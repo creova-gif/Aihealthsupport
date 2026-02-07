@@ -148,9 +148,10 @@ export function AIArchitectureDashboard({ onBack }: AIArchitectureProps) {
   ];
 
   const governanceMetrics = [
+    { label: language === 'sw' ? 'Ukaguzi wa Mfano' : 'Model Audits', value: '127', status: 'good' },
     { label: language === 'sw' ? 'Ufuatiliaji wa Upendeleo' : 'Bias Monitoring', value: '98%', status: 'good' },
     { label: language === 'sw' ? 'Ukaguzi wa Mkoa' : 'Regional Audits', value: '26/26', status: 'good' },
-    { label: language === 'sw' ? 'Idhini ya MoH' : 'MoH Approvals', value: '4/4', status: 'good' },
+    { label: language === 'sw' ? 'Kufuata Kanuni' : 'Policy Compliance', value: '4/4', status: 'good' },
     { label: language === 'sw' ? 'PDPA Kufuata' : 'PDPA Compliance', value: '100%', status: 'good' },
   ];
 
@@ -164,9 +165,6 @@ export function AIArchitectureDashboard({ onBack }: AIArchitectureProps) {
 
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-3xl md:text-4xl">{t.title}</h1>
-          <Badge className="text-lg px-4 py-2" style={{ backgroundColor: '#0F9D58' }}>
-            TMDA Certified
-          </Badge>
         </div>
 
         <Tabs defaultValue="architecture" className="space-y-4">

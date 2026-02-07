@@ -1,20 +1,18 @@
 /**
- * Progressive Intake Flow - World-Class Data Collection
+ * Progressive Intake Flow - Clinical-Grade Data Collection
  * 
  * DESIGN PRINCIPLES:
  * - Max 3 questions per screen
+ * - No "AI" aesthetic or sparkles
+ * - Clinical, calm, professional
  * - Progressive disclosure
- * - Clear microcopy explaining "why"
- * - Cards not dropdowns
- * - Subtle animations (98% scale)
- * - Can skip optional sections
- * - Review & edit before submit
+ * - Clear microcopy
+ * - Trust-first design
  */
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowRight, ArrowLeft, Check, Edit2, User, Activity, Target, Utensils, Shield, FileText } from 'lucide-react';
-import { Button } from './ui/button';
+import { ArrowRight, ArrowLeft, Check, Edit2, User, Activity, Target } from 'lucide-react';
 
 interface IntakeData {
   // Step 1: Identity

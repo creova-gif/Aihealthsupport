@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Brain, CheckCircle, AlertCircle, Info, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
-import { Badge } from '@/app/components/ui/badge';
 import { Progress } from '@/app/components/ui/progress';
 import { Alert, AlertDescription } from '@/app/components/ui/alert';
 
@@ -169,24 +168,15 @@ export function AIExplainabilityPanel({
           </div>
         )}
 
-        {/* Safety Disclaimer */}
-        <Alert className="bg-yellow-50 border-yellow-300">
-          <AlertCircle className="h-4 w-4 text-yellow-600" />
-          <AlertDescription>
-            <strong className="block mb-1">{text.safetyNote}</strong>
-            <p className="text-sm">{text.safetyText}</p>
+        {/* Clinical disclaimer */}
+        <Alert>
+          <Info className="h-4 w-4" />
+          <AlertDescription className="text-xs">
+            {language === 'sw'
+              ? 'Huu ni ushauri tu. Daktari ana uamuzi wa mwisho wa kimatibabu.'
+              : 'This is guidance only. A healthcare professional makes the final clinical decision.'}
           </AlertDescription>
         </Alert>
-
-        {/* TMDA Badge */}
-        <div className="flex items-center justify-center gap-2 pt-4 border-t">
-          <Badge variant="outline" className="text-xs">
-            TMDA Class B Certified
-          </Badge>
-          <Badge variant="outline" className="text-xs" style={{ borderColor: '#0F9D58', color: '#0F9D58' }}>
-            ISO 14971 Compliant
-          </Badge>
-        </div>
       </CardContent>
     </Card>
   );
@@ -233,8 +223,8 @@ export function ModelPerformanceCard({ language = 'sw' }: { language: 'sw' | 'en
         ))}
         <p className="text-xs text-gray-600 mt-3">
           {language === 'sw'
-            ? 'Vigezo vilivyoidhinishwa na TMDA'
-            : 'TMDA-approved thresholds'}
+            ? 'Vigezo vya kliniki'
+            : 'Clinical thresholds'}
         </p>
       </CardContent>
     </Card>

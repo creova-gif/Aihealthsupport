@@ -17,7 +17,6 @@ import {
   Bell,
   User,
   ChevronRight,
-  Shield,
   Clock,
   CheckCircle2,
   AlertCircle,
@@ -145,19 +144,6 @@ export function ModernHome({ userName = 'User', language, onNavigate }: ModernHo
             </h1>
             <p className="text-lg text-[#6B7280]">{t.tagline}</p>
           </motion.div>
-
-          {/* Trust badge */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[#EFF6FF] rounded-full mb-8"
-          >
-            <Shield className="w-4 h-4 text-[#1976D2]" />
-            <span className="text-sm font-medium text-[#1976D2]">
-              {language === 'sw' ? 'Salama & Siri' : 'Secure & Private'}
-            </span>
-          </motion.div>
         </div>
       </div>
 
@@ -250,10 +236,13 @@ function CareJourneyCard({
     >
       <div className="flex items-start gap-4">
         <div
-          className="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110"
-          style={{ backgroundColor: `${color}15` }}
+          className="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg shadow-sm ring-1 ring-black/5"
+          style={{ 
+            backgroundColor: `${color}08`,
+            boxShadow: `0 2px 8px ${color}15`
+          }}
         >
-          <Icon className="w-7 h-7" style={{ color }} />
+          <Icon className="w-7 h-7 transition-transform duration-300 group-hover:scale-110" style={{ color, strokeWidth: 2 }} />
         </div>
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold text-[#1A1D23] mb-1 text-lg">{title}</h3>
