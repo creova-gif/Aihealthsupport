@@ -1,0 +1,87 @@
+{
+  "version": "1.0.0",
+  "max_length": 160,
+  "sender_id": "AfyaAI",
+  "templates": {
+    "HIGH": {
+      "sw": "AfyaAI: DHARURA! Nenda {facility} SASA. Au piga 112. Rejea: {code}. Onyesha nambari hii kwa daktari.",
+      "en": "AfyaAI: EMERGENCY! Go to {facility} NOW. Or call 112. Ref: {code}. Show this to doctor."
+    },
+    "MEDIUM": {
+      "sw": "AfyaAI: Tafadhali tembelea {facility}. Rejea: {code}. Leo au kesho. Maswali? Piga 0800-AFYA.",
+      "en": "AfyaAI: Please visit {facility}. Ref: {code}. Today or tomorrow. Questions? Call 0800-AFYA."
+    },
+    "LOW": {
+      "sw": "AfyaAI: Pumzika na kunywa maji. Tembelea kituo kama dalili haziendi. Rejea: {code}. Maswali? 0800-AFYA.",
+      "en": "AfyaAI: Rest and hydrate. Visit facility if symptoms persist. Ref: {code}. Questions? 0800-AFYA."
+    }
+  },
+  "appointment_reminder": {
+    "sw": "AfyaAI: Una miadi tarehe {date} saa {time} kwenye {facility}. Tafadhali fika mapema. Rejea: {code}.",
+    "en": "AfyaAI: You have an appointment on {date} at {time} at {facility}. Please arrive early. Ref: {code}."
+  },
+  "appointment_confirmation": {
+    "sw": "AfyaAI: Miadi yako imethimitishwa. Tarehe: {date}, Saa: {time}, Kituo: {facility}. Rejea: {code}.",
+    "en": "AfyaAI: Your appointment is confirmed. Date: {date}, Time: {time}, Facility: {facility}. Ref: {code}."
+  },
+  "missed_appointment": {
+    "sw": "AfyaAI: Hujaonekana kwenye miadi yako ya {date}. Tafadhali wasiliana na {facility} ili kupanga upya.",
+    "en": "AfyaAI: You missed your appointment on {date}. Please contact {facility} to reschedule."
+  },
+  "medication_reminder": {
+    "sw": "AfyaAI: Kumbusho la dawa: Meza {medication} sasa. Fuata maelekezo ya daktari. Maswali? 0800-AFYA.",
+    "en": "AfyaAI: Medication reminder: Take {medication} now. Follow doctor's instructions. Questions? 0800-AFYA."
+  },
+  "test_results_ready": {
+    "sw": "AfyaAI: Matokeo yako ya vipimo yameandaliwa. Tembelea {facility} ili kupokea. Rejea: {code}.",
+    "en": "AfyaAI: Your test results are ready. Visit {facility} to collect. Ref: {code}."
+  },
+  "chw_outreach": {
+    "sw": "AfyaAI: CHW {chw_name} atakuja kutembelea kaya yako tarehe {date}. Hatari: {risk_level}.",
+    "en": "AfyaAI: CHW {chw_name} will visit your household on {date}. Risk level: {risk_level}."
+  },
+  "chw_referral_alert": {
+    "sw": "AfyaAI CHW: Tafadhali tembelea kaya ya {household_name}. Hatari: {risk_level}. Rejea: {code}.",
+    "en": "AfyaAI CHW: Please visit household {household_name}. Risk: {risk_level}. Ref: {code}."
+  },
+  "facility_queue_update": {
+    "sw": "AfyaAI: Wewe ni wa {position} kwenye foleni. Muda wa kusubiri: ~{wait_time} dakika. Kituo: {facility}.",
+    "en": "AfyaAI: You are #{position} in queue. Wait time: ~{wait_time} minutes. Facility: {facility}."
+  },
+  "prescription_refill": {
+    "sw": "AfyaAI: Dawa yako {medication} inaisha. Tafadhali tembelea {facility} kwa kujaza upya. Rejea: {code}.",
+    "en": "AfyaAI: Your {medication} is running low. Please visit {facility} for refill. Ref: {code}."
+  },
+  "pregnancy_milestone": {
+    "sw": "AfyaAI: Hongera! Umefikia wiki ya {week} ya ujauzito. Miadi yako inayofuata: {next_appointment}. Chanjo: {immunization}.",
+    "en": "AfyaAI: Congratulations! You're at week {week} of pregnancy. Next appointment: {next_appointment}. Vaccine: {immunization}."
+  },
+  "child_immunization": {
+    "sw": "AfyaAI: Chanjo ya {vaccine_name} kwa {child_name} tarehe {due_date}. Tembelea {facility}. Rejea: {code}.",
+    "en": "AfyaAI: {vaccine_name} vaccine for {child_name} due on {due_date}. Visit {facility}. Ref: {code}."
+  },
+  "emergency_broadcast": {
+    "sw": "AfyaAI: [TANGAZO LA DHARURA] {message}. Kwa maelezo zaidi piga 0800-AFYA.",
+    "en": "AfyaAI: [EMERGENCY ALERT] {message}. For more info call 0800-AFYA."
+  },
+  "health_education": {
+    "sw": "AfyaAI: Kidokezo cha Afya: {tip}. Taarifa zaidi: www.afyaai.go.tz",
+    "en": "AfyaAI: Health Tip: {tip}. More info: www.afyaai.go.tz"
+  },
+  "feedback_request": {
+    "sw": "AfyaAI: Je, huduma yetu ilikusaidia? Jibu 1=Ndiyo, 2=Hapana, 3=Kidogo. Asante!",
+    "en": "AfyaAI: Did our service help you? Reply 1=Yes, 2=No, 3=Somewhat. Thank you!"
+  },
+  "safety_disclaimer": {
+    "sw": "AfyaAI haibadilishi daktari. Daima fuata ushauri wa mhudumu wa afya.",
+    "en": "AfyaAI does not replace a doctor. Always follow healthcare advice."
+  },
+  "opt_out": {
+    "sw": "Umetoka kwenye huduma za AfyaAI. Tuma START ili kurudi. Maswali? 0800-AFYA.",
+    "en": "You've unsubscribed from AfyaAI. Reply START to rejoin. Questions? 0800-AFYA."
+  },
+  "welcome": {
+    "sw": "Karibu AfyaAI! Huduma yako ya afya kwa simu. Tuma AFYA kwa maswali. Msaada: 0800-AFYA.",
+    "en": "Welcome to AfyaAI! Your mobile health service. Send AFYA for questions. Help: 0800-AFYA."
+  }
+}

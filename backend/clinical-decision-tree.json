@@ -1,0 +1,331 @@
+{
+  "version": "1.0.0",
+  "country": "Tanzania",
+  "language": ["sw", "en"],
+  "last_updated": "2026-02-07",
+  "regulatory_compliance": {
+    "tmda": true,
+    "pdpa": true,
+    "who_ethical_ai": true
+  },
+  "disclaimer": {
+    "sw": "AfyaAI haibadilishi daktari. Daima fuata ushauri wa mhudumu wa afya.",
+    "en": "AfyaAI does not replace a doctor. Always follow healthcare advice."
+  },
+  "risk_rules": [
+    {
+      "id": "HIGH_001",
+      "name": "Child Under 5 with Prolonged Fever",
+      "condition": {
+        "age_group": "<5",
+        "symptom": "fever",
+        "duration_days": ">3"
+      },
+      "risk": "HIGH",
+      "action": "EMERGENCY",
+      "rationale": {
+        "sw": "Mtoto chini ya miaka 5 na homa ya zaidi ya siku 3 anaweza kuwa na malaria, pneumonia, au ugonjwa mwingine hatari. Vipimo vya haraka vinahitajika.",
+        "en": "A child under 5 with fever >3 days may have malaria, pneumonia, or other serious infection. Immediate testing required."
+      }
+    },
+    {
+      "id": "HIGH_002",
+      "name": "Pregnancy with Bleeding",
+      "condition": {
+        "pregnant": true,
+        "symptom": "bleeding"
+      },
+      "risk": "HIGH",
+      "action": "EMERGENCY",
+      "rationale": {
+        "sw": "Kutokwa damu wakati wa ujauzito kunaweza kuwa ni dalili ya hatari kwa mama na mtoto. Msaada wa haraka unahitajika.",
+        "en": "Bleeding during pregnancy can be dangerous for mother and baby. Urgent medical attention required."
+      }
+    },
+    {
+      "id": "HIGH_003",
+      "name": "Pregnancy with Severe Pain",
+      "condition": {
+        "pregnant": true,
+        "symptom": "severe_pain"
+      },
+      "risk": "HIGH",
+      "action": "EMERGENCY",
+      "rationale": {
+        "sw": "Maumivu makali wakati wa ujauzito yanaweza kuonyesha matatizo hatari. Angalia mhudumu wa afya haraka.",
+        "en": "Severe pain during pregnancy may indicate serious complications. See healthcare provider immediately."
+      }
+    },
+    {
+      "id": "HIGH_004",
+      "name": "Severe Breathing Difficulty",
+      "condition": {
+        "symptom": "breathing_difficulty",
+        "severity": "severe"
+      },
+      "risk": "HIGH",
+      "action": "EMERGENCY",
+      "rationale": {
+        "sw": "Shida kubwa ya kupumua inaweza kuwa ni dalili ya pneumonia, asthma kali, au tatizo la moyo. Dharura.",
+        "en": "Severe breathing difficulty may indicate pneumonia, severe asthma, or heart problem. Emergency."
+      }
+    },
+    {
+      "id": "HIGH_005",
+      "name": "Loss of Consciousness",
+      "condition": {
+        "consciousness": "unconscious"
+      },
+      "risk": "HIGH",
+      "action": "EMERGENCY",
+      "rationale": {
+        "sw": "Kupoteza fahamu ni dalili ya hatari sana. Piga 112 mara moja.",
+        "en": "Loss of consciousness is very serious. Call 112 immediately."
+      }
+    },
+    {
+      "id": "HIGH_006",
+      "name": "Heavy Bleeding",
+      "condition": {
+        "symptom": "bleeding",
+        "severity": "heavy"
+      },
+      "risk": "HIGH",
+      "action": "EMERGENCY",
+      "rationale": {
+        "sw": "Kutokwa damu nyingi kunaweza kusababisha upotevu wa damu hatari. Nenda hospitali haraka.",
+        "en": "Heavy bleeding can cause dangerous blood loss. Go to hospital immediately."
+      }
+    },
+    {
+      "id": "MEDIUM_001",
+      "name": "Fever 2-3 Days",
+      "condition": {
+        "symptom": "fever",
+        "duration_days": "2-3"
+      },
+      "risk": "MEDIUM",
+      "action": "VISIT_CLINIC",
+      "rationale": {
+        "sw": "Homa ya siku 2-3 inahitaji kuangaliwa na mhudumu wa afya. Inaweza kuwa malaria au ugonjwa mwingine.",
+        "en": "Fever for 2-3 days needs medical evaluation. Could be malaria or other infection."
+      }
+    },
+    {
+      "id": "MEDIUM_002",
+      "name": "Severe Pain (Any Location)",
+      "condition": {
+        "symptom": "severe_pain"
+      },
+      "risk": "MEDIUM",
+      "action": "VISIT_CLINIC",
+      "rationale": {
+        "sw": "Maumivu makali yanahitaji kuangaliwa na daktari kubaini sababu na matibabu sahihi.",
+        "en": "Severe pain needs medical assessment to determine cause and appropriate treatment."
+      }
+    },
+    {
+      "id": "MEDIUM_003",
+      "name": "Diarrhea with Weakness",
+      "condition": {
+        "symptom": "diarrhea",
+        "consciousness": "sleepy_confused"
+      },
+      "risk": "MEDIUM",
+      "action": "VISIT_CLINIC",
+      "rationale": {
+        "sw": "Kuhara na udhaifu kunaweza kuonyesha upotevu wa maji na umeme mwilini. Angalia daktari.",
+        "en": "Diarrhea with weakness may indicate dehydration and electrolyte imbalance. See doctor."
+      }
+    },
+    {
+      "id": "LOW_001",
+      "name": "Mild Short-Duration Symptoms",
+      "condition": {
+        "symptom": "any",
+        "severity": "mild",
+        "duration_days": "<2"
+      },
+      "risk": "LOW",
+      "action": "SELF_CARE",
+      "rationale": {
+        "sw": "Dalili za upole za siku chache zinaweza kuwa za kawaida. Pumzika, kunywa maji, na fuatilia.",
+        "en": "Mild symptoms for a few days may be normal. Rest, hydrate, and monitor."
+      }
+    }
+  ],
+  "actions": {
+    "SELF_CARE": {
+      "priority": 1,
+      "timeframe": "monitor",
+      "message": {
+        "sw": "Pumzika, kunywa maji mengi, fuatilia dalili. Tembelea kituo kama haziendi.",
+        "en": "Rest, drink plenty of fluids, monitor symptoms. Visit facility if they don't improve."
+      },
+      "instructions": {
+        "sw": [
+          "Pumzika nyumbani",
+          "Kunywa maji mengi (angalau lita 2 kwa siku)",
+          "Kula vyakula vya kuunga mkono afya",
+          "Fuatilia dalili kwa siku 2-3",
+          "Tembelea daktari kama dalili zinazidi au haziendi"
+        ],
+        "en": [
+          "Rest at home",
+          "Drink plenty of water (at least 2 liters per day)",
+          "Eat nutritious foods",
+          "Monitor symptoms for 2-3 days",
+          "Visit doctor if symptoms worsen or don't improve"
+        ]
+      }
+    },
+    "VISIT_CLINIC": {
+      "priority": 2,
+      "timeframe": "24-48 hours",
+      "message": {
+        "sw": "Tafadhali tembelea kituo cha afya ndani ya siku 1-2.",
+        "en": "Please visit a health clinic within 1-2 days."
+      },
+      "instructions": {
+        "sw": [
+          "Panga miadi kwenye kituo cha afya kilicho karibu",
+          "Leta nambari ya rufaa (AFYA-XXXX)",
+          "Eleza dalili zote kwa mhudumu wa afya",
+          "Fuata matibabu yaliyopewa"
+        ],
+        "en": [
+          "Book appointment at nearest health facility",
+          "Bring referral code (AFYA-XXXX)",
+          "Explain all symptoms to healthcare provider",
+          "Follow prescribed treatment"
+        ]
+      }
+    },
+    "IMMEDIATE_FACILITY": {
+      "priority": 3,
+      "timeframe": "within hours",
+      "message": {
+        "sw": "Nenda kituo cha afya au hospitali haraka (ndani ya masaa machache).",
+        "en": "Go to health facility or hospital soon (within a few hours)."
+      },
+      "instructions": {
+        "sw": [
+          "Nenda hospitali ya rufaa haraka",
+          "Onyesha nambari ya rufaa kwa mhudumu wa afya",
+          "Eleza dalili zote na historia yako ya afya"
+        ],
+        "en": [
+          "Go to referral hospital soon",
+          "Show referral code to healthcare provider",
+          "Explain all symptoms and medical history"
+        ]
+      }
+    },
+    "EMERGENCY": {
+      "priority": 4,
+      "timeframe": "immediate",
+      "message": {
+        "sw": "Hii ni dharura. Piga 112 au nenda hospitali SASA.",
+        "en": "This is an emergency. Call 112 or go to hospital NOW."
+      },
+      "emergency_numbers": {
+        "TZ": "112",
+        "ambulance": "114",
+        "police": "112"
+      },
+      "instructions": {
+        "sw": [
+          "Piga 112 SASA kwa gari la wagonjwa",
+          "Au nenda hospitali ya karibu haraka",
+          "Usisimame - endesha mara moja",
+          "Onyesha nambari ya rufaa kwa daktari"
+        ],
+        "en": [
+          "Call 112 NOW for ambulance",
+          "Or go to nearest hospital immediately",
+          "Don't wait - act now",
+          "Show referral code to doctor"
+        ]
+      }
+    }
+  },
+  "facilities": {
+    "HFR-001234": {
+      "name": {
+        "sw": "Hospitali ya Rufaa Muhimbili",
+        "en": "Muhimbili National Hospital"
+      },
+      "type": "national_referral",
+      "services": ["emergency", "surgery", "maternity", "pediatrics", "ICU"],
+      "phone": "+255-22-215-0608",
+      "address": {
+        "sw": "United Nations Road, Upanga, Dar es Salaam",
+        "en": "United Nations Road, Upanga, Dar es Salaam"
+      },
+      "coordinates": {
+        "lat": -6.8162,
+        "lng": 39.2803
+      },
+      "hours": "24/7"
+    },
+    "HFR-005678": {
+      "name": {
+        "sw": "Kituo cha Afya Kariakoo",
+        "en": "Kariakoo Health Centre"
+      },
+      "type": "health_centre",
+      "services": ["outpatient", "maternity", "immunization", "laboratory"],
+      "phone": "+255-22-218-4567",
+      "address": {
+        "sw": "Kariakoo, Dar es Salaam",
+        "en": "Kariakoo, Dar es Salaam"
+      },
+      "coordinates": {
+        "lat": -6.8162,
+        "lng": 39.2803
+      },
+      "hours": "Mon-Fri 8AM-5PM, Sat 8AM-12PM"
+    }
+  },
+  "common_conditions_tanzania": {
+    "malaria": {
+      "triggers": ["fever", "headache", "chills"],
+      "high_risk_areas": ["Pwani", "Morogoro", "Mtwara", "Lindi"],
+      "action": "VISIT_CLINIC",
+      "tests_required": ["blood_smear", "rapid_diagnostic_test"]
+    },
+    "tuberculosis": {
+      "triggers": ["cough_persistent", "night_sweats", "weight_loss"],
+      "duration": ">2 weeks",
+      "action": "VISIT_CLINIC",
+      "tests_required": ["sputum_test", "chest_xray"]
+    },
+    "pneumonia": {
+      "triggers": ["cough", "breathing_difficulty", "fever"],
+      "high_risk": ["children_under_5", "elderly", "hiv_positive"],
+      "action": "IMMEDIATE_FACILITY"
+    },
+    "diarrheal_disease": {
+      "triggers": ["diarrhea", "vomiting", "dehydration"],
+      "high_risk": ["children_under_5"],
+      "action": "VISIT_CLINIC"
+    }
+  },
+  "audit_metadata": {
+    "model_name": "AfyaAI Clinical Decision Tree v1.0",
+    "developer": "AfyaAI Team",
+    "validation_status": "pending_tmda_review",
+    "clinical_review": {
+      "reviewed_by": "Dr. [Name] - MoH Tanzania",
+      "review_date": "pending",
+      "approval_status": "pending"
+    },
+    "changelog": [
+      {
+        "version": "1.0.0",
+        "date": "2026-02-07",
+        "changes": "Initial production release"
+      }
+    ]
+  }
+}
