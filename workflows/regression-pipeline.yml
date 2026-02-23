@@ -1,0 +1,503 @@
+# CI/CD REGRESSION PIPELINE
+# AfyaCare Tanzania National Digital Health Platform
+#
+# This pipeline MUST pass 100% before any production deployment
+#
+# Stages:
+# 1. Code Quality & Security Scan
+# 2. Unit Tests
+# 3. Integration Tests
+# 4. Regression Tests (Full Suite)
+# 5. Load & Stress Tests
+# 6. Security Penetration Tests
+# 7. Data Integrity Validation
+# 8. FHIR Contract Tests
+# 9. Language/i18n Audit
+# 10. Deployment Readiness Check
+#
+# Deploy blocked if ANY stage fails
+
+name: AfyaCare Regression Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: '20.x'
+  DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+  
+jobs:
+  # ==========================================
+  # STAGE 1: CODE QUALITY & SECURITY SCAN
+  # ==========================================
+  code-quality:
+    name: Code Quality & Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: ESLint
+        run: npm run lint
+      
+      - name: TypeScript Type Check
+        run: npm run type-check
+      
+      - name: Dependency Vulnerability Scan
+        run: npm audit --audit-level=high
+      
+      - name: SAST (Static Application Security Testing)
+        run: npm run security:sast
+      
+      - name: Code Coverage Check
+        run: npm run test:coverage -- --threshold=80
+
+  # ==========================================
+  # STAGE 2: UNIT TESTS
+  # ==========================================
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: code-quality
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run Unit Tests
+        run: npm run test:unit -- --coverage
+      
+      - name: Upload Coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/unit/lcov.info
+
+  # ==========================================
+  # STAGE 3: INTEGRATION TESTS
+  # ==========================================
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: unit-tests
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: afyacare_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Setup Test Database
+        run: npm run db:test:setup
+      
+      - name: Run Integration Tests
+        run: npm run test:integration
+        env:
+          DATABASE_URL: postgresql://postgres:test_password@localhost:5432/afyacare_test
+
+  # ==========================================
+  # STAGE 4: FULL REGRESSION SUITE
+  # ==========================================
+  regression-tests:
+    name: Full Regression Suite
+    runs-on: ubuntu-latest
+    needs: integration-tests
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: afyacare_test
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+    
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: A. Authentication & RBAC Tests
+        run: npm run test:regression:auth
+      
+      - name: B. Master Patient Index Tests
+        run: npm run test:regression:mpi
+      
+      - name: C. Clinical Documentation Tests
+        run: npm run test:regression:clinical
+      
+      - name: D. Pharmacy Module Tests
+        run: npm run test:regression:pharmacy
+      
+      - name: E. Laboratory Module Tests
+        run: npm run test:regression:lab
+      
+      - name: F. Queue Management Tests
+        run: npm run test:regression:queue
+      
+      - name: G. Ministry Reporting Tests
+        run: npm run test:regression:reporting
+      
+      - name: H. FHIR API Tests
+        run: npm run test:regression:fhir
+      
+      - name: I. Language/i18n Tests
+        run: npm run test:regression:i18n
+      
+      - name: Generate Regression Report
+        run: npm run test:regression:report
+      
+      - name: Upload Regression Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: regression-test-results
+          path: ./test-results/regression/
+
+  # ==========================================
+  # STAGE 5: LOAD & STRESS TESTS
+  # ==========================================
+  load-tests:
+    name: Load & Stress Tests
+    runs-on: ubuntu-latest
+    needs: regression-tests
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Start Test Server
+        run: npm run server:test &
+        env:
+          NODE_ENV: test
+      
+      - name: Wait for Server
+        run: npx wait-on http://localhost:3000 --timeout 60000
+      
+      - name: Scenario 1 - District Hospital Load
+        run: npm run test:load:district
+      
+      - name: Scenario 2 - Regional Hospital Load
+        run: npm run test:load:regional
+      
+      - name: Scenario 3 - National Spike Test
+        run: npm run test:load:spike
+      
+      - name: Scenario 4 - 2G Network Simulation
+        run: npm run test:load:2g
+      
+      - name: Scenario 5 - Offline Sync Stress
+        run: npm run test:load:offline-sync
+      
+      - name: Performance Threshold Check
+        run: npm run test:load:validate-thresholds
+      
+      - name: Upload Load Test Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: load-test-results
+          path: ./test-results/load/
+
+  # ==========================================
+  # STAGE 6: SECURITY PENETRATION TESTS
+  # ==========================================
+  security-tests:
+    name: Security Penetration Tests
+    runs-on: ubuntu-latest
+    needs: regression-tests
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: SQL Injection Tests
+        run: npm run test:security:sql-injection
+      
+      - name: XSS Tests
+        run: npm run test:security:xss
+      
+      - name: JWT Manipulation Tests
+        run: npm run test:security:jwt
+      
+      - name: Privilege Escalation Tests
+        run: npm run test:security:privilege-escalation
+      
+      - name: Rate Limiting Tests
+        run: npm run test:security:rate-limiting
+      
+      - name: Brute Force Tests
+        run: npm run test:security:brute-force
+      
+      - name: CSRF Tests
+        run: npm run test:security:csrf
+      
+      - name: Path Traversal Tests
+        run: npm run test:security:path-traversal
+      
+      - name: Generate Security Report
+        run: npm run test:security:report
+      
+      - name: Upload Security Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: security-test-results
+          path: ./test-results/security/
+
+  # ==========================================
+  # STAGE 7: DATA INTEGRITY VALIDATION
+  # ==========================================
+  data-integrity:
+    name: Data Integrity Validation
+    runs-on: ubuntu-latest
+    needs: regression-tests
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: afyacare_test
+    
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Load Test Data
+        run: npm run db:test:seed
+      
+      - name: Run Data Integrity Validator
+        run: npm run validate:data-integrity
+      
+      - name: Check for Orphan Records
+        run: npm run validate:orphan-records
+      
+      - name: Check Foreign Key Integrity
+        run: npm run validate:foreign-keys
+      
+      - name: Check Inventory Integrity
+        run: npm run validate:inventory
+      
+      - name: Check MPI Duplicates
+        run: npm run validate:mpi-duplicates
+      
+      - name: Validate Audit Trail
+        run: npm run validate:audit-trail
+      
+      - name: Upload Validation Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: data-integrity-results
+          path: ./test-results/integrity/
+
+  # ==========================================
+  # STAGE 8: FHIR CONTRACT TESTS
+  # ==========================================
+  fhir-contract:
+    name: FHIR R4 Contract Tests
+    runs-on: ubuntu-latest
+    needs: regression-tests
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Validate FHIR Patient Resource Schema
+        run: npm run test:fhir:patient-schema
+      
+      - name: Validate FHIR Encounter Resource Schema
+        run: npm run test:fhir:encounter-schema
+      
+      - name: Validate FHIR Observation Resource Schema
+        run: npm run test:fhir:observation-schema
+      
+      - name: Validate FHIR MedicationRequest Schema
+        run: npm run test:fhir:medication-schema
+      
+      - name: Test FHIR Search Parameters
+        run: npm run test:fhir:search-params
+      
+      - name: Test FHIR OAuth Flow
+        run: npm run test:fhir:oauth
+      
+      - name: Test FHIR Rate Limiting
+        run: npm run test:fhir:rate-limit
+
+  # ==========================================
+  # STAGE 9: LANGUAGE/i18n AUDIT
+  # ==========================================
+  i18n-audit:
+    name: Language & i18n Audit
+    runs-on: ubuntu-latest
+    needs: regression-tests
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Check Translation Completeness
+        run: npm run test:i18n:completeness
+      
+      - name: Check for Untranslated Keys
+        run: npm run test:i18n:missing-keys
+      
+      - name: Validate ICU Message Format
+        run: npm run test:i18n:icu-validation
+      
+      - name: Test Language Switching
+        run: npm run test:i18n:switching
+      
+      - name: Check for Hardcoded Text
+        run: npm run test:i18n:hardcoded-text
+
+  # ==========================================
+  # STAGE 10: DEPLOYMENT READINESS CHECK
+  # ==========================================
+  deployment-readiness:
+    name: Deployment Readiness Check
+    runs-on: ubuntu-latest
+    needs: [regression-tests, load-tests, security-tests, data-integrity, fhir-contract, i18n-audit]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      
+      - name: Download All Test Results
+        uses: actions/download-artifact@v3
+      
+      - name: Generate Compliance Report
+        run: npm run test:generate-compliance-report
+      
+      - name: Check Deployment Thresholds
+        run: |
+          npm run test:check-threshold -- \
+            --regression-pass-rate=100 \
+            --security-vulnerabilities=0 \
+            --performance-degradation-max=1 \
+            --load-test-p95-max=500ms
+      
+      - name: Validate Migration Scripts
+        run: npm run db:migrations:validate
+      
+      - name: Check Environment Variables
+        run: npm run deploy:check-env-vars
+      
+      - name: Generate Deployment Report
+        run: npm run deploy:generate-report
+      
+      - name: Upload Deployment Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: deployment-readiness-report
+          path: ./deployment-report.pdf
+      
+      - name: Post Status to Slack
+        if: always()
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": "AfyaCare CI/CD Pipeline: ${{ job.status }}",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Build Status: *${{ job.status }}*\nBranch: ${{ github.ref }}\nCommit: ${{ github.sha }}"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      
+      - name: Block Deployment if Failed
+        if: failure()
+        run: |
+          echo "❌ DEPLOYMENT BLOCKED: One or more tests failed"
+          echo "Review test results and fix issues before deploying"
+          exit 1
+
+  # ==========================================
+  # PRODUCTION DEPLOYMENT (MANUAL APPROVAL)
+  # ==========================================
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: deployment-readiness
+    environment: 
+      name: production
+      url: https://afyacare.go.tz
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Deploy to Production
+        run: npm run deploy:production
+        env:
+          DEPLOY_KEY: ${{ secrets.PRODUCTION_DEPLOY_KEY }}
+      
+      - name: Run Smoke Tests
+        run: npm run test:smoke:production
+      
+      - name: Monitor Health
+        run: npm run monitor:health-check
+      
+      - name: Notify MoH Team
+        run: |
+          echo "✅ AfyaCare v${{ github.sha }} deployed to production"
+          npm run notify:moh-team

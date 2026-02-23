@@ -8,6 +8,9 @@ import {
   CheckCircle,
   Calendar,
   ArrowLeft,
+  Clock,
+  Activity,
+  Zap,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
@@ -31,6 +34,19 @@ const translations = {
     coverage: 'Ufikaji',
     performance: 'Utendaji',
     back: 'Rudi',
+    // NEW: Enhanced priority section
+    urgentAction: 'Hatua za Haraka',
+    aiRecommends: 'AI Inapendekeza',
+    urgentPatients: 'Wagonjwa wa Haraka',
+    actionNeeded: 'Hatua Inahitajika',
+    lastVisit: 'Ziara ya Mwisho',
+    riskScore: 'Hatari',
+    daysOverdue: 'Siku Zilizopita',
+    viewDetails: 'Angalia Maelezo',
+    markVisited: 'Weka Ametembelewa',
+    callPatient: 'Piga Simu',
+    planRoute: 'Ratibu Ziara',
+    planRouteDesc: 'Panga njia bora ya kutembelea',
   },
   en: {
     title: 'CHW Dashboard',
@@ -47,40 +63,125 @@ const translations = {
     coverage: 'Coverage',
     performance: 'Performance',
     back: 'Back',
+    // NEW: Enhanced priority section
+    urgentAction: 'Urgent Action Required',
+    aiRecommends: 'AI Recommends',
+    urgentPatients: 'Urgent Patients',
+    actionNeeded: 'Action Needed',
+    lastVisit: 'Last Visit',
+    riskScore: 'Risk',
+    daysOverdue: 'Days Overdue',
+    viewDetails: 'View Details',
+    markVisited: 'Mark Visited',
+    callPatient: 'Call Patient',
+    planRoute: 'Plan Route',
+    planRouteDesc: 'Optimize your visit schedule',
   },
 };
 
 interface CHWDashboardProps {
   onBack: () => void;
+  onNavigate?: (route: string) => void;
 }
 
-export function CHWDashboard({ onBack }: CHWDashboardProps) {
+export function CHWDashboard({ onBack, onNavigate }: CHWDashboardProps) {
   const { language } = useApp();
   const t = translations[language];
 
+  // ENHANCED: Priority patients with AI-generated risk scores and actions
   const priorityHouseholds = [
     {
+      id: '1',
       name: 'Mama Fatuma Hassan',
+      age: 28,
       status: 'pregnant',
-      risk: 'high',
+      risk: 'critical',
+      riskScore: 92,
       reason: language === 'sw' ? 'Mimba - homa kwa siku 3' : 'Pregnancy - fever for 3 days',
+      aiAction: language === 'sw'
+        ? 'Rejesha kwa kliniki SASA - homa wakati wa ujauzito ni hatari'
+        : 'Refer to clinic NOW - fever during pregnancy is dangerous',
       lastVisit: '5 days ago',
+      daysOverdue: 5,
+      phone: '+255 741 234 567',
+      nextAction: language === 'sw' ? 'Rejesha Kliniki' : 'Refer to Clinic',
     },
     {
-      name: 'Juma Ramadhani',
-      status: 'ncd',
-      risk: 'medium',
-      reason: language === 'sw' ? 'Shinikizo la damu - dawa zimekwisha' : 'Hypertension - medication finished',
-      lastVisit: '2 weeks ago',
-    },
-    {
+      id: '2',
       name: 'Halima Saleh',
+      age: 2,
       status: 'child',
-      risk: 'high',
-      reason: language === 'sw' ? 'Mtoto - kuhara na kutapika' : 'Child - diarrhea and vomiting',
+      risk: 'critical',
+      riskScore: 88,
+      reason: language === 'sw' ? 'Mtoto (2 years) - kuhara na kutapika' : 'Child (2 years) - diarrhea and vomiting',
+      aiAction: language === 'sw'
+        ? 'Tembelea LEO - hatari ya ukosefu wa maji kwa watoto'
+        : 'Visit TODAY - risk of dehydration in children',
       lastVisit: '1 day ago',
+      daysOverdue: 1,
+      phone: '+255 742 345 678',
+      nextAction: language === 'sw' ? 'Tembelea Leo' : 'Visit Today',
+    },
+    {
+      id: '3',
+      name: 'Juma Ramadhani',
+      age: 56,
+      status: 'ncd',
+      risk: 'high',
+      riskScore: 75,
+      reason: language === 'sw' ? 'Shinikizo la damu - dawa zimekwisha' : 'Hypertension - medication finished',
+      aiAction: language === 'sw'
+        ? 'Leta dawa mpya wiki hii - shinikizo lisilo na dawa ni hatari'
+        : 'Deliver new medication this week - uncontrolled BP is risky',
+      lastVisit: '2 weeks ago',
+      daysOverdue: 7,
+      phone: '+255 743 456 789',
+      nextAction: language === 'sw' ? 'Leta Dawa' : 'Deliver Medication',
+    },
+    {
+      id: '4',
+      name: 'Grace Mwakasege',
+      age: 31,
+      status: 'pregnant',
+      risk: 'medium',
+      riskScore: 58,
+      reason: language === 'sw' ? 'Mimba - kliniki ya ANC ya 4' : 'Pregnancy - 4th ANC visit due',
+      aiAction: language === 'sw'
+        ? 'Tathmini ya kawaida - hakikisha ANC inafuatiliwa'
+        : 'Routine assessment - ensure ANC follow-up',
+      lastVisit: '3 weeks ago',
+      daysOverdue: 2,
+      phone: '+255 744 567 890',
+      nextAction: language === 'sw' ? 'ANC Kufuatilia' : 'ANC Follow-up',
     },
   ];
+
+  // Sort by risk score (highest first)
+  const sortedPriorities = [...priorityHouseholds].sort((a, b) => b.riskScore - a.riskScore);
+
+  const getRiskBadgeColor = (risk: string) => {
+    switch (risk) {
+      case 'critical':
+        return 'bg-red-600 text-white animate-pulse';
+      case 'high':
+        return 'bg-orange-600 text-white';
+      case 'medium':
+        return 'bg-yellow-600 text-white';
+      default:
+        return 'bg-green-600 text-white';
+    }
+  };
+
+  const getRiskIcon = (risk: string) => {
+    switch (risk) {
+      case 'critical':
+        return <AlertTriangle className="w-4 h-4" />;
+      case 'high':
+        return <Activity className="w-4 h-4" />;
+      default:
+        return <CheckCircle className="w-4 h-4" />;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
@@ -143,42 +244,125 @@ export function CHWDashboard({ onBack }: CHWDashboardProps) {
           </Card>
         </div>
 
+        {/* Route Optimizer Button - Prominent CTA */}
+        {onNavigate && (
+          <button
+            onClick={() => onNavigate('route-optimizer')}
+            className="w-full mb-6 p-6 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] group"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
+                  <MapPin className="h-8 w-8 text-white" strokeWidth={2} />
+                </div>
+                <div className="text-left">
+                  <h3 className="text-xl font-semibold mb-1">{t.planRoute}</h3>
+                  <p className="text-sm text-blue-100">{t.planRouteDesc}</p>
+                </div>
+              </div>
+              <ArrowLeft className="h-6 w-6 text-white/60 group-hover:text-white/100 transition-colors rotate-180" />
+            </div>
+          </button>
+        )}
+
         {/* AI Priority List */}
-        <Card className="mb-6 bg-gradient-to-r from-blue-50 to-green-50">
-          <CardHeader>
-            <CardTitle className="text-xl flex items-center gap-2">
-              <Users className="h-5 w-5 text-blue-600" />
-              {t.aiPriority} - {t.visitToday}
-            </CardTitle>
+        <Card className="mb-6 border-l-4 border-l-red-500 shadow-lg">
+          <CardHeader className="bg-gradient-to-r from-red-50 to-orange-50">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-xl flex items-center gap-2">
+                <Zap className="h-6 w-6 text-red-600" />
+                {t.urgentAction}
+              </CardTitle>
+              <Badge className="bg-red-600 text-white text-sm px-3 py-1">
+                {sortedPriorities.length} {t.urgentPatients}
+              </Badge>
+            </div>
+            <p className="text-sm text-gray-600 mt-1">
+              {t.aiRecommends}
+            </p>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {priorityHouseholds.map((household, idx) => (
-                <Card key={idx} className="border-2">
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex-1">
-                        <h3 className="text-lg font-semibold mb-1">{household.name}</h3>
-                        <p className="text-gray-600 text-sm mb-2">{household.reason}</p>
-                        <div className="flex gap-2 flex-wrap">
-                          <Badge
-                            className={
-                              household.risk === 'high'
-                                ? 'bg-red-100 text-red-800'
-                                : 'bg-yellow-100 text-yellow-800'
-                            }
-                          >
-                            {household.risk === 'high' ? '🔴 High Risk' : '🟡 Medium Risk'}
-                          </Badge>
-                          <Badge variant="outline">{household.lastVisit}</Badge>
-                        </div>
+          <CardContent className="p-0">
+            <div className="divide-y divide-gray-200">
+              {sortedPriorities.map((household) => (
+                <div key={household.id} className="p-5 hover:bg-gray-50 transition-colors">
+                  {/* Header: Name + Risk Score */}
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-1">
+                        <h3 className="text-lg font-bold text-gray-900">{household.name}</h3>
+                        <Badge className={getRiskBadgeColor(household.risk)}>
+                          {getRiskIcon(household.risk)}
+                          <span className="ml-1.5">{household.riskScore}</span>
+                        </Badge>
                       </div>
-                      <Button size="sm" className="bg-green-600 hover:bg-green-700">
-                        {language === 'sw' ? 'Tembelea' : 'Visit'}
-                      </Button>
+                      <p className="text-sm text-gray-500">
+                        {household.age} {language === 'sw' ? 'miaka' : 'years old'} • {household.status}
+                      </p>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+
+                  {/* Reason */}
+                  <div className="bg-gray-50 border-l-4 border-l-blue-500 p-3 rounded mb-3">
+                    <p className="text-sm font-medium text-gray-900">{household.reason}</p>
+                  </div>
+
+                  {/* AI Action Recommendation */}
+                  <div className="bg-blue-50 border-l-4 border-l-blue-600 p-3 rounded mb-3">
+                    <div className="flex items-start gap-2">
+                      <Zap className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="text-xs font-semibold text-blue-900 uppercase mb-1">
+                          {t.aiRecommends}
+                        </p>
+                        <p className="text-sm text-blue-800">{household.aiAction}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Metadata */}
+                  <div className="flex items-center gap-4 text-xs text-gray-500 mb-3">
+                    <div className="flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5" />
+                      <span>{t.lastVisit}: {household.lastVisit}</span>
+                    </div>
+                    {household.daysOverdue > 0 && (
+                      <Badge variant="outline" className="text-red-600 border-red-600">
+                        {household.daysOverdue} {t.daysOverdue}
+                      </Badge>
+                    )}
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                    >
+                      <CheckCircle className="w-4 h-4 mr-1.5" />
+                      {household.nextAction}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="flex-1"
+                      onClick={() => (window.location.href = `tel:${household.phone}`)}
+                    >
+                      <Clock className="w-4 h-4 mr-1.5" />
+                      {t.callPatient}
+                    </Button>
+                    {onNavigate && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="flex-1"
+                        onClick={() => onNavigate(`route/${household.id}`)}
+                      >
+                        <MapPin className="w-4 h-4 mr-1.5" />
+                        {t.planRoute}
+                      </Button>
+                    )}
+                  </div>
+                </div>
               ))}
             </div>
           </CardContent>

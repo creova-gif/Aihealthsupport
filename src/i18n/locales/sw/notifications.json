@@ -1,0 +1,45 @@
+{
+  "appointment_reminder": {
+    "title": "Ukumbusho wa Miadi",
+    "message": "Una miadi kesho saa {{time}}",
+    "action": "Angalia Maelezo"
+  },
+  "medication_reminder": {
+    "title": "Ukumbusho wa Dawa",
+    "message": "Wakati wa kutumia {{medication}}",
+    "action": "Weka Kumetumika"
+  },
+  "test_results": {
+    "title": "Matokeo ya Uchunguzi Yameandaliwa",
+    "message": "Matokeo yako ya {{test}} yanapatikana sasa",
+    "action": "Angalia Matokeo"
+  },
+  "message_received": {
+    "title": "Ujumbe Mpya",
+    "message": "{{sender}} amekutumia ujumbe",
+    "action": "Fungua Ujumbe"
+  },
+  "emergency_alert": {
+    "title": "Arifa ya Dharura",
+    "message": "Huduma za dharura zimejulishwa",
+    "action": "Angalia Hali"
+  },
+  "sync_complete": {
+    "title": "Usawazishaji Umekamilika",
+    "message": "Data yako imesawazishwa"
+  },
+  "refill_due": {
+    "title": "Dawa Zinahitaji Kujazwa",
+    "message": "{{medication}} inahitaji kujazwa",
+    "action": "Agiza Kujazwa"
+  },
+  "appointment_confirmed": {
+    "title": "Miadi Imethibitishwa",
+    "message": "Miadi yako tarehe {{date}} imethibitishwa"
+  },
+  "vaccine_due": {
+    "title": "Chanjo Inahitajika",
+    "message": "Chanjo ya {{vaccine}} inahitajika",
+    "action": "Panga"
+  }
+}

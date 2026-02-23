@@ -56,6 +56,16 @@ export function AppointmentSystem({ language, onBack }: AppointmentSystemProps) 
   const [view, setView] = useState<'list' | 'book' | 'details'>('list');
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
   const [selectedFacility, setSelectedFacility] = useState<Facility | null>(null);
+  
+  // NEW: Multi-step booking wizard state
+  const [bookingStep, setBookingStep] = useState<1 | 2 | 3>(1);
+  const [bookingData, setBookingData] = useState({
+    facility: null as Facility | null,
+    date: '',
+    time: '',
+    reason: '',
+    hasInsurance: false,
+  });
 
   const content = {
     sw: {
@@ -88,6 +98,19 @@ export function AppointmentSystem({ language, onBack }: AppointmentSystemProps) 
       confirmBooking: 'Thibitisha Miadi',
       appointmentBooked: 'Miadi Imepangwa!',
       appointmentCancelled: 'Miadi Imeghairiwa',
+      // NEW: Multi-step labels
+      step: 'Hatua',
+      of: 'ya',
+      stepWhere: 'Wapi?',
+      stepWhen: 'Lini?',
+      stepDetails: 'Maelezo',
+      selectDate: 'Chagua Tarehe',
+      selectTime: 'Chagua Muda',
+      reasonForVisit: 'Sababu ya Ziara',
+      reasonOptional: '(Hiari)',
+      hasInsuranceLabel: 'Nina Bima',
+      back: 'Rudi',
+      next: 'Endelea',
       status: {
         upcoming: 'Inakuja',
         completed: 'Imekamilika',
@@ -124,6 +147,19 @@ export function AppointmentSystem({ language, onBack }: AppointmentSystemProps) 
       confirmBooking: 'Confirm Booking',
       appointmentBooked: 'Appointment Booked!',
       appointmentCancelled: 'Appointment Cancelled',
+      // NEW: Multi-step labels
+      step: 'Step',
+      of: 'of',
+      stepWhere: 'Where?',
+      stepWhen: 'When?',
+      stepDetails: 'Details',
+      selectDate: 'Select Date',
+      selectTime: 'Select Time',
+      reasonForVisit: 'Reason for Visit',
+      reasonOptional: '(Optional)',
+      hasInsuranceLabel: 'I have insurance',
+      back: 'Back',
+      next: 'Next',
       status: {
         upcoming: 'Upcoming',
         completed: 'Completed',
@@ -196,6 +232,48 @@ export function AppointmentSystem({ language, onBack }: AppointmentSystemProps) 
   const pastAppointments = mockAppointments.filter(
     (a) => a.status !== 'upcoming'
   );
+
+  // Helper: Generate time slots
+  const generateTimeSlots = () => {
+    const slots = [];
+    for (let hour = 8; hour <= 17; hour++) {
+      slots.push(`${hour}:00`);
+      if (hour < 17) slots.push(`${hour}:30`);
+    }
+    return slots;
+  };
+
+  // Helper: Generate next 30 days
+  const generateDates = () => {
+    const dates = [];
+    const today = new Date();
+    for (let i = 1; i <= 30; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+      dates.push(date);
+    }
+    return dates;
+  };
+
+  // Helper: Handle booking confirmation
+  const handleConfirmBooking = () => {
+    // In production: Send to backend
+    alert(
+      language === 'sw'
+        ? `Miadi imepangwa! ${bookingData.facility?.name.sw} - ${bookingData.date} ${bookingData.time}`
+        : `Appointment booked! ${bookingData.facility?.name.en} - ${bookingData.date} ${bookingData.time}`
+    );
+    // Reset and return to list
+    setBookingData({
+      facility: null,
+      date: '',
+      time: '',
+      reason: '',
+      hasInsurance: false,
+    });
+    setBookingStep(1);
+    setView('list');
+  };
 
   const getLoadColor = (load: string) => {
     switch (load) {
@@ -437,113 +515,362 @@ export function AppointmentSystem({ language, onBack }: AppointmentSystemProps) 
 
   // Book New Appointment View
   if (view === 'book') {
+    // ========================================
+    // PROGRESS BAR COMPONENT
+    // ========================================
+    const ProgressBar = ({ current, total }: { current: number; total: number }) => {
+      return (
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-medium text-[#6B7280]">
+              {t.step} {current} {t.of} {total}
+            </span>
+            <span className="text-sm text-[#6B7280]">
+              {Math.round((current / total) * 100)}%
+            </span>
+          </div>
+          <div className="w-full h-2 bg-[#E5E7EB] rounded-full overflow-hidden">
+            <motion.div
+              className="h-full bg-[#1E88E5]"
+              initial={{ width: 0 }}
+              animate={{ width: `${(current / total) * 100}%` }}
+              transition={{ duration: 0.3 }}
+            />
+          </div>
+        </div>
+      );
+    };
+
     return (
       <div className="min-h-screen bg-[#FAFBFC] pb-24">
         {/* Header */}
         <div className="bg-white border-b border-[#E5E7EB]">
           <div className="max-w-4xl mx-auto px-6 py-6">
             <button
-              onClick={() => setView('list')}
+              onClick={() => {
+                // Reset wizard on cancel
+                setBookingStep(1);
+                setBookingData({
+                  facility: null,
+                  date: '',
+                  time: '',
+                  reason: '',
+                  hasInsurance: false,
+                });
+                setView('list');
+              }}
               className="flex items-center gap-2 mb-4 text-[#6B7280] hover:text-[#1A1D23] transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
-              <span className="text-sm font-medium">
-                {language === 'sw' ? 'Rudi' : 'Back'}
-              </span>
+              <span className="text-sm font-medium">{t.back}</span>
             </button>
 
-            <h1 className="text-2xl font-bold text-[#1A1D23] mb-2">{t.selectFacility}</h1>
+            <h1 className="text-2xl font-bold text-[#1A1D23] mb-2">{t.bookNew}</h1>
             <p className="text-[#6B7280]">
-              {language === 'sw'
-                ? 'Chagua kituo na angalia msongamano wa sasa'
-                : 'Choose a facility and see current load'}
+              {bookingStep === 1 && (language === 'sw' ? 'Chagua kituo cha afya' : 'Select a health facility')}
+              {bookingStep === 2 && (language === 'sw' ? 'Chagua tarehe na muda' : 'Select date and time')}
+              {bookingStep === 3 && (language === 'sw' ? 'Ongeza maelezo ya ziara' : 'Add visit details')}
             </p>
           </div>
         </div>
 
-        {/* Facilities */}
-        <div className="max-w-4xl mx-auto px-6 py-6 space-y-4">
-          {mockFacilities.map((facility, index) => {
-            const loadColors = getLoadColor(facility.currentLoad);
+        <div className="max-w-4xl mx-auto px-6 py-6">
+          <ProgressBar current={bookingStep} total={3} />
 
-            return (
-              <motion.div
-                key={facility.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="bg-white rounded-xl border border-[#E5E7EB] p-6 hover:shadow-md transition-shadow"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 className="text-lg font-semibold text-[#1A1D23] mb-1">
-                      {facility.name[language]}
-                    </h3>
-                    <p className="text-sm text-[#6B7280] mb-2">
-                      {facility.address[language]}
-                    </p>
-                    {facility.distance && (
-                      <div className="flex items-center gap-1.5 text-sm text-[#6B7280]">
-                        <MapPin className="w-4 h-4" />
-                        <span>
-                          {t.distance} {facility.distance}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
+          {/* ========================================
+              STEP 1: WHERE? (Facility Selection)
+              ======================================== */}
+          {bookingStep === 1 && (
+            <div className="space-y-4">
+              <h2 className="text-xl font-semibold text-[#1A1D23] mb-4">
+                {t.stepWhere}
+              </h2>
 
-                {/* Stats */}
-                <div className="grid grid-cols-3 gap-3 mb-4">
-                  <div className="text-center p-3 bg-[#FAFBFC] rounded-lg">
-                    <p className="text-2xl font-bold text-[#1A1D23]">
-                      {facility.availableSlots}
-                    </p>
-                    <p className="text-xs text-[#6B7280] mt-1">{t.availableSlots}</p>
-                  </div>
-                  <div className="text-center p-3 bg-[#FAFBFC] rounded-lg">
-                    <p className="text-2xl font-bold text-[#1A1D23]">
-                      {facility.waitTime}
-                    </p>
-                    <p className="text-xs text-[#6B7280] mt-1">{t.minutes}</p>
-                  </div>
-                  <div
-                    className="text-center p-3 rounded-lg"
-                    style={{
-                      backgroundColor: loadColors.bg,
-                      borderColor: loadColors.border,
-                      borderWidth: '1px',
+              {mockFacilities.map((facility, index) => {
+                const loadColors = getLoadColor(facility.currentLoad);
+                const isSelected = bookingData.facility?.id === facility.id;
+
+                return (
+                  <motion.button
+                    key={facility.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    onClick={() => {
+                      setBookingData({ ...bookingData, facility });
+                      setBookingStep(2);
                     }}
+                    className={`w-full text-left bg-white rounded-xl border-2 p-6 hover:shadow-md transition-all ${
+                      isSelected ? 'border-[#1E88E5]' : 'border-[#E5E7EB]'
+                    }`}
                   >
-                    <p
-                      className="text-sm font-bold"
-                      style={{ color: loadColors.text }}
-                    >
-                      {t.loadLevels[facility.currentLoad]}
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <h3 className="text-lg font-semibold text-[#1A1D23] mb-1">
+                          {facility.name[language]}
+                        </h3>
+                        <p className="text-sm text-[#6B7280] mb-2">
+                          {facility.address[language]}
+                        </p>
+                        {facility.distance && (
+                          <div className="flex items-center gap-1.5 text-sm text-[#6B7280]">
+                            <MapPin className="w-4 h-4" />
+                            <span>
+                              {t.distance} {facility.distance}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Stats */}
+                    <div className="grid grid-cols-3 gap-3">
+                      <div className="text-center p-3 bg-[#FAFBFC] rounded-lg">
+                        <p className="text-xl font-bold text-[#1A1D23]">
+                          {facility.availableSlots}
+                        </p>
+                        <p className="text-xs text-[#6B7280] mt-1">{t.availableSlots}</p>
+                      </div>
+                      <div className="text-center p-3 bg-[#FAFBFC] rounded-lg">
+                        <p className="text-xl font-bold text-[#1A1D23]">
+                          {facility.waitTime}
+                        </p>
+                        <p className="text-xs text-[#6B7280] mt-1">{t.minutes}</p>
+                      </div>
+                      <div
+                        className="text-center p-3 rounded-lg"
+                        style={{
+                          backgroundColor: loadColors.bg,
+                          borderColor: loadColors.border,
+                          borderWidth: '1px',
+                        }}
+                      >
+                        <p
+                          className="text-sm font-bold"
+                          style={{ color: loadColors.text }}
+                        >
+                          {t.loadLevels[facility.currentLoad]}
+                        </p>
+                        <p className="text-xs text-[#6B7280] mt-1">{t.facilityLoad}</p>
+                      </div>
+                    </div>
+                  </motion.button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* ========================================
+              STEP 2: WHEN? (Date & Time Selection)
+              ======================================== */}
+          {bookingStep === 2 && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="space-y-6"
+            >
+              <h2 className="text-xl font-semibold text-[#1A1D23]">
+                {t.stepWhen}
+              </h2>
+
+              {/* Selected Facility Summary */}
+              <div className="bg-white border-2 border-[#E5E7EB] rounded-xl p-4">
+                <div className="flex items-center gap-2 text-sm text-[#6B7280] mb-1">
+                  <MapPin className="w-4 h-4" />
+                  <span>{language === 'sw' ? 'Kituo ulichochagua:' : 'Selected facility:'}</span>
+                </div>
+                <p className="font-semibold text-[#1A1D23]">
+                  {bookingData.facility?.name[language]}
+                </p>
+              </div>
+
+              {/* Date Selection */}
+              <div className="bg-white border-2 border-[#E5E7EB] rounded-xl p-6">
+                <label className="block text-sm font-semibold text-[#1A1D23] mb-3">
+                  <Calendar className="w-4 h-4 inline mr-2" />
+                  {t.selectDate}
+                </label>
+                <select
+                  value={bookingData.date}
+                  onChange={(e) =>
+                    setBookingData({ ...bookingData, date: e.target.value })
+                  }
+                  className="w-full p-3 border-2 border-[#E5E7EB] rounded-lg text-[#1A1D23] font-medium focus:border-[#1E88E5] focus:outline-none"
+                  style={{ minHeight: '48px' }}
+                >
+                  <option value="">
+                    {language === 'sw' ? 'Chagua tarehe...' : 'Select date...'}
+                  </option>
+                  {generateDates().map((date) => {
+                    const dateStr = date.toISOString().split('T')[0];
+                    const displayDate = date.toLocaleDateString(
+                      language === 'sw' ? 'sw-TZ' : 'en-US',
+                      { weekday: 'long', month: 'long', day: 'numeric' }
+                    );
+                    return (
+                      <option key={dateStr} value={dateStr}>
+                        {displayDate}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+
+              {/* Time Selection */}
+              {bookingData.date && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-white border-2 border-[#E5E7EB] rounded-xl p-6"
+                >
+                  <label className="block text-sm font-semibold text-[#1A1D23] mb-3">
+                    <Clock className="w-4 h-4 inline mr-2" />
+                    {t.selectTime}
+                  </label>
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                    {generateTimeSlots().map((slot) => (
+                      <button
+                        key={slot}
+                        onClick={() => {
+                          setBookingData({ ...bookingData, time: slot });
+                          setBookingStep(3);
+                        }}
+                        className={`p-3 rounded-lg border-2 font-medium transition-all ${
+                          bookingData.time === slot
+                            ? 'bg-[#1E88E5] text-white border-[#1E88E5]'
+                            : 'bg-white text-[#1A1D23] border-[#E5E7EB] hover:border-[#1E88E5]'
+                        }`}
+                        style={{ minHeight: '48px' }}
+                      >
+                        {slot}
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Back Button */}
+              <Button
+                onClick={() => setBookingStep(1)}
+                variant="outline"
+                className="w-full h-12"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                {t.back}
+              </Button>
+            </motion.div>
+          )}
+
+          {/* ========================================
+              STEP 3: DETAILS (Reason & Insurance)
+              ======================================== */}
+          {bookingStep === 3 && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="space-y-6"
+            >
+              <h2 className="text-xl font-semibold text-[#1A1D23]">
+                {t.stepDetails}
+              </h2>
+
+              {/* Booking Summary */}
+              <div className="bg-white border-2 border-[#E5E7EB] rounded-xl p-6 space-y-3">
+                <h3 className="font-semibold text-[#1A1D23] mb-3">
+                  {language === 'sw' ? 'Muhtasari wa Miadi' : 'Appointment Summary'}
+                </h3>
+                
+                <div className="flex items-start gap-3 text-sm">
+                  <MapPin className="w-4 h-4 text-[#6B7280] mt-0.5" />
+                  <div>
+                    <p className="text-[#6B7280]">
+                      {language === 'sw' ? 'Kituo' : 'Facility'}
                     </p>
-                    <p className="text-xs text-[#6B7280] mt-1">{t.facilityLoad}</p>
+                    <p className="font-semibold text-[#1A1D23]">
+                      {bookingData.facility?.name[language]}
+                    </p>
                   </div>
                 </div>
 
-                {/* Book Button */}
+                <div className="flex items-start gap-3 text-sm">
+                  <Calendar className="w-4 h-4 text-[#6B7280] mt-0.5" />
+                  <div>
+                    <p className="text-[#6B7280]">
+                      {language === 'sw' ? 'Tarehe na Muda' : 'Date & Time'}
+                    </p>
+                    <p className="font-semibold text-[#1A1D23]">
+                      {new Date(bookingData.date).toLocaleDateString(
+                        language === 'sw' ? 'sw-TZ' : 'en-US',
+                        { weekday: 'long', month: 'long', day: 'numeric' }
+                      )}{' '}
+                      • {bookingData.time}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Reason for Visit */}
+              <div className="bg-white border-2 border-[#E5E7EB] rounded-xl p-6">
+                <label className="block text-sm font-semibold text-[#1A1D23] mb-2">
+                  {t.reasonForVisit} <span className="text-[#6B7280] font-normal">{t.reasonOptional}</span>
+                </label>
+                <textarea
+                  value={bookingData.reason}
+                  onChange={(e) =>
+                    setBookingData({ ...bookingData, reason: e.target.value })
+                  }
+                  maxLength={200}
+                  rows={4}
+                  placeholder={
+                    language === 'sw'
+                      ? 'Eleza kwa ufupi sababu ya kuja kliniki...'
+                      : 'Briefly describe your reason for visiting...'
+                  }
+                  className="w-full p-3 border-2 border-[#E5E7EB] rounded-lg text-[#1A1D23] focus:border-[#1E88E5] focus:outline-none resize-none"
+                />
+                <p className="text-xs text-[#6B7280] mt-2">
+                  {bookingData.reason.length}/200
+                </p>
+              </div>
+
+              {/* Insurance */}
+              <div className="bg-white border-2 border-[#E5E7EB] rounded-xl p-6">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={bookingData.hasInsurance}
+                    onChange={(e) =>
+                      setBookingData({ ...bookingData, hasInsurance: e.target.checked })
+                    }
+                    className="w-5 h-5 rounded border-2 border-[#E5E7EB] text-[#1E88E5] focus:ring-2 focus:ring-[#1E88E5] focus:ring-offset-2"
+                  />
+                  <span className="text-sm font-medium text-[#1A1D23]">
+                    {t.hasInsuranceLabel}
+                  </span>
+                </label>
+              </div>
+
+              {/* Actions */}
+              <div className="space-y-3">
                 <Button
-                  onClick={() => {
-                    setSelectedFacility(facility);
-                    // In production, this would open a date/time picker
-                    alert(
-                      language === 'sw'
-                        ? `Kuchagua tarehe na muda kwa ${facility.name.sw}...`
-                        : `Selecting date and time for ${facility.name.en}...`
-                    );
-                  }}
-                  className="w-full bg-[#1E88E5] hover:bg-[#1976D2]"
+                  onClick={handleConfirmBooking}
+                  className="w-full h-14 bg-[#1E88E5] hover:bg-[#1976D2] text-lg font-semibold"
                 >
-                  {t.bookAppointment}
-                  <ChevronRight className="w-5 h-5 ml-2" />
+                  <CheckCircle className="w-5 h-5 mr-2" />
+                  {t.confirmBooking}
                 </Button>
-              </motion.div>
-            );
-          })}
+
+                <Button
+                  onClick={() => setBookingStep(2)}
+                  variant="outline"
+                  className="w-full h-12"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  {t.back}
+                </Button>
+              </div>
+            </motion.div>
+          )}
         </div>
       </div>
     );

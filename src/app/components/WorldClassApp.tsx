@@ -12,6 +12,7 @@ import { ModernSymptomChecker } from './ModernSymptomChecker';
 import { ModernNavigation } from './ModernNavigation';
 import { ModernSupportSystem } from './ModernSupportSystem';
 import { ModernLogOff } from './ModernLogOff';
+import { EmergencyScreen } from './EmergencyScreen';
 import { CareJourneys } from './CareJourneys';
 import { AIAssistant } from './AIAssistant';
 import { MessagesHub } from './MessagesHub';
@@ -41,7 +42,7 @@ export function WorldClassApp() {
 
   // Check if user has completed onboarding
   useEffect(() => {
-    const savedUserData = localStorage.getItem('afyaai_user_data');
+    const savedUserData = localStorage.getItem('afyacare_user_data');
     if (savedUserData) {
       setUserData(JSON.parse(savedUserData));
       setShowSplash(true); // Still show splash for branding
@@ -63,7 +64,7 @@ export function WorldClassApp() {
       consentGiven: data.consentGiven,
     };
     setUserData(newUserData);
-    localStorage.setItem('afyaai_user_data', JSON.stringify(newUserData));
+    localStorage.setItem('afyacare_user_data', JSON.stringify(newUserData));
     setShowOnboarding(false);
   };
 
@@ -72,7 +73,7 @@ export function WorldClassApp() {
   };
 
   const handleConfirmLogout = () => {
-    localStorage.removeItem('afyaai_user_data');
+    localStorage.removeItem('afyacare_user_data');
     setUserData(null);
     setShowLogOff(false);
     setShowOnboarding(true);
@@ -86,7 +87,7 @@ export function WorldClassApp() {
         language: userData.language === 'sw' ? ('en' as const) : ('sw' as const),
       };
       setUserData(newUserData);
-      localStorage.setItem('afyaai_user_data', JSON.stringify(newUserData));
+      localStorage.setItem('afyacare_user_data', JSON.stringify(newUserData));
     }
   };
 
@@ -154,6 +155,25 @@ export function WorldClassApp() {
             userName={userData?.name}
             language={userData.language}
             onNavigate={setCurrentRoute}
+          />
+        );
+
+      // Emergency tab - ALWAYS ACCESSIBLE (no auth required)
+      case 'emergency':
+        return (
+          <EmergencyScreen
+            language={userData.language}
+            userName={userData?.name}
+            userMedicalInfo={{
+              bloodType: 'O+',
+              allergies: ['Penicillin', 'Peanuts'],
+              chronicConditions: ['Hypertension'],
+              currentMedications: ['Lisinopril 10mg daily'],
+              emergencyContacts: [
+                { name: 'Sarah Mwamba', phone: '+255712345678', relationship: 'Sister' },
+                { name: 'John Kimaro', phone: '+255787654321', relationship: 'Friend' },
+              ],
+            }}
           />
         );
 
@@ -254,7 +274,6 @@ export function WorldClassApp() {
 
       case 'conditions':
       case 'records':
-      case 'emergency':
       case 'care-questions':
       case 'medication-help':
       case 'results-help':
@@ -347,12 +366,13 @@ function getNormalizedRoute(route: string): string {
   // Map internal routes to navigation tabs
   if (route === 'dashboard') return 'home';
   if (route === 'symptom-checker') return 'assistant';
-  if (['maternal', 'conditions', 'records', 'appointments', 'emergency'].includes(route)) {
+  if (route === 'emergency') return 'emergency'; // Emergency always maps to itself
+  if (['maternal', 'conditions', 'records', 'appointments'].includes(route)) {
     return 'care';
   }
   if (['care-questions', 'medication-help', 'results-help', 'next-steps'].includes(route)) {
     return 'assistant';
   }
   if (route === 'telemedicine') return 'messages';
-  return route; // home, care, assistant, messages, profile
+  return route; // home, care, emergency, messages, profile
 }

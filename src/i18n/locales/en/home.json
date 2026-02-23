@@ -1,0 +1,79 @@
+{
+  "greeting": "Hello {{name}}",
+  "greeting_default": "Hello",
+  "welcome": "Welcome to AfyaCare",
+  "tagline": "Your health, simplified",
+  "how_can_help": "How can we help you today?",
+  "afya_id": "AfyaID Number",
+  "afya_id_info": "Your national health identification number. Used across all healthcare facilities in Tanzania.",
+  "quick_actions": {
+    "title": "Quick Actions",
+    "check_symptoms": "Check Symptoms",
+    "book_appointment": "Book Appointment",
+    "refill_medication": "Refill Medication",
+    "view_results": "View Results",
+    "find_facility": "Find Facility",
+    "emergency": "Emergency"
+  },
+  "primary_cards": {
+    "symptoms": {
+      "title": "Symptom Checker",
+      "description": "Get advice about how you feel",
+      "available_offline": "Available offline"
+    },
+    "appointments": {
+      "title": "Appointments",
+      "description": "Schedule and manage appointments",
+      "next": "Next appointment"
+    },
+    "medications": {
+      "title": "Medications",
+      "description": "Track your prescriptions",
+      "refill_due": "Refill due soon"
+    },
+    "records": {
+      "title": "Health Records",
+      "description": "View your medical history",
+      "recent_visit": "Recent visit"
+    },
+    "care": {
+      "title": "My Care",
+      "description": "All your healthcare services"
+    },
+    "messages": {
+      "title": "Messages",
+      "description": "Talk to your care team",
+      "unread": "{{count}} unread"
+    }
+  },
+  "upcoming": {
+    "title": "Upcoming",
+    "next_appointment": "Next Appointment",
+    "medication_reminder": "Medication Reminder",
+    "test_results": "Test Results Ready",
+    "no_upcoming": "No upcoming appointments",
+    "schedule_now": "Schedule Now",
+    "view_all": "View All"
+  },
+  "health_summary": {
+    "title": "Health Summary",
+    "vitals": "Recent Vitals",
+    "conditions": "Conditions",
+    "allergies": "Allergies",
+    "no_data": "No health data recorded yet"
+  },
+  "emergency": {
+    "title": "Emergency",
+    "subtitle": "Get immediate help",
+    "call_now": "Call 114 Now",
+    "find_hospital": "Find Nearest Hospital",
+    "first_aid": "First Aid Guide"
+  },
+  "connectivity": {
+    "online": "Connected to AfyaCare",
+    "offline": "Offline Mode",
+    "offline_message": "You're offline. Changes will sync when connected.",
+    "syncing": "Syncing...",
+    "sync_complete": "Sync complete"
+  }
+}

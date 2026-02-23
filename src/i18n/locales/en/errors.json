@@ -1,0 +1,41 @@
+{
+  "general": {
+    "title": "Something went wrong",
+    "message": "An unexpected error occurred. Please try again.",
+    "retry": "Try Again",
+    "contact_support": "Contact Support"
+  },
+  "network": {
+    "offline": "No internet connection",
+    "timeout": "Request timed out",
+    "server_error": "Server error. Please try again later",
+    "connection_failed": "Connection failed"
+  },
+  "auth": {
+    "unauthorized": "Session expired. Please login again",
+    "forbidden": "You don't have permission to access this",
+    "invalid_token": "Invalid authentication token"
+  },
+  "validation": {
+    "form_errors": "Please fix the errors in the form",
+    "invalid_input": "Invalid input"
+  },
+  "data": {
+    "not_found": "Data not found",
+    "load_failed": "Failed to load data",
+    "save_failed": "Failed to save changes",
+    "sync_failed": "Synchronization failed"
+  },
+  "appointments": {
+    "booking_failed": "Failed to book appointment",
+    "cancellation_failed": "Failed to cancel appointment",
+    "no_slots": "No available slots"
+  },
+  "messages": {
+    "send_failed": "Failed to send message",
+    "load_failed": "Failed to load messages"
+  },
+  "emergency": {
+    "call_failed": "Emergency call failed. Dial 114 manually"
+  }
+}

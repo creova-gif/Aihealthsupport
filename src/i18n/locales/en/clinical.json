@@ -1,0 +1,113 @@
+{
+  "title": "Clinical Information",
+  "medical_terminology": "Medical Terminology",
+  "risk_levels": {
+    "high": "High Risk",
+    "moderate": "Moderate Risk",
+    "low": "Low Risk",
+    "critical": "Critical",
+    "severe": "Severe",
+    "mild": "Mild"
+  },
+  "urgency": {
+    "emergency": "Emergency - Seek immediate care",
+    "urgent": "Urgent - See doctor within 24 hours",
+    "routine": "Routine - Schedule an appointment",
+    "monitoring": "Monitor - Watch for changes"
+  },
+  "vital_signs": {
+    "title": "Vital Signs",
+    "blood_pressure": "Blood Pressure",
+    "heart_rate": "Heart Rate",
+    "temperature": "Temperature",
+    "respiratory_rate": "Respiratory Rate",
+    "oxygen_saturation": "Oxygen Saturation",
+    "weight": "Weight",
+    "height": "Height",
+    "bmi": "Body Mass Index (BMI)"
+  },
+  "vital_ranges": {
+    "normal": "Normal",
+    "abnormal": "Abnormal",
+    "high": "High",
+    "low": "Low",
+    "critical_high": "Critically High",
+    "critical_low": "Critically Low"
+  },
+  "symptoms": {
+    "fever": "Fever",
+    "cough": "Cough",
+    "headache": "Headache",
+    "fatigue": "Fatigue",
+    "nausea": "Nausea",
+    "vomiting": "Vomiting",
+    "diarrhea": "Diarrhea",
+    "shortness_of_breath": "Shortness of Breath",
+    "chest_pain": "Chest Pain",
+    "abdominal_pain": "Abdominal Pain",
+    "dizziness": "Dizziness",
+    "rash": "Rash"
+  },
+  "conditions": {
+    "diabetes": "Diabetes",
+    "hypertension": "Hypertension",
+    "asthma": "Asthma",
+    "malaria": "Malaria",
+    "tuberculosis": "Tuberculosis",
+    "hiv": "HIV",
+    "covid19": "COVID-19",
+    "pneumonia": "Pneumonia"
+  },
+  "medications": {
+    "prescription": "Prescription",
+    "dosage": "Dosage",
+    "frequency": "Frequency",
+    "duration": "Duration",
+    "instructions": "Instructions",
+    "side_effects": "Side Effects",
+    "interactions": "Drug Interactions",
+    "refill": "Refill"
+  },
+  "lab_tests": {
+    "blood_test": "Blood Test",
+    "urine_test": "Urine Test",
+    "xray": "X-Ray",
+    "ultrasound": "Ultrasound",
+    "ecg": "ECG/EKG",
+    "ct_scan": "CT Scan",
+    "mri": "MRI",
+    "results_pending": "Results Pending",
+    "results_ready": "Results Ready"
+  },
+  "treatment": {
+    "plan": "Treatment Plan",
+    "medication": "Medication",
+    "therapy": "Therapy",
+    "surgery": "Surgery",
+    "follow_up": "Follow-up",
+    "referral": "Referral",
+    "home_care": "Home Care Instructions"
+  },
+  "diagnosis": {
+    "confirmed": "Confirmed Diagnosis",
+    "suspected": "Suspected Diagnosis",
+    "ruled_out": "Ruled Out",
+    "pending": "Pending Further Investigation"
+  },
+  "pregnancy": {
+    "prenatal": "Prenatal Care",
+    "trimester": "Trimester",
+    "due_date": "Expected Due Date",
+    "gestational_age": "Gestational Age",
+    "antenatal_visits": "Antenatal Visits",
+    "postnatal": "Postnatal Care"
+  },
+  "immunization": {
+    "vaccination": "Vaccination",
+    "vaccine": "Vaccine",
+    "dose": "Dose",
+    "schedule": "Vaccination Schedule",
+    "complete": "Vaccination Complete",
+    "due": "Vaccination Due"
+  }
+}

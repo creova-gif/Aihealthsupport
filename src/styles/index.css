@@ -4,3 +4,4 @@
 @import './design-tokens.css';
 @import './onboarding-tokens.css';
 @import './world-class-design-system.css'; /* World-class design system */
+@import './accessibility.css'; /* WCAG 2.1 AA+ compliance */

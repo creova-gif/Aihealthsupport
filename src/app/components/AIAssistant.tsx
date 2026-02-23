@@ -1,7 +1,12 @@
 /**
- * AIAssistant - Calm, explainable AI guidance
- * Not chat spam. Clear, cautious, and always explains why.
- * AI never replaces doctors. AI always explains.
+ * AIAssistant - Redesigned for Task Clarity & Progress Visibility
+ * 
+ * REFACTORED: Now uses AfyaCare Design System components
+ * - PageHeader for consistent header
+ * - SectionHeader for section labels
+ * - StatusBadge for conversation status
+ * - UrgencyCard for disclaimer
+ * - Design system colors and spacing
  */
 
 import React, { useState } from 'react';
@@ -12,11 +17,21 @@ import {
   Pill,
   FileText,
   Lightbulb,
-  Sparkles,
+  Stethoscope,
   ArrowRight,
   ChevronRight,
+  Clock,
+  CheckCircle2,
+  AlertCircle,
 } from 'lucide-react';
 import { Button } from './ui/button';
+import {
+  PageHeader,
+  SectionHeader,
+  StatusBadge,
+  UrgencyCard,
+  colors,
+} from '@/app/design-system';
 
 interface AIAssistantProps {
   language: 'sw' | 'en';
@@ -32,46 +47,85 @@ interface AssistantOption {
   route: string;
   color: string;
   bgColor: string;
+  isCommon?: boolean;
+}
+
+interface RecentConversation {
+  id: string;
+  type: string;
+  title: { sw: string; en: string };
+  timestamp: string;
+  status: 'completed' | 'in-progress' | 'needs-action';
 }
 
 export function AIAssistant({ language, userName, onNavigate }: AIAssistantProps) {
-  const assistantOptions: AssistantOption[] = [
+  const content = {
+    sw: {
+      title: 'Ushauri wa Afya',
+      subtitle: 'Maswali na ushauri kuhusu afya yako',
+      commonActions: 'Vitendo vya Kawaida',
+      moreHelp: 'Msaada Zaidi',
+      recentConversations: 'Mazungumzo ya Hivi Karibuni',
+      emptyConversations: 'Hakuna mazungumzo bado',
+      talkToDoctor: 'Zungumza na Daktari',
+      emergency: 'Kwa Dharura',
+      disclaimer: 'Ushauri huu ni wa kielimishi tu. Sio mbadala wa madaktari.',
+      status: {
+        completed: 'Imekamilika',
+        'in-progress': 'Inaendelea',
+        'needs-action': 'Inahitaji Hatua',
+      },
+    },
+    en: {
+      title: 'Health Guidance',
+      subtitle: 'Questions and guidance about your health',
+      commonActions: 'Common Actions',
+      moreHelp: 'More Help',
+      recentConversations: 'Recent Conversations',
+      emptyConversations: 'No conversations yet',
+      talkToDoctor: 'Talk to Doctor',
+      emergency: 'For Emergencies',
+      disclaimer: 'This guidance is informational only. Not a replacement for doctors.',
+      status: {
+        completed: 'Completed',
+        'in-progress': 'In Progress',
+        'needs-action': 'Needs Action',
+      },
+    },
+  };
+
+  const t = content[language];
+
+  const commonOptions: AssistantOption[] = [
     {
       key: 'symptoms',
       icon: MessageSquare,
-      title: { sw: 'Ushauri wa Dalili', en: 'Symptom guidance' },
+      title: { sw: 'Nina Dalili', en: 'I have symptoms' },
       description: {
         sw: 'Nieleze jinsi unavyohisi, nitakusaidia kuelewa',
         en: 'Tell me how you feel, I\'ll help you understand',
       },
       route: 'symptom-checker',
-      color: '#1E88E5',
-      bgColor: '#EFF6FF',
-    },
-    {
-      key: 'questions',
-      icon: HelpCircle,
-      title: { sw: 'Maswali ya Afya', en: 'Care questions' },
-      description: {
-        sw: 'Uliza maswali kuhusu afya yako',
-        en: 'Ask questions about your health',
-      },
-      route: 'care-questions',
-      color: '#8B5CF6',
-      bgColor: '#F5F3FF',
+      color: colors.primary[500],
+      bgColor: colors.primary[50],
+      isCommon: true,
     },
     {
       key: 'medication',
       icon: Pill,
-      title: { sw: 'Msaada wa Dawa', en: 'Medication help' },
+      title: { sw: 'Maswali kuhusu Dawa', en: 'Medication questions' },
       description: {
         sw: 'Pata taarifa kuhusu dawa zako',
         en: 'Get information about your medications',
       },
       route: 'medication-help',
-      color: '#10B981',
-      bgColor: '#ECFDF5',
+      color: colors.success[500],
+      bgColor: colors.success[50],
+      isCommon: true,
     },
+  ];
+
+  const moreOptions: AssistantOption[] = [
     {
       key: 'results',
       icon: FileText,
@@ -81,13 +135,25 @@ export function AIAssistant({ language, userName, onNavigate }: AIAssistantProps
         en: 'I\'ll help you understand your test results',
       },
       route: 'results-help',
-      color: '#F59E0B',
-      bgColor: '#FFFBEB',
+      color: colors.warning[500],
+      bgColor: colors.warning[50],
+    },
+    {
+      key: 'questions',
+      icon: HelpCircle,
+      title: { sw: 'Maswali ya Jumla', en: 'General questions' },
+      description: {
+        sw: 'Uliza maswali kuhusu afya yako',
+        en: 'Ask questions about your health',
+      },
+      route: 'care-questions',
+      color: '#8B5CF6',
+      bgColor: '#F5F3FF',
     },
     {
       key: 'next-steps',
       icon: Lightbulb,
-      title: { sw: 'Nifanye Nini?', en: 'What should I do next?' },
+      title: { sw: 'Nifanye Nini?', en: 'What should I do?' },
       description: {
         sw: 'Pata mapendekezo ya hatua zinazofuata',
         en: 'Get recommendations for next steps',
@@ -98,141 +164,196 @@ export function AIAssistant({ language, userName, onNavigate }: AIAssistantProps
     },
   ];
 
+  // Mock recent conversations
+  const recentConversations: RecentConversation[] = [
+    {
+      id: '1',
+      type: 'symptom',
+      title: { sw: 'Maumivu ya kichwa na homa', en: 'Headache and fever' },
+      timestamp: '2h',
+      status: 'completed',
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-[#FAFBFC] pb-24">
-      {/* Header */}
-      <div className="bg-gradient-to-br from-[#1E88E5] to-[#1565C0] text-white">
-        <div className="max-w-4xl mx-auto px-6 py-8">
-          <div className="flex items-center gap-2 mb-3">
-            <Sparkles className="w-6 h-6" />
-            <h1 className="text-3xl font-bold">
-              {language === 'sw' ? 'Msaidizi wa AI' : 'AI Assistant'}
-            </h1>
-          </div>
-          <p className="text-white/90 text-base">
-            {language === 'sw'
-              ? 'Nitakusaidia kuelewa afya yako. Uliza chochote!'
-              : 'I\'m here to help you understand your health. Ask me anything!'}
-          </p>
-        </div>
-      </div>
+    <div className="min-h-screen bg-[#F7F9FB] pb-24">
+      {/* PageHeader from Design System */}
+      <PageHeader
+        title={t.title}
+        subtitle={t.subtitle}
+        onBack={() => window.history.back()}
+        backLabel={language === 'sw' ? 'Rudi' : 'Back'}
+      />
 
-      {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-6 py-6">
-        {/* Trust Message */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-6 p-4 bg-white rounded-xl border border-[#E5E7EB]"
-        >
-          <div className="flex items-start gap-3">
-            <div className="flex-shrink-0 w-10 h-10 bg-[#EFF6FF] rounded-full flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-[#1E88E5]" />
-            </div>
-            <div className="flex-1">
-              <p className="text-sm text-[#1A1D23] leading-relaxed">
-                {language === 'sw' ? (
-                  <>
-                    Nina kujifunza kutoka kwa vyanzo vya kibinadamu. Ushauri wangu ni
-                    <span className="font-semibold"> wa kielelezo tu</span> - sio
-                    mbadala wa madaktari. Nitakuelezea kwa nini nakuambia jambo fulani.
-                  </>
-                ) : (
-                  <>
-                    I learn from clinical sources. My guidance is{' '}
-                    <span className="font-semibold">informational only</span> - not a
-                    replacement for doctors. I\'ll always explain why I tell you something.
-                  </>
-                )}
-              </p>
-            </div>
-          </div>
-        </motion.div>
+      <div className="max-w-4xl mx-auto px-6 pt-6 space-y-6">
+        {/* Disclaimer - Using UrgencyCard */}
+        <UrgencyCard
+          level="warning"
+          title={t.disclaimer}
+          icon={AlertCircle}
+        />
 
-        {/* How can I help? */}
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold text-[#1A1D23] mb-4">
-            {language === 'sw' ? 'Nikusaidie vipi?' : 'How can I help you?'}
-          </h2>
-        </div>
-
-        {/* Assistant Options */}
-        <div className="space-y-3">
-          {assistantOptions.map((option, index) => {
-            const Icon = option.icon;
-            return (
-              <motion.div
+        {/* COMMON ACTIONS - Using SectionHeader */}
+        <section>
+          <SectionHeader>{t.commonActions}</SectionHeader>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {commonOptions.map((option) => (
+              <GuidanceCard
                 key={option.key}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.08 }}
-              >
-                <button
-                  onClick={() => onNavigate(option.route)}
-                  className="w-full group"
-                >
-                  <div className="bg-white rounded-xl border border-[#E5E7EB] p-4 hover:shadow-md transition-all duration-200 hover:border-[#CBD5E1]">
-                    <div className="flex items-center gap-4">
-                      {/* Icon */}
-                      <div
-                        className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center"
-                        style={{ backgroundColor: option.bgColor }}
-                      >
-                        <Icon className="w-6 h-6" style={{ color: option.color }} />
-                      </div>
-
-                      {/* Content */}
-                      <div className="flex-1 text-left">
-                        <h3 className="text-base font-semibold text-[#1A1D23] mb-0.5">
-                          {option.title[language]}
-                        </h3>
-                        <p className="text-sm text-[#6B7280]">
-                          {option.description[language]}
-                        </p>
-                      </div>
-
-                      {/* Arrow */}
-                      <ChevronRight className="w-5 h-5 text-[#9CA3AF] group-hover:text-[#1E88E5] group-hover:translate-x-1 transition-all" />
-                    </div>
-                  </div>
-                </button>
-              </motion.div>
-            );
-          })}
-        </div>
-
-        {/* Recent conversations (placeholder) */}
-        <div className="mt-8">
-          <h3 className="text-base font-semibold text-[#1A1D23] mb-3">
-            {language === 'sw' ? 'Mazungumzo ya Hivi Karibuni' : 'Recent conversations'}
-          </h3>
-          <div className="bg-white rounded-xl border border-[#E5E7EB] p-8 text-center">
-            <MessageSquare className="w-12 h-12 text-[#D1D5DB] mx-auto mb-3" />
-            <p className="text-[#6B7280] text-sm">
-              {language === 'sw'
-                ? 'Hakuna mazungumzo bado. Anza kuzungumza na mimi!'
-                : 'No conversations yet. Start chatting with me!'}
-            </p>
+                option={option}
+                language={language}
+                onNavigate={onNavigate}
+              />
+            ))}
           </div>
-        </div>
+        </section>
 
-        {/* Bottom disclaimer */}
-        <div className="mt-6 p-4 bg-[#FEF2F2] rounded-xl border border-[#FEE2E2]">
-          <p className="text-xs text-[#991B1B] text-center leading-relaxed">
-            {language === 'sw' ? (
-              <>
-                <span className="font-semibold">Kumbuka:</span> Kwa hali za dharura,
-                wasiliana na huduma za dharura mara moja. Usiamini tu ushauri wa AI.
-              </>
-            ) : (
-              <>
-                <span className="font-semibold">Remember:</span> For emergencies, contact
-                emergency services immediately. Don\'t rely solely on AI guidance.
-              </>
-            )}
-          </p>
-        </div>
+        {/* MORE HELP OPTIONS */}
+        <section>
+          <SectionHeader>{t.moreHelp}</SectionHeader>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {moreOptions.map((option) => (
+              <GuidanceCard
+                key={option.key}
+                option={option}
+                language={language}
+                onNavigate={onNavigate}
+              />
+            ))}
+          </div>
+        </section>
+
+        {/* RECENT CONVERSATIONS */}
+        {recentConversations.length > 0 && (
+          <section>
+            <SectionHeader>{t.recentConversations}</SectionHeader>
+            <div className="space-y-3">
+              {recentConversations.map((conversation) => (
+                <ConversationCard
+                  key={conversation.id}
+                  conversation={conversation}
+                  language={language}
+                  statusLabel={t.status[conversation.status]}
+                  onNavigate={onNavigate}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Talk to Doctor - Primary CTA */}
+        <section>
+          <button
+            onClick={() => onNavigate('talk-to-doctor')}
+            className="w-full p-6 bg-white border-2 rounded-xl hover:border-[#1E88E5] transition-colors text-left group"
+            style={{ borderColor: colors.neutral[300] }}
+          >
+            <div className="flex items-center gap-4">
+              <div
+                className="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{ backgroundColor: colors.primary[50] }}
+              >
+                <Stethoscope
+                  className="w-7 h-7"
+                  style={{ color: colors.primary[500] }}
+                  strokeWidth={2}
+                />
+              </div>
+              <div className="flex-1">
+                <p className="text-lg font-semibold text-[#1A1D23] mb-1">
+                  {t.talkToDoctor}
+                </p>
+                <p className="text-sm text-[#6B7280]">
+                  {language === 'sw'
+                    ? 'Ongea na mtaalamu wa afya'
+                    : 'Connect with a healthcare professional'}
+                </p>
+              </div>
+              <ChevronRight
+                className="w-5 h-5 text-[#9CA3AF] group-hover:translate-x-1 transition-transform"
+              />
+            </div>
+          </button>
+        </section>
       </div>
     </div>
+  );
+}
+
+// Guidance Card Component
+function GuidanceCard({
+  option,
+  language,
+  onNavigate,
+}: {
+  option: AssistantOption;
+  language: 'sw' | 'en';
+  onNavigate: (route: string) => void;
+}) {
+  const Icon = option.icon;
+
+  return (
+    <button
+      onClick={() => onNavigate(option.route)}
+      className="w-full p-5 rounded-xl border-2 border-[#E5E7EB] hover:border-[#1E88E5] transition-colors text-left group"
+      style={{ backgroundColor: option.bgColor }}
+    >
+      <div className="flex items-start gap-3">
+        <div
+          className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+          style={{ backgroundColor: 'white' }}
+        >
+          <Icon className="w-6 h-6" style={{ color: option.color }} strokeWidth={2} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-base font-semibold text-[#1A1D23] mb-1">
+            {option.title[language]}
+          </p>
+          <p className="text-sm text-[#6B7280]">{option.description[language]}</p>
+        </div>
+        <ArrowRight className="w-5 h-5 text-[#9CA3AF] group-hover:translate-x-1 transition-transform flex-shrink-0 mt-3" />
+      </div>
+    </button>
+  );
+}
+
+// Conversation Card Component - Using StatusBadge
+function ConversationCard({
+  conversation,
+  language,
+  statusLabel,
+  onNavigate,
+}: {
+  conversation: RecentConversation;
+  language: 'sw' | 'en';
+  statusLabel: string;
+  onNavigate: (route: string) => void;
+}) {
+  const getStatusType = (status: string): 'completed' | 'in-progress' | 'needs-action' => {
+    return status as any;
+  };
+
+  return (
+    <button
+      onClick={() => onNavigate(`conversation/${conversation.id}`)}
+      className="w-full p-4 bg-white border-2 border-[#E5E7EB] rounded-xl hover:border-[#D1D5DB] transition-colors text-left group"
+    >
+      <div className="flex items-center justify-between">
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-[#1A1D23] mb-1">
+            {conversation.title[language]}
+          </p>
+          <div className="flex items-center gap-2">
+            <StatusBadge
+              type={getStatusType(conversation.status)}
+              label={statusLabel}
+              size="sm"
+            />
+            <span className="text-xs text-[#6B7280]">{conversation.timestamp}</span>
+          </div>
+        </div>
+        <ChevronRight className="w-5 h-5 text-[#9CA3AF] group-hover:translate-x-1 transition-transform flex-shrink-0" />
+      </div>
+    </button>
   );
 }

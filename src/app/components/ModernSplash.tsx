@@ -84,10 +84,13 @@ export function ModernSplash({ onComplete }: ModernSplashProps) {
         className="text-center mb-8"
       >
         <h1 className="text-4xl font-bold text-[#1A1D23] mb-2 tracking-tight">
-          AfyaAI TZA
+          AfyaCare Tanzania
         </h1>
         <p className="text-lg text-[#6B7280]">
-          Your trusted healthcare companion
+          Huduma za Afya Zinazotegemewa
+        </p>
+        <p className="text-sm text-[#9CA3AF] mt-1">
+          Trusted Healthcare Services
         </p>
       </motion.div>
 

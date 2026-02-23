@@ -1,0 +1,50 @@
+{
+  "title": "My Profile",
+  "personal_info": "Personal Information",
+  "medical_info": "Medical Information",
+  "settings": "Settings",
+  "name": "Full Name",
+  "phone": "Phone Number",
+  "email": "Email Address",
+  "date_of_birth": "Date of Birth",
+  "gender": "Gender",
+  "address": "Address",
+  "emergency_contact": "Emergency Contact",
+  "blood_type": "Blood Type",
+  "allergies": "Allergies",
+  "chronic_conditions": "Chronic Conditions",
+  "current_medications": "Current Medications",
+  "edit_profile": "Edit Profile",
+  "save_changes": "Save Changes",
+  "cancel": "Cancel",
+  "language": {
+    "title": "Language",
+    "english": "English",
+    "swahili": "Kiswahili"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "push": "Push Notifications",
+    "sms": "SMS Notifications",
+    "email": "Email Notifications",
+    "appointments": "Appointment Reminders",
+    "medications": "Medication Reminders",
+    "results": "Test Results"
+  },
+  "privacy": {
+    "title": "Privacy & Security",
+    "change_password": "Change Password",
+    "biometric": "Biometric Login",
+    "data_sharing": "Data Sharing Preferences",
+    "delete_account": "Delete Account"
+  },
+  "help": {
+    "title": "Help & Support",
+    "faq": "Frequently Asked Questions",
+    "contact": "Contact Support",
+    "feedback": "Send Feedback",
+    "about": "About AfyaCare"
+  },
+  "logout": "Logout",
+  "version": "Version {{version}}"
+}

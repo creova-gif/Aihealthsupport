@@ -1,0 +1,56 @@
+{
+  "title": "Msaidizi wa Afya",
+  "subtitle": "Mwenzako wa afya anayetumia AI",
+  "greeting": "Habari! Naweza kukusaidia vipi leo?",
+  "placeholder": "Andika swali lako au eleza dalili zako...",
+  "send": "Tuma",
+  "listening": "Inasikiliza...",
+  "thinking": "Inachanganua...",
+  "voice_input": "Gusa kuongea",
+  "stop_voice": "Acha kurekodi",
+  "examples": {
+    "title": "Jaribu kuuliza:",
+    "symptom_1": "Nina maumivu ya kichwa na homa",
+    "symptom_2": "Nifanye nini kwa kikohozi?",
+    "appointment": "Je, niende kwa daktari?",
+    "medication": "Nitumie dawa lini?",
+    "general": "Dalili za malaria ni zipi?",
+    "emergency": "Je, hii ni dharura?"
+  },
+  "disclaimer": {
+    "title": "Ilani Muhimu",
+    "message": "Msaidizi huyu hutoa maelezo ya jumla ya afya na si mbadala wa ushauri wa kitaalamu wa matibabu, utambuzi, au matibabu.",
+    "emergency": "Ikiwa una dharura ya matibabu, piga simu 114 mara moja.",
+    "understand": "Naelewa"
+  },
+  "responses": {
+    "emergency_detected": "Dalili zako zinaweza kuonyesha hali ya dharura.",
+    "see_doctor": "Kulingana na dalili zako, tunapendekeza uone mtoa huduma za afya.",
+    "self_care": "Unaweza kujaribu mikakati hii ya kujitunza:",
+    "monitor": "Fuatilia dalili zako. Zikiongezeka, tafuta huduma ya matibabu.",
+    "not_medical_advice": "Hii si utambuzi wa kitabibu. Tafadhali wasiliana na mtaalamu wa afya kwa tathmini sahihi."
+  },
+  "actions": {
+    "call_emergency": "Piga Simu ya Dharura (114)",
+    "book_appointment": "Panga Miadi",
+    "find_facility": "Tafuta Kliniki Iliyo Karibu",
+    "view_guide": "Angalia Mwongozo wa Kujitunza",
+    "start_over": "Anza Mazungumzo Mapya"
+  },
+  "limitations": {
+    "title": "Kile Nisichoweza Kufanya",
+    "no_diagnosis": "• Siwezi kutoa utambuzi wa kitabibu",
+    "no_prescriptions": "• Siwezi kuandikia dawa",
+    "no_emergency": "• Siwezi kushughulikia dharura za matibabu",
+    "no_replacement": "• Mimi si mbadala wa daktari"
+  },
+  "empty_state": {
+    "title": "Niulize chochote kuhusu afya yako",
+    "suggestions": [
+      "Angalia dalili",
+      "Mwongozo wa dawa",
+      "Vidokezo vya afya",
+      "Tafuta daktari"
+    ]
+  }
+}

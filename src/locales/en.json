@@ -1,0 +1,539 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "save": "Save",
+    "cancel": "Cancel",
+    "back": "Back",
+    "next": "Next",
+    "close": "Close",
+    "submit": "Submit",
+    "delete": "Delete",
+    "edit": "Edit",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "search": "Search",
+    "filter": "Filter",
+    "refresh": "Refresh",
+    "settings": "Settings",
+    "help": "Help",
+    "logout": "Logout",
+    "login": "Login",
+    "continue": "Continue",
+    "skip": "Skip",
+    "done": "Done",
+    "viewAll": "View All",
+    "learnMore": "Learn More"
+  },
+  "home": {
+    "greeting": "Hello {{name}}",
+    "tagline": "How can we help you today?",
+    "emergency": "Emergency",
+    "emergencySubtext": "Get immediate help",
+    "afyaId": "AfyaID Number",
+    "afyaIdInfo": "Your national health identification number. Used across all healthcare facilities.",
+    "connectivity": {
+      "online": "Connected",
+      "offline": "Offline - Your data is safe"
+    },
+    "primaryActions": {
+      "symptoms": {
+        "title": "Check Symptoms",
+        "description": "Get advice about how you feel",
+        "available": "Available offline"
+      },
+      "care": {
+        "title": "My Care",
+        "description": "View all your healthcare services"
+      },
+      "messages": {
+        "title": "Messages",
+        "description": "Communicate with healthcare providers"
+      },
+      "appointments": {
+        "title": "Appointments",
+        "description": "Schedule and manage your appointments"
+      },
+      "records": {
+        "title": "Health Records",
+        "description": "View your medical history"
+      },
+      "facilities": {
+        "title": "Find Facilities",
+        "description": "Locate hospitals and clinics"
+      }
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "bookAppointment": "Book Appointment",
+      "refillMedication": "Refill Medication",
+      "viewResults": "View Results",
+      "findClinic": "Find Clinic"
+    },
+    "upcomingSection": {
+      "title": "Upcoming",
+      "nextAppointment": "Next appointment",
+      "medications": "{{count}} medication",
+      "medications_plural": "{{count}} medications",
+      "noUpcoming": "No upcoming appointments",
+      "scheduleNow": "Schedule now"
+    }
+  },
+  "assistant": {
+    "title": "Health Assistant",
+    "greeting": "Hello! How can I help you today?",
+    "placeholder": "Type your question...",
+    "examples": {
+      "title": "Example questions:",
+      "symptom": "I have a headache and fever",
+      "appointment": "Should I see a doctor?",
+      "medication": "What are my medication reminders?",
+      "general": "What should I do for a cold?"
+    },
+    "disclaimer": "This assistant is not a replacement for professional medical advice. If you have an emergency, call 112.",
+    "thinking": "Thinking...",
+    "voiceInput": "Tap to speak",
+    "stopVoice": "Stop listening"
+  },
+  "care": {
+    "title": "My Care",
+    "myJourneys": "My Health Journeys",
+    "active": "Active",
+    "completed": "Completed",
+    "upcoming": "Upcoming",
+    "medications": {
+      "title": "My Medications",
+      "active": "Current medications",
+      "schedule": "Today's schedule",
+      "adherence": "Adherence: {{percentage}}%",
+      "takeMedication": "Take medication",
+      "markTaken": "Mark as taken",
+      "missed": "Missed",
+      "upcoming": "Upcoming",
+      "addMedication": "Add new medication",
+      "refill": "Refill"
+    },
+    "appointments": {
+      "title": "My Appointments",
+      "next": "Next appointment",
+      "past": "Past appointments",
+      "book": "Book appointment",
+      "reschedule": "Reschedule",
+      "cancel": "Cancel",
+      "upcoming": "Upcoming",
+      "noAppointments": "No appointments"
+    },
+    "conditions": {
+      "title": "My Health Conditions",
+      "active": "Active",
+      "managed": "Managed",
+      "addCondition": "Add new condition"
+    },
+    "vitals": {
+      "title": "Vital Signs",
+      "bloodPressure": "Blood pressure",
+      "heartRate": "Heart rate",
+      "temperature": "Temperature",
+      "weight": "Weight",
+      "glucose": "Blood glucose",
+      "lastRecorded": "Last recorded {{date}}"
+    }
+  },
+  "messages": {
+    "title": "Messages",
+    "inbox": "Inbox",
+    "sent": "Sent",
+    "compose": "Compose",
+    "noMessages": "No messages",
+    "markRead": "Mark as read",
+    "reply": "Reply",
+    "forward": "Forward",
+    "from": "From",
+    "to": "To",
+    "subject": "Subject",
+    "date": "Date",
+    "providers": "Providers",
+    "support": "Support",
+    "notifications": "Notifications"
+  },
+  "profile": {
+    "title": "My Profile",
+    "personalInfo": "Personal Information",
+    "name": "Name",
+    "phone": "Phone",
+    "email": "Email",
+    "dateOfBirth": "Date of Birth",
+    "gender": "Gender",
+    "address": "Address",
+    "emergencyContact": "Emergency Contact",
+    "settings": {
+      "title": "Settings",
+      "language": "Language",
+      "notifications": "Notifications",
+      "privacy": "Privacy",
+      "security": "Security",
+      "biometric": "Biometric Authentication",
+      "dataSharing": "Data Sharing"
+    },
+    "health": {
+      "title": "Health Information",
+      "bloodType": "Blood Type",
+      "allergies": "Allergies",
+      "medications": "Medications",
+      "conditions": "Health Conditions",
+      "insurance": "Health Insurance"
+    }
+  },
+  "auth": {
+    "welcome": "Welcome to AfyaCare Tanzania",
+    "login": "Login",
+    "signup": "Sign Up",
+    "forgotPassword": "Forgot Password?",
+    "resetPassword": "Reset Password",
+    "phoneNumber": "Phone Number",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "enterCode": "Enter Code",
+    "sendCode": "Send Code",
+    "verifyPhone": "Verify Phone",
+    "createAccount": "Create Account",
+    "termsAgree": "I agree to Terms & Conditions",
+    "privacyAgree": "I have read the Privacy Policy",
+    "biometricSetup": "Set up biometric authentication",
+    "loginWithBiometric": "Login with biometric"
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Welcome to AfyaCare",
+      "subtitle": "Comprehensive healthcare for Tanzania",
+      "getStarted": "Get Started"
+    },
+    "userType": {
+      "title": "Who are you?",
+      "patient": "Patient",
+      "patientDesc": "I'm seeking healthcare services",
+      "employee": "Healthcare Worker",
+      "employeeDesc": "I work in healthcare"
+    },
+    "language": {
+      "title": "Choose your language",
+      "subtitle": "You can change this later"
+    },
+    "consent": {
+      "title": "Your Consent",
+      "dataUsage": "How we use your data",
+      "privacy": "We protect your privacy",
+      "agree": "I agree to the terms"
+    },
+    "personalization": {
+      "title": "Make it yours",
+      "goals": "What are your health goals?",
+      "conditions": "Do you have any health conditions?"
+    }
+  },
+  "symptomChecker": {
+    "title": "Check Symptoms",
+    "subtitle": "Tell me how you're feeling",
+    "searchPlaceholder": "Search symptoms...",
+    "commonSymptoms": "Common symptoms",
+    "selectedSymptoms": "Selected symptoms",
+    "addSymptom": "Add symptom",
+    "severity": {
+      "title": "How severe is the symptom?",
+      "mild": "Mild",
+      "moderate": "Moderate",
+      "severe": "Severe"
+    },
+    "duration": {
+      "title": "How long have you had this symptom?",
+      "hours": "Hours",
+      "days": "Days",
+      "weeks": "Weeks",
+      "months": "Months"
+    },
+    "assessment": {
+      "title": "Your Assessment",
+      "urgency": "Urgency",
+      "recommendations": "Recommendations",
+      "seekCare": "Seek emergency care",
+      "bookAppointment": "Book an appointment",
+      "selfCare": "Self-care at home",
+      "monitor": "Monitor symptoms"
+    },
+    "disclaimer": "This tool is not a substitute for a doctor's examination. If you have an emergency, call 112 immediately."
+  },
+  "appointments": {
+    "title": "Appointments",
+    "book": "Book Appointment",
+    "upcoming": "Upcoming",
+    "past": "Past",
+    "canceled": "Canceled",
+    "selectFacility": "Select a facility",
+    "selectProvider": "Select a provider",
+    "selectDate": "Select date",
+    "selectTime": "Select time",
+    "reason": "Reason for visit",
+    "reasonPlaceholder": "Briefly describe the reason for your visit",
+    "confirmBooking": "Confirm Booking",
+    "bookingConfirmed": "Appointment Confirmed!",
+    "appointmentDetails": "Appointment Details",
+    "facility": "Facility",
+    "provider": "Provider",
+    "date": "Date",
+    "time": "Time",
+    "status": "Status",
+    "reschedule": "Reschedule",
+    "cancel": "Cancel Appointment",
+    "directions": "Get Directions",
+    "addToCalendar": "Add to Calendar"
+  },
+  "medications": {
+    "title": "My Medications",
+    "active": "Current medications",
+    "past": "Past medications",
+    "add": "Add medication",
+    "name": "Medication name",
+    "dosage": "Dosage",
+    "frequency": "Frequency",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "instructions": "Instructions",
+    "prescribedBy": "Prescribed by",
+    "refillDate": "Refill date",
+    "adherence": {
+      "title": "Medication Adherence",
+      "rate": "Adherence Rate",
+      "taken": "Taken",
+      "missed": "Missed",
+      "thisWeek": "This Week",
+      "thisMonth": "This Month"
+    },
+    "schedule": {
+      "title": "Today's Schedule",
+      "morning": "Morning",
+      "afternoon": "Afternoon",
+      "evening": "Evening",
+      "night": "Night",
+      "taken": "Taken",
+      "pending": "Pending",
+      "missed": "Missed"
+    },
+    "reminders": {
+      "title": "Reminders",
+      "enabled": "Reminders enabled",
+      "disabled": "Reminders disabled",
+      "setReminder": "Set reminder",
+      "time": "Reminder time"
+    }
+  },
+  "facilities": {
+    "title": "Health Facilities",
+    "findNearby": "Find nearby facilities",
+    "search": "Search facilities...",
+    "filters": {
+      "type": "Facility Type",
+      "services": "Services",
+      "distance": "Distance",
+      "rating": "Rating"
+    },
+    "types": {
+      "hospital": "Hospital",
+      "clinic": "Clinic",
+      "pharmacy": "Pharmacy",
+      "lab": "Laboratory",
+      "dispensary": "Dispensary"
+    },
+    "details": {
+      "address": "Address",
+      "phone": "Phone",
+      "hours": "Hours",
+      "services": "Services available",
+      "distance": "Distance",
+      "rating": "Rating",
+      "reviews": "Reviews"
+    },
+    "actions": {
+      "directions": "Get Directions",
+      "call": "Call",
+      "book": "Book Appointment",
+      "viewDetails": "View Details"
+    }
+  },
+  "records": {
+    "title": "Health Records",
+    "timeline": "Timeline",
+    "documents": "Documents",
+    "labResults": "Lab Results",
+    "imaging": "Medical Imaging",
+    "vaccinations": "Vaccinations",
+    "prescriptions": "Prescriptions",
+    "reports": "Hospital Reports",
+    "upload": "Upload Document",
+    "download": "Download",
+    "share": "Share",
+    "print": "Print",
+    "noRecords": "No records",
+    "viewDetails": "View Details"
+  },
+  "emergency": {
+    "title": "Emergency",
+    "callEmergency": "Call 112",
+    "findER": "Find Nearest ER",
+    "firstAid": "First Aid",
+    "warning": "Medical Emergency",
+    "description": "If this is a medical emergency, call 112 immediately or go to the nearest hospital.",
+    "symptoms": {
+      "title": "Emergency symptoms:",
+      "chestPain": "Severe chest pain",
+      "breathing": "Difficulty breathing",
+      "bleeding": "Heavy bleeding",
+      "unconscious": "Loss of consciousness",
+      "seizure": "Seizure",
+      "severeHeadache": "Severe headache",
+      "poisoning": "Poisoning"
+    },
+    "actions": {
+      "call": "Call Now",
+      "locate": "Locate Hospital",
+      "cpr": "CPR Instructions",
+      "firstAid": "First Aid"
+    }
+  },
+  "chw": {
+    "dashboard": {
+      "title": "CHW Dashboard",
+      "patients": "Patients",
+      "visits": "Today's Visits",
+      "followUps": "Follow-ups",
+      "alerts": "Alerts"
+    },
+    "patients": {
+      "title": "My Patients",
+      "active": "Active",
+      "highRisk": "High Risk",
+      "recentVisits": "Recent Visits",
+      "addPatient": "Add Patient"
+    },
+    "visits": {
+      "title": "Visits",
+      "today": "Today",
+      "planned": "Planned",
+      "completed": "Completed",
+      "record": "Record Visit"
+    },
+    "routes": {
+      "title": "Route Planning",
+      "optimize": "Optimize Route",
+      "distance": "Total Distance",
+      "duration": "Travel Time",
+      "patients": "{{count}} patient",
+      "patients_plural": "{{count}} patients"
+    }
+  },
+  "moh": {
+    "dashboard": {
+      "title": "Ministry of Health Dashboard",
+      "overview": "Overview",
+      "facilities": "Facilities",
+      "personnel": "Personnel",
+      "patients": "Patients",
+      "analytics": "Analytics"
+    },
+    "monitoring": {
+      "title": "AI Monitoring",
+      "performance": "Performance",
+      "errors": "Errors",
+      "usage": "Usage",
+      "quality": "Quality"
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all as read",
+    "clear": "Clear all",
+    "types": {
+      "appointment": "Appointment",
+      "medication": "Medication",
+      "result": "Result",
+      "message": "Message",
+      "alert": "Alert"
+    },
+    "noNotifications": "No new notifications"
+  },
+  "errors": {
+    "generic": "An error occurred. Please try again.",
+    "network": "Network error. Please check your connection.",
+    "offline": "You are offline. Some features may be unavailable.",
+    "unauthorized": "Unauthorized access. Please login again.",
+    "notFound": "Page not found.",
+    "serverError": "Server error. Please try again later.",
+    "validation": "Please fill all required fields.",
+    "timeout": "Request timed out. Please try again.",
+    "fileUpload": "File upload failed. Please try again.",
+    "retry": "Retry",
+    "goBack": "Go Back"
+  },
+  "validation": {
+    "required": "This field is required",
+    "email": "Please enter a valid email",
+    "phone": "Please enter a valid phone number",
+    "password": "Password must be at least 8 characters",
+    "passwordMatch": "Passwords do not match",
+    "minLength": "Must be at least {{min}} characters",
+    "maxLength": "Must not exceed {{max}} characters",
+    "invalidDate": "Invalid date",
+    "futureDate": "Date must be in the future",
+    "pastDate": "Date must be in the past",
+    "invalidFormat": "Invalid format"
+  },
+  "dateTime": {
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "tomorrow": "Tomorrow",
+    "thisWeek": "This week",
+    "lastWeek": "Last week",
+    "thisMonth": "This month",
+    "lastMonth": "Last month",
+    "daysAgo": "{{count}} day ago",
+    "daysAgo_plural": "{{count}} days ago",
+    "hoursAgo": "{{count}} hour ago",
+    "hoursAgo_plural": "{{count}} hours ago",
+    "minutesAgo": "{{count}} minute ago",
+    "minutesAgo_plural": "{{count}} minutes ago",
+    "justNow": "Just now",
+    "at": "at"
+  },
+  "medical": {
+    "terms": {
+      "emergency": "Emergency",
+      "urgent": "Urgent",
+      "routine": "Routine",
+      "diagnosis": "Diagnosis",
+      "treatment": "Treatment",
+      "prescription": "Prescription",
+      "symptom": "Symptom",
+      "condition": "Condition",
+      "allergy": "Allergy",
+      "vital": "Vital Sign",
+      "bloodPressure": "Blood Pressure",
+      "heartRate": "Heart Rate",
+      "temperature": "Temperature",
+      "weight": "Weight",
+      "height": "Height",
+      "bmi": "BMI"
+    },
+    "units": {
+      "kg": "kg",
+      "lbs": "lbs",
+      "cm": "cm",
+      "ft": "ft",
+      "mmHg": "mmHg",
+      "bpm": "bpm",
+      "celsius": "°C",
+      "fahrenheit": "°F",
+      "mg": "mg",
+      "ml": "ml"
+    }
+  }
+}

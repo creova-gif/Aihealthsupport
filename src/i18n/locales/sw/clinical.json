@@ -1,0 +1,113 @@
+{
+  "title": "Maelezo ya Kliniki",
+  "medical_terminology": "Istilahi za Kitabibu",
+  "risk_levels": {
+    "high": "Hatari Kubwa",
+    "moderate": "Hatari ya Kati",
+    "low": "Hatari Ndogo",
+    "critical": "Hatari Sana",
+    "severe": "Kali",
+    "mild": "Nyepesi"
+  },
+  "urgency": {
+    "emergency": "Dharura - Tafuta huduma mara moja",
+    "urgent": "Haraka - Mwone daktari ndani ya masaa 24",
+    "routine": "Kawaida - Panga miadi",
+    "monitoring": "Fuatilia - Angalia mabadiliko"
+  },
+  "vital_signs": {
+    "title": "Alama za Maisha",
+    "blood_pressure": "Shinikizo la Damu",
+    "heart_rate": "Mapigo ya Moyo",
+    "temperature": "Joto la Mwili",
+    "respiratory_rate": "Kasi ya Kupumua",
+    "oxygen_saturation": "Ukamilifu waOksijeni",
+    "weight": "Uzani",
+    "height": "Urefu",
+    "bmi": "Kipimo cha Uzani wa Mwili (BMI)"
+  },
+  "vital_ranges": {
+    "normal": "Kawaida",
+    "abnormal": "Si Kawaida",
+    "high": "Juu",
+    "low": "Chini",
+    "critical_high": "Juu Sana",
+    "critical_low": "Chini Sana"
+  },
+  "symptoms": {
+    "fever": "Homa",
+    "cough": "Kikohozi",
+    "headache": "Maumivu ya Kichwa",
+    "fatigue": "Uchovu",
+    "nausea": "Kichefuchefu",
+    "vomiting": "Kutapika",
+    "diarrhea": "Kuhara",
+    "shortness_of_breath": "Kupumua Kwa Shida",
+    "chest_pain": "Maumivu ya Kifua",
+    "abdominal_pain": "Maumivu ya Tumbo",
+    "dizziness": "Kizunguzungu",
+    "rash": "Upele"
+  },
+  "conditions": {
+    "diabetes": "Kisukari",
+    "hypertension": "Shinikizo la Damu",
+    "asthma": "Pumu",
+    "malaria": "Malaria",
+    "tuberculosis": "Kifua Kikuu",
+    "hiv": "VVU",
+    "covid19": "COVID-19",
+    "pneumonia": "Nimonia"
+  },
+  "medications": {
+    "prescription": "Maagizo ya Dawa",
+    "dosage": "Kipimo",
+    "frequency": "Mara kwa Mara",
+    "duration": "Muda",
+    "instructions": "Maelekezo",
+    "side_effects": "Athari za Dawa",
+    "interactions": "Mwingiliano wa Dawa",
+    "refill": "Jaza Upya"
+  },
+  "lab_tests": {
+    "blood_test": "Uchunguzi wa Damu",
+    "urine_test": "Uchunguzi wa Mkojo",
+    "xray": "X-Ray",
+    "ultrasound": "Ultrasound",
+    "ecg": "ECG/EKG",
+    "ct_scan": "CT Scan",
+    "mri": "MRI",
+    "results_pending": "Matokeo Yanasubiri",
+    "results_ready": "Matokeo Yameandaliwa"
+  },
+  "treatment": {
+    "plan": "Mpango wa Matibabu",
+    "medication": "Dawa",
+    "therapy": "Tiba",
+    "surgery": "Upasuaji",
+    "follow_up": "Ufuatiliaji",
+    "referral": "Uelekezaji",
+    "home_care": "Maelekezo ya Kujitunza Nyumbani"
+  },
+  "diagnosis": {
+    "confirmed": "Utambuzi Uliothibitishwa",
+    "suspected": "Utambuzi Unaoshukiwa",
+    "ruled_out": "Umeondolewa",
+    "pending": "Inasubiri Uchunguzi Zaidi"
+  },
+  "pregnancy": {
+    "prenatal": "Huduma za Kabla ya Kuzaa",
+    "trimester": "Robo ya Mwaka",
+    "due_date": "Tarehe Inayotarajiwa ya Kuzaa",
+    "gestational_age": "Umri wa Ujauzito",
+    "antenatal_visits": "Ziara za Kabla ya Kuzaa",
+    "postnatal": "Huduma Baada ya Kuzaa"
+  },
+  "immunization": {
+    "vaccination": "Chanjo",
+    "vaccine": "Chanjo",
+    "dose": "Kipimo",
+    "schedule": "Ratiba ya Chanjo",
+    "complete": "Chanjo Zimekamilika",
+    "due": "Chanjo Zinahitajika"
+  }
+}

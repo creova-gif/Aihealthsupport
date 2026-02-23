@@ -121,6 +121,26 @@ export function PatientDashboard({ onNavigate }: DashboardProps) {
     },
   ];
 
+  // Quick access cards - smaller cards for quick actions
+  const quickActions = [
+    {
+      id: 'medications',
+      icon: Heart, // Will import Pill icon
+      title: language === 'sw' ? 'Dawa Zangu' : 'My Medications',
+      description: language === 'sw' ? 'Fuatilia dawa zako' : 'Track your meds',
+      gradient: 'from-blue-500 to-cyan-600',
+      route: 'medications',
+    },
+    {
+      id: 'facilities',
+      icon: MapPin,
+      title: language === 'sw' ? 'Tafuta Kituo' : 'Find Facility',
+      description: language === 'sw' ? 'Kituo cha karibu' : 'Nearby clinics',
+      gradient: 'from-green-500 to-emerald-600',
+      route: 'facilities',
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       {/* Header */}
@@ -194,6 +214,33 @@ export function PatientDashboard({ onNavigate }: DashboardProps) {
         {/* Primary Action Cards - Large, Visual, 1-2 actions */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {primaryActions.map((action) => {
+            const Icon = action.icon;
+            return (
+              <button
+                key={action.id}
+                onClick={() => onNavigate(action.route)}
+                className="group relative overflow-hidden rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+              >
+                <div className={`h-48 bg-gradient-to-br ${action.gradient} p-6 flex flex-col justify-between`}>
+                  <div className="flex items-start justify-between">
+                    <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
+                      <Icon className="h-8 w-8 text-white" strokeWidth={2} />
+                    </div>
+                    <ChevronRight className="h-6 w-6 text-white/60 group-hover:text-white/100 transition-colors" />
+                  </div>
+                  <div className="text-left">
+                    <h3 className="text-xl font-semibold text-white mb-1">{action.title}</h3>
+                    <p className="text-sm text-white/80">{action.description}</p>
+                  </div>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Quick Access Cards - Smaller, for quick actions */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {quickActions.map((action) => {
             const Icon = action.icon;
             return (
               <button

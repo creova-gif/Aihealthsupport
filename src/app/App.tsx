@@ -1,22 +1,85 @@
-import React, { useState, useEffect } from 'react';
-import { AppProvider, useApp } from './context/AppContext';
-import { WorldClassApp } from './components/WorldClassApp';
+import { Suspense, lazy, useEffect, useState } from 'react';
+import { useApp, AppProvider } from './context/AppContext';
+import { SharedDeviceProvider } from './context/SharedDeviceContext';
+import { I18nextProvider } from 'react-i18next';
+import i18n from './utils/i18n';
+import '../styles/fonts.css';
+import '../styles/theme.css';
+
+// Monitoring & Analytics
+import {
+  initializeMonitoring,
+  trackPageView,
+  trackFeatureUsage,
+  trackDisclaimerAcceptance,
+} from './utils/monitoring';
+
+// Components
 import { SplashScreen } from './components/SplashScreen';
-import { OnboardingOrchestrator, OnboardingData } from './components/OnboardingOrchestrator';
-import { OnboardingEnhancementManager } from './components/OnboardingEnhancementManager';
-import { MicroFeedback } from './components/MicroFeedback';
-import { PatientPortalManager } from './components/PatientPortalManager';
-import { PatientDashboard } from './components/PatientDashboard';
-import { EnhancedSymptomChecker } from './components/EnhancedSymptomChecker';
-import { AppointmentsScreen } from './components/AppointmentsScreen';
-import { ProfileScreen } from './components/ProfileScreen';
-import { MaternalCareTracker } from './components/MaternalCareTracker';
 import { BottomNavigation } from './components/BottomNavigation';
-import { CHWDashboard } from './components/CHWDashboard';
-import { MoHDashboard } from './components/MoHDashboard';
-import { AIArchitectureDashboard } from './components/AIArchitectureDashboard';
 import { Globe } from 'lucide-react';
 import { Button } from './components/ui/button';
+import type { OnboardingData } from './components/OnboardingOrchestrator';
+import { NationalInfrastructureApp } from './components/NationalInfrastructureApp';
+
+// ✅ PERFORMANCE: Lazy load legacy components (for compatibility)
+const WorldClassApp = lazy(() => import('./components/WorldClassApp').then(m => ({ default: m.WorldClassApp })));
+const OnboardingOrchestrator = lazy(() => import('./components/OnboardingOrchestrator').then(m => ({ default: m.OnboardingOrchestrator })));
+const OnboardingEnhancementManager = lazy(() => import('./components/OnboardingEnhancementManager').then(m => ({ default: m.OnboardingEnhancementManager })));
+const MicroFeedback = lazy(() => import('./components/MicroFeedback').then(m => ({ default: m.MicroFeedback })));
+const PatientPortalManager = lazy(() => import('./components/PatientPortalManager').then(m => ({ default: m.PatientPortalManager })));
+const PatientDashboard = lazy(() => import('./components/PatientDashboard').then(m => ({ default: m.PatientDashboard })));
+const EnhancedSymptomChecker = lazy(() => import('./components/EnhancedSymptomChecker').then(m => ({ default: m.EnhancedSymptomChecker })));
+const AppointmentsScreen = lazy(() => import('./components/AppointmentsScreen').then(m => ({ default: m.AppointmentsScreen })));
+const ProfileScreen = lazy(() => import('./components/ProfileScreen').then(m => ({ default: m.ProfileScreen })));
+const MaternalCareTracker = lazy(() => import('./components/MaternalCareTracker').then(m => ({ default: m.MaternalCareTracker })));
+const CHWDashboard = lazy(() => import('./components/CHWDashboard').then(m => ({ default: m.CHWDashboard })));
+const MoHDashboard = lazy(() => import('./components/MoHDashboard').then(m => ({ default: m.MoHDashboard })));
+const AIArchitectureDashboard = lazy(() => import('./components/AIArchitectureDashboard').then(m => ({ default: m.AIArchitectureDashboard })));
+const MedicationTracker = lazy(() => import('./components/MedicationTracker').then(m => ({ default: m.MedicationTracker })));
+const FacilityFinder = lazy(() => import('./components/FacilityFinder').then(m => ({ default: m.FacilityFinder })));
+const CHWRouteOptimizer = lazy(() => import('./components/CHWRouteOptimizer').then(m => ({ default: m.CHWRouteOptimizer })));
+const SafetyDisclaimerModal = lazy(() => import('./components/SafetyDisclaimerModal').then(m => ({ default: m.SafetyDisclaimerModal })));
+const AdminMonitoringDashboard = lazy(() => import('./components/AdminMonitoringDashboard').then(m => ({ default: m.AdminMonitoringDashboard })));
+
+// Loading components - Premium skeleton states
+import { SkeletonDashboardGrid, Spinner } from './components/ui/skeleton';
+
+// Loading spinner component - Now with skeleton variants
+function LoadingSpinner() {
+  return (
+    <div className="min-h-screen bg-[#F7F9FB] flex items-center justify-center">
+      <div className="text-center">
+        <Spinner size="lg" className="mx-auto mb-4" />
+        <p className="text-sm text-[#6B7280]">Loading...</p>
+      </div>
+    </div>
+  );
+}
+
+// Dashboard loading state - Premium skeleton
+function DashboardLoader() {
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white p-4">
+      <div className="max-w-7xl mx-auto">
+        {/* Header skeleton */}
+        <div className="mb-6 animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-48 mb-2" />
+          <div className="h-4 bg-gray-200 rounded w-32" />
+        </div>
+        
+        {/* Stats grid skeleton */}
+        <SkeletonDashboardGrid />
+        
+        {/* Content skeleton */}
+        <div className="mt-6 space-y-4">
+          <div className="h-32 bg-white rounded-xl border border-gray-200 animate-pulse" />
+          <div className="h-32 bg-white rounded-xl border border-gray-200 animate-pulse" />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function AppContent() {
   const { userRole, language, setLanguage, setUserRole, setUserData } = useApp();
@@ -27,6 +90,11 @@ function AppContent() {
   const [showFeedback, setShowFeedback] = useState(false);
   const [feedbackTrigger, setFeedbackTrigger] = useState<'first-action' | '7-days' | 'feature-use'>('first-action');
   const [useWorldClassMode, setUseWorldClassMode] = useState(true); // Toggle for world-class experience
+  
+  // Safety disclaimer state
+  const [showDisclaimer, setShowDisclaimer] = useState(false);
+  const [disclaimerTool, setDisclaimerTool] = useState<'symptomChecker' | 'appointment' | 'aiGuidance'>('symptomChecker');
+  const [pendingRoute, setPendingRoute] = useState<string | null>(null);
 
   // Check if this is first launch
   useEffect(() => {
@@ -114,6 +182,46 @@ function AppContent() {
     setShowOnboarding(true);
   };
 
+  // Navigation with safety disclaimer check
+  const handleNavigateWithDisclaimer = (route: string) => {
+    // Check if route requires disclaimer and hasn't been accepted yet
+    const requiresDisclaimer = ['symptom-checker', 'appointments'].includes(route);
+    
+    if (requiresDisclaimer) {
+      const disclaimerKey = `disclaimer_${route}_accepted`;
+      const hasAccepted = localStorage.getItem(disclaimerKey) === 'true';
+      
+      if (!hasAccepted) {
+        // Show disclaimer first
+        setPendingRoute(route);
+        setDisclaimerTool(route === 'symptom-checker' ? 'symptomChecker' : 'appointment');
+        setShowDisclaimer(true);
+        return;
+      }
+    }
+    
+    // Navigate directly if no disclaimer needed or already accepted
+    setCurrentRoute(route);
+  };
+
+  const handleDisclaimerAccept = () => {
+    if (pendingRoute) {
+      // Store acceptance
+      const disclaimerKey = `disclaimer_${pendingRoute}_accepted`;
+      localStorage.setItem(disclaimerKey, 'true');
+      
+      // Navigate to pending route
+      setCurrentRoute(pendingRoute);
+      setPendingRoute(null);
+    }
+    setShowDisclaimer(false);
+  };
+
+  const handleDisclaimerDecline = () => {
+    setPendingRoute(null);
+    setShowDisclaimer(false);
+  };
+
   // Show splash screen first
   if (showSplash) {
     return <SplashScreen onComplete={handleSplashComplete} />;
@@ -165,32 +273,56 @@ function AppContent() {
 
         {/* Micro Feedback */}
         {showFeedback && (
-          <MicroFeedback
-            language={language}
-            trigger={feedbackTrigger}
-            onSubmit={handleFeedbackSubmit}
-            onDismiss={() => setShowFeedback(false)}
-          />
+          <Suspense fallback={<LoadingSpinner />}>
+            <MicroFeedback
+              language={language}
+              trigger={feedbackTrigger}
+              onSubmit={handleFeedbackSubmit}
+              onDismiss={() => setShowFeedback(false)}
+            />
+          </Suspense>
         )}
 
-        {currentRoute === 'dashboard' && (
-          <PatientDashboard onNavigate={setCurrentRoute} />
+        {/* Safety Disclaimer Modal */}
+        {showDisclaimer && (
+          <Suspense fallback={null}>
+            <SafetyDisclaimerModal
+              isOpen={showDisclaimer}
+              tool={disclaimerTool}
+              language={language}
+              onAccept={handleDisclaimerAccept}
+              onDecline={handleDisclaimerDecline}
+            />
+          </Suspense>
         )}
-        {currentRoute === 'symptom-checker' && (
-          <EnhancedSymptomChecker onBack={() => setCurrentRoute('dashboard')} />
-        )}
-        {currentRoute === 'appointments' && (
-          <AppointmentsScreen onBack={() => setCurrentRoute('dashboard')} />
-        )}
-        {currentRoute === 'profile' && (
-          <ProfileScreen 
-            onBack={() => setCurrentRoute('dashboard')} 
-            onLogout={handleLogout}
-          />
-        )}
-        {currentRoute === 'maternal' && (
-          <MaternalCareTracker onBack={() => setCurrentRoute('dashboard')} />
-        )}
+
+        <Suspense fallback={<LoadingSpinner />}>
+          {currentRoute === 'dashboard' && (
+            <PatientDashboard onNavigate={handleNavigateWithDisclaimer} />
+          )}
+          {currentRoute === 'symptom-checker' && (
+            <EnhancedSymptomChecker onBack={() => setCurrentRoute('dashboard')} />
+          )}
+          {currentRoute === 'appointments' && (
+            <AppointmentsScreen onBack={() => setCurrentRoute('dashboard')} />
+          )}
+          {currentRoute === 'profile' && (
+            <ProfileScreen 
+              onBack={() => setCurrentRoute('dashboard')} 
+              onLogout={handleLogout}
+            />
+          )}
+          {currentRoute === 'maternal' && (
+            <MaternalCareTracker onBack={() => setCurrentRoute('dashboard')} />
+          )}
+          {currentRoute === 'medications' && (
+            <MedicationTracker onBack={() => setCurrentRoute('dashboard')} />
+          )}
+          {currentRoute === 'facilities' && (
+            <FacilityFinder onBack={() => setCurrentRoute('dashboard')} />
+          )}
+        </Suspense>
+
         {(currentRoute === 'ncds' || currentRoute === 'telemedicine') && (
           <div className="min-h-screen bg-gray-50 p-4 flex items-center justify-center">
             <div className="text-center">
@@ -210,7 +342,7 @@ function AppContent() {
         )}
         <BottomNavigation
           activeRoute={currentRoute}
-          onNavigate={setCurrentRoute}
+          onNavigate={handleNavigateWithDisclaimer}
         />
       </>
     );
@@ -230,7 +362,17 @@ function AppContent() {
           onEnhancementComplete={handleEnhancementComplete}
         />
 
-        <CHWDashboard onBack={handleLogout} />
+        <Suspense fallback={<LoadingSpinner />}>
+          {currentRoute === 'dashboard' && (
+            <CHWDashboard 
+              onBack={handleLogout}
+              onNavigate={setCurrentRoute}
+            />
+          )}
+          {currentRoute === 'route-optimizer' && (
+            <CHWRouteOptimizer onBack={() => setCurrentRoute('dashboard')} />
+          )}
+        </Suspense>
       </>
     );
   }
@@ -279,12 +421,27 @@ function AppContent() {
       );
     }
     
+    if (currentRoute === 'monitoring') {
+      return (
+        <>
+          <LanguageToggle />
+          <Suspense fallback={<DashboardLoader />}>
+            <AdminMonitoringDashboard 
+              onBack={() => setCurrentRoute('dashboard')}
+              language={language}
+            />
+          </Suspense>
+        </>
+      );
+    }
+    
     return (
       <>
         <LanguageToggle />
         <MoHDashboard 
           onBack={handleLogout}
           onViewArchitecture={() => setCurrentRoute('ai-architecture')}
+          onViewMonitoring={() => setCurrentRoute('monitoring')}
         />
       </>
     );
@@ -294,29 +451,28 @@ function AppContent() {
 }
 
 export default function App() {
-  // Check if we should use world-class mode
-  const [useWorldClass, setUseWorldClass] = useState(true);
+  // ✅ ALWAYS USE NATIONAL INFRASTRUCTURE MODE (World-Class Standard)
+  const [useNationalInfrastructure, setUseNationalInfrastructure] = useState(true);
 
   useEffect(() => {
-    const savedPref = localStorage.getItem('world_class_mode');
-    if (savedPref !== null) {
-      setUseWorldClass(savedPref === 'true');
-    }
+    // Initialize monitoring on app start
+    initializeMonitoring();
+    
+    // Check if user explicitly requested legacy mode (for testing only)
+    const legacyMode = localStorage.getItem('legacy_mode') === 'true';
+    setUseNationalInfrastructure(!legacyMode);
   }, []);
 
-  // If world-class mode is enabled, use the new experience
-  if (useWorldClass) {
-    return (
-      <AppProvider>
-        <WorldClassApp />
-      </AppProvider>
-    );
-  }
-
-  // Otherwise, use the existing experience
+  // Wrap everything with i18n provider at the top level
   return (
-    <AppProvider>
-      <AppContent />
-    </AppProvider>
+    <I18nextProvider i18n={i18n}>
+      <AppProvider>
+        <SharedDeviceProvider>
+          <Suspense fallback={<LoadingSpinner />}>
+            {useNationalInfrastructure ? <NationalInfrastructureApp /> : <WorldClassApp />}
+          </Suspense>
+        </SharedDeviceProvider>
+      </AppProvider>
+    </I18nextProvider>
   );
 }

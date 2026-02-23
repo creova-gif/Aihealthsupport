@@ -1,0 +1,534 @@
+{
+  "common": {
+    "loading": "Inapakia...",
+    "error": "Kosa limetokea",
+    "save": "Hifadhi",
+    "cancel": "Ghairi",
+    "back": "Rudi",
+    "next": "Endelea",
+    "close": "Funga",
+    "submit": "Wasilisha",
+    "delete": "Futa",
+    "edit": "Hariri",
+    "confirm": "Thibitisha",
+    "yes": "Ndiyo",
+    "no": "Hapana",
+    "search": "Tafuta",
+    "filter": "Chuja",
+    "refresh": "Onyesha upya",
+    "settings": "Mipangilio",
+    "help": "Msaada",
+    "logout": "Toka",
+    "login": "Ingia",
+    "continue": "Endelea",
+    "skip": "Ruka",
+    "done": "Imemaliza",
+    "viewAll": "Angalia zote",
+    "learnMore": "Jifunze zaidi"
+  },
+  "home": {
+    "greeting": "Habari {{name}}",
+    "tagline": "Unahitaji msaada gani leo?",
+    "emergency": "Dharura",
+    "emergencySubtext": "Hali ya haraka",
+    "afyaId": "Nambari ya AfyaID",
+    "afyaIdInfo": "Nambari yako ya kitaifa ya afya. Inatumika katika vituo vyote vya afya.",
+    "connectivity": {
+      "online": "Mtandao unapatikana",
+      "offline": "Huna mtandao - taarifa zako ni salama"
+    },
+    "primaryActions": {
+      "symptoms": {
+        "title": "Nina Dalili",
+        "description": "Pata ushauri kuhusu jinsi unavyohisi",
+        "available": "Inapatikana bila mtandao"
+      },
+      "care": {
+        "title": "Huduma za Afya",
+        "description": "Angalia huduma zako zote"
+      },
+      "messages": {
+        "title": "Ujumbe",
+        "description": "Wasiliana na wahudumu wa afya"
+      },
+      "appointments": {
+        "title": "Miadi",
+        "description": "Panga na uangalie miadi yako"
+      },
+      "records": {
+        "title": "Kumbukumbu za Afya",
+        "description": "Angalia historia yako ya matibabu"
+      },
+      "facilities": {
+        "title": "Vituo vya Afya",
+        "description": "Tafuta hospitali na zahanati"
+      }
+    },
+    "quickActions": {
+      "title": "Vitendo vya Haraka",
+      "bookAppointment": "Panga Muadi",
+      "refillMedication": "Ongeza Dawa",
+      "viewResults": "Angalia Matokeo",
+      "findClinic": "Tafuta Zahanati"
+    },
+    "upcomingSection": {
+      "title": "Inayokuja",
+      "nextAppointment": "Muadi ujao",
+      "medications": "Dawa {{count}}",
+      "noUpcoming": "Hakuna muadi wowote unaokuja",
+      "scheduleNow": "Panga sasa"
+    }
+  },
+  "assistant": {
+    "title": "Msaidizi wa Afya",
+    "greeting": "Habari! Naweza kukusaidia vipi leo?",
+    "placeholder": "Andika swali lako...",
+    "examples": {
+      "title": "Maswali ya mfano:",
+      "symptom": "Nina maumivu ya kichwa na homa",
+      "appointment": "Je, ninapaswa kuona daktari?",
+      "medication": "Ni nini kumbukumbu za dawa yangu?",
+      "general": "Ninaweza kufanya nini kwa mafua?"
+    },
+    "disclaimer": "Msaada huu si badala ya ushauri wa kitaalamu wa matibabu. Kama una hali ya dharura, piga simu 112.",
+    "thinking": "Ninafikiri...",
+    "voiceInput": "Bonyeza kusema",
+    "stopVoice": "Simamisha kusikiza"
+  },
+  "care": {
+    "title": "Huduma za Afya",
+    "myJourneys": "Safari Zangu za Afya",
+    "active": "Hai",
+    "completed": "Zimekamilika",
+    "upcoming": "Zinazokuja",
+    "medications": {
+      "title": "Dawa Zangu",
+      "active": "Dawa za sasa",
+      "schedule": "Ratiba ya leo",
+      "adherence": "Kufuata: {{percentage}}%",
+      "takeMedication": "Chukua dawa",
+      "markTaken": "Weka alama imetumika",
+      "missed": "Ulipokosa",
+      "upcoming": "Inayokuja",
+      "addMedication": "Ongeza dawa mpya",
+      "refill": "Jaza tena"
+    },
+    "appointments": {
+      "title": "Miadi Yangu",
+      "next": "Muadi ujao",
+      "past": "Miadi iliyopita",
+      "book": "Panga muadi",
+      "reschedule": "Panga upya",
+      "cancel": "Ghairi",
+      "upcoming": "Inayokuja",
+      "noAppointments": "Hakuna miadi"
+    },
+    "conditions": {
+      "title": "Hali Zangu za Afya",
+      "active": "Hai",
+      "managed": "Inashughulikiwa",
+      "addCondition": "Ongeza hali mpya"
+    },
+    "vitals": {
+      "title": "Alama Muhimu",
+      "bloodPressure": "Shinikizo la damu",
+      "heartRate": "Mapigo ya moyo",
+      "temperature": "Joto la mwili",
+      "weight": "Uzito",
+      "glucose": "Sukari ya damu",
+      "lastRecorded": "Imeandikwa mwisho {{date}}"
+    }
+  },
+  "messages": {
+    "title": "Ujumbe",
+    "inbox": "Barua pepe",
+    "sent": "Iliyotumwa",
+    "compose": "Tunga mpya",
+    "noMessages": "Hakuna ujumbe",
+    "markRead": "Weka alama imesomwa",
+    "reply": "Jibu",
+    "forward": "Peleka mbele",
+    "from": "Kutoka",
+    "to": "Kwa",
+    "subject": "Mada",
+    "date": "Tarehe",
+    "providers": "Watoa huduma",
+    "support": "Msaada",
+    "notifications": "Arifa"
+  },
+  "profile": {
+    "title": "Wasifu Wangu",
+    "personalInfo": "Taarifa Binafsi",
+    "name": "Jina",
+    "phone": "Simu",
+    "email": "Barua pepe",
+    "dateOfBirth": "Tarehe ya kuzaliwa",
+    "gender": "Jinsia",
+    "address": "Anwani",
+    "emergencyContact": "Mawasiliano ya dharura",
+    "settings": {
+      "title": "Mipangilio",
+      "language": "Lugha",
+      "notifications": "Arifa",
+      "privacy": "Faragha",
+      "security": "Usalama",
+      "biometric": "Uthibitishaji wa kibaiolojia",
+      "dataSharing": "Kushiriki data"
+    },
+    "health": {
+      "title": "Taarifa za Afya",
+      "bloodType": "Aina ya damu",
+      "allergies": "Mzio",
+      "medications": "Dawa",
+      "conditions": "Hali za afya",
+      "insurance": "Bima ya afya"
+    }
+  },
+  "auth": {
+    "welcome": "Karibu AfyaCare Tanzania",
+    "login": "Ingia",
+    "signup": "Jisajili",
+    "forgotPassword": "Umesahau nywila?",
+    "resetPassword": "Weka upya nywila",
+    "phoneNumber": "Nambari ya simu",
+    "password": "Nywila",
+    "confirmPassword": "Thibitisha nywila",
+    "enterCode": "Ingiza nambari",
+    "sendCode": "Tuma nambari",
+    "verifyPhone": "Thibitisha simu",
+    "createAccount": "Fungua akaunti",
+    "termsAgree": "Nakubali Masharti na Vigezo",
+    "privacyAgree": "Nimesoma Sera ya Faragha",
+    "biometricSetup": "Weka uthibitishaji wa kibaiolojia",
+    "loginWithBiometric": "Ingia kwa kibaiolojia"
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Karibu AfyaCare",
+      "subtitle": "Huduma kamili za afya kwa Tanzania",
+      "getStarted": "Anza"
+    },
+    "userType": {
+      "title": "Wewe ni nani?",
+      "patient": "Mgonjwa",
+      "patientDesc": "Ninatafuta huduma za afya",
+      "employee": "Mfanyakazi wa afya",
+      "employeeDesc": "Ninafanya kazi katika sekta ya afya"
+    },
+    "language": {
+      "title": "Chagua lugha",
+      "subtitle": "Unaweza kubadilisha hii baadaye"
+    },
+    "consent": {
+      "title": "Ridhaa yako",
+      "dataUsage": "Jinsi tunavyotumia data yako",
+      "privacy": "Tunalinda faragha yako",
+      "agree": "Nakubali na masharti"
+    },
+    "personalization": {
+      "title": "Fanya iwe yako",
+      "goals": "Malengo yako ya afya ni nini?",
+      "conditions": "Je, una hali yoyote ya afya?"
+    }
+  },
+  "symptomChecker": {
+    "title": "Angalia Dalili",
+    "subtitle": "Nieleze jinsi unavyohisi",
+    "searchPlaceholder": "Tafuta dalili...",
+    "commonSymptoms": "Dalili za kawaida",
+    "selectedSymptoms": "Dalili ulizochagua",
+    "addSymptom": "Ongeza dalili",
+    "severity": {
+      "title": "Dalili ni kubwa kiasi gani?",
+      "mild": "Nyepesi",
+      "moderate": "Ya wastani",
+      "severe": "Kali"
+    },
+    "duration": {
+      "title": "Umekuwa na dalili kwa muda gani?",
+      "hours": "Saa",
+      "days": "Siku",
+      "weeks": "Wiki",
+      "months": "Miezi"
+    },
+    "assessment": {
+      "title": "Tathmini yako",
+      "urgency": "Haraka",
+      "recommendations": "Mapendekezo",
+      "seekCare": "Tafuta huduma ya dharura",
+      "bookAppointment": "Panga muadi",
+      "selfCare": "Jitibu nyumbani",
+      "monitor": "Fuatilia dalili"
+    },
+    "disclaimer": "Chombo hiki hakibadilikani na uchunguzi wa daktari. Kama una hali ya dharura, piga simu 112 mara moja."
+  },
+  "appointments": {
+    "title": "Miadi",
+    "book": "Panga Muadi",
+    "upcoming": "Inayokuja",
+    "past": "Iliyopita",
+    "canceled": "Imeghairiwa",
+    "selectFacility": "Chagua kituo cha afya",
+    "selectProvider": "Chagua mtoa huduma",
+    "selectDate": "Chagua tarehe",
+    "selectTime": "Chagua muda",
+    "reason": "Sababu ya muadi",
+    "reasonPlaceholder": "Eleza kwa ufupi sababu ya ziara yako",
+    "confirmBooking": "Thibitisha kupanga",
+    "bookingConfirmed": "Muadi umethhibitishwa!",
+    "appointmentDetails": "Maelezo ya muadi",
+    "facility": "Kituo",
+    "provider": "Mtoa huduma",
+    "date": "Tarehe",
+    "time": "Muda",
+    "status": "Hali",
+    "reschedule": "Panga upya",
+    "cancel": "Ghairi muadi",
+    "directions": "Pata maelekezo",
+    "addToCalendar": "Ongeza kwenye kalenda"
+  },
+  "medications": {
+    "title": "Dawa Zangu",
+    "active": "Dawa za sasa",
+    "past": "Dawa za zamani",
+    "add": "Ongeza dawa",
+    "name": "Jina la dawa",
+    "dosage": "Kipimo",
+    "frequency": "Mara kwa mara",
+    "startDate": "Tarehe ya kuanza",
+    "endDate": "Tarehe ya kumalizika",
+    "instructions": "Maelekezo",
+    "prescribedBy": "Imeagizwa na",
+    "refillDate": "Tarehe ya kujaza tena",
+    "adherence": {
+      "title": "Kufuata dawa",
+      "rate": "Kiwango cha kufuata",
+      "taken": "Zilizochukuliwa",
+      "missed": "Zilizokosekana",
+      "thisWeek": "Wiki hii",
+      "thisMonth": "Mwezi huu"
+    },
+    "schedule": {
+      "title": "Ratiba ya leo",
+      "morning": "Asubuhi",
+      "afternoon": "Mchana",
+      "evening": "Jioni",
+      "night": "Usiku",
+      "taken": "Imetumika",
+      "pending": "Inasubiri",
+      "missed": "Imekosekana"
+    },
+    "reminders": {
+      "title": "Ukumbusho",
+      "enabled": "Ukumbusho umewashwa",
+      "disabled": "Ukumbusho umezimwa",
+      "setReminder": "Weka ukumbusho",
+      "time": "Muda wa ukumbusho"
+    }
+  },
+  "facilities": {
+    "title": "Vituo vya Afya",
+    "findNearby": "Tafuta vituo karibu",
+    "search": "Tafuta kituo...",
+    "filters": {
+      "type": "Aina ya kituo",
+      "services": "Huduma",
+      "distance": "Umbali",
+      "rating": "Ukadiriaji"
+    },
+    "types": {
+      "hospital": "Hospitali",
+      "clinic": "Zahanati",
+      "pharmacy": "Duka la dawa",
+      "lab": "Maabara",
+      "dispensary": "Zahanati ndogo"
+    },
+    "details": {
+      "address": "Anwani",
+      "phone": "Simu",
+      "hours": "Masaa ya kufanya kazi",
+      "services": "Huduma zinazopatikana",
+      "distance": "Umbali",
+      "rating": "Ukadiriaji",
+      "reviews": "Mapitio"
+    },
+    "actions": {
+      "directions": "Pata maelekezo",
+      "call": "Piga simu",
+      "book": "Panga muadi",
+      "viewDetails": "Angalia maelezo"
+    }
+  },
+  "records": {
+    "title": "Kumbukumbu za Afya",
+    "timeline": "Mstari wa wakati",
+    "documents": "Nyaraka",
+    "labResults": "Matokeo ya maabara",
+    "imaging": "Picha za matibabu",
+    "vaccinations": "Chanjo",
+    "prescriptions": "Maagizo ya dawa",
+    "reports": "Ripoti za hospitali",
+    "upload": "Pakia nyaraka",
+    "download": "Pakua",
+    "share": "Shiriki",
+    "print": "Chapa",
+    "noRecords": "Hakuna kumbukumbu",
+    "viewDetails": "Angalia maelezo"
+  },
+  "emergency": {
+    "title": "Dharura",
+    "callEmergency": "Piga simu 112",
+    "findER": "Tafuta ER karibu",
+    "firstAid": "Msaada wa kwanza",
+    "warning": "Hali ya dharura ya matibabu",
+    "description": "Kama hii ni hali ya dharura ya matibabu, piga simu 112 mara moja au nenda hospitali ya karibu zaidi.",
+    "symptoms": {
+      "title": "Ishara za dharura:",
+      "chestPain": "Maumivu makali ya kifua",
+      "breathing": "Ugumu wa kupumua",
+      "bleeding": "Kutokwa na damu kwingi",
+      "unconscious": "Kupoteza fahamu",
+      "seizure": "Kifafa",
+      "severeHeadache": "Maumivu makali ya kichwa",
+      "poisoning": "Sumu"
+    },
+    "actions": {
+      "call": "Piga simu sasa",
+      "locate": "Tafuta hospitali",
+      "cpr": "Maelekezo ya CPR",
+      "firstAid": "Msaada wa kwanza"
+    }
+  },
+  "chw": {
+    "dashboard": {
+      "title": "Dashibodi ya CHW",
+      "patients": "Wagonjwa",
+      "visits": "Ziara za leo",
+      "followUps": "Kufuatilia",
+      "alerts": "Tahadhari"
+    },
+    "patients": {
+      "title": "Wagonjwa Wangu",
+      "active": "Hai",
+      "highRisk": "Hatari kubwa",
+      "recentVisits": "Ziara za hivi karibuni",
+      "addPatient": "Ongeza mgonjwa"
+    },
+    "visits": {
+      "title": "Ziara",
+      "today": "Leo",
+      "planned": "Zilizopangwa",
+      "completed": "Zimekamilika",
+      "record": "Rekodi ziara"
+    },
+    "routes": {
+      "title": "Upangaji wa Njia",
+      "optimize": "Boresha njia",
+      "distance": "Umbali jumla",
+      "duration": "Muda wa safari",
+      "patients": "Wagonjwa {{count}}"
+    }
+  },
+  "moh": {
+    "dashboard": {
+      "title": "Dashibodi ya Wizara ya Afya",
+      "overview": "Muhtasari",
+      "facilities": "Vituo",
+      "personnel": "Wafanyakazi",
+      "patients": "Wagonjwa",
+      "analytics": "Uchanganuzi"
+    },
+    "monitoring": {
+      "title": "Ufuatiliaji wa AI",
+      "performance": "Utendaji",
+      "errors": "Makosa",
+      "usage": "Matumizi",
+      "quality": "Ubora"
+    }
+  },
+  "notifications": {
+    "title": "Arifa",
+    "markAllRead": "Weka alama zote zimesomwa",
+    "clear": "Futa zote",
+    "types": {
+      "appointment": "Muadi",
+      "medication": "Dawa",
+      "result": "Matokeo",
+      "message": "Ujumbe",
+      "alert": "Tahadhari"
+    },
+    "noNotifications": "Hakuna arifa mpya"
+  },
+  "errors": {
+    "generic": "Kosa limetokea. Tafadhali jaribu tena.",
+    "network": "Tatizo la mtandao. Angalia muunganisho wako.",
+    "offline": "Huna mtandao. Baadhi ya vipengele havitapatikana.",
+    "unauthorized": "Hauruhusiwi kufikia hii. Tafadhali ingia tena.",
+    "notFound": "Ukurasa haujapatikana.",
+    "serverError": "Tatizo la seva. Tafadhali jaribu baadaye.",
+    "validation": "Tafadhali jaza sehemu zote zinazohitajika.",
+    "timeout": "Ombi limechelewa. Tafadhali jaribu tena.",
+    "fileUpload": "Kupakia faili kumeshindwa. Tafadhali jaribu tena.",
+    "retry": "Jaribu tena",
+    "goBack": "Rudi"
+  },
+  "validation": {
+    "required": "Sehemu hii inahitajika",
+    "email": "Tafadhali ingiza barua pepe halali",
+    "phone": "Tafadhali ingiza nambari ya simu halali",
+    "password": "Nywila lazima iwe na angalau herufi 8",
+    "passwordMatch": "Nywila hazilingani",
+    "minLength": "Lazima iwe na angalau herufi {{min}}",
+    "maxLength": "Isiwe na zaidi ya herufi {{max}}",
+    "invalidDate": "Tarehe si sahihi",
+    "futureDate": "Tarehe lazima iwe baadaye",
+    "pastDate": "Tarehe lazima iwe zamani",
+    "invalidFormat": "Muundo si sahihi"
+  },
+  "dateTime": {
+    "today": "Leo",
+    "yesterday": "Jana",
+    "tomorrow": "Kesho",
+    "thisWeek": "Wiki hii",
+    "lastWeek": "Wiki iliyopita",
+    "thisMonth": "Mwezi huu",
+    "lastMonth": "Mwezi uliopita",
+    "daysAgo": "siku {{count}} zilizopita",
+    "hoursAgo": "saa {{count}} zilizopita",
+    "minutesAgo": "dakika {{count}} zilizopita",
+    "justNow": "Sasa hivi",
+    "at": "saa"
+  },
+  "medical": {
+    "terms": {
+      "emergency": "Dharura",
+      "urgent": "Ya haraka",
+      "routine": "Ya kawaida",
+      "diagnosis": "Uchunguzi",
+      "treatment": "Matibabu",
+      "prescription": "Agizo la dawa",
+      "symptom": "Dalili",
+      "condition": "Hali",
+      "allergy": "Mzio",
+      "vital": "Alama muhimu",
+      "bloodPressure": "Shinikizo la damu",
+      "heartRate": "Mapigo ya moyo",
+      "temperature": "Joto la mwili",
+      "weight": "Uzito",
+      "height": "Urefu",
+      "bmi": "BMI"
+    },
+    "units": {
+      "kg": "kg",
+      "lbs": "pauni",
+      "cm": "sm",
+      "ft": "futi",
+      "mmHg": "mmHg",
+      "bpm": "mapigo kwa dakika",
+      "celsius": "°C",
+      "fahrenheit": "°F",
+      "mg": "mg",
+      "ml": "ml"
+    }
+  }
+}

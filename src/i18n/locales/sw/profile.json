@@ -1,0 +1,50 @@
+{
+  "title": "Wasifu Wangu",
+  "personal_info": "Maelezo Binafsi",
+  "medical_info": "Maelezo ya Kimatibabu",
+  "settings": "Mipangilio",
+  "name": "Jina Kamili",
+  "phone": "Namba ya Simu",
+  "email": "Barua Pepe",
+  "date_of_birth": "Tarehe ya Kuzaliwa",
+  "gender": "Jinsia",
+  "address": "Anwani",
+  "emergency_contact": "Mawasiliano ya Dharura",
+  "blood_type": "Aina ya Damu",
+  "allergies": "Mzio",
+  "chronic_conditions": "Magonjwa Sugu",
+  "current_medications": "Dawa za Sasa",
+  "edit_profile": "Hariri Wasifu",
+  "save_changes": "Hifadhi Mabadiliko",
+  "cancel": "Ghairi",
+  "language": {
+    "title": "Lugha",
+    "english": "English",
+    "swahili": "Kiswahili"
+  },
+  "notifications": {
+    "title": "Arifa",
+    "push": "Arifa za Push",
+    "sms": "Arifa za SMS",
+    "email": "Arifa za Barua Pepe",
+    "appointments": "Ukumbusho wa Miadi",
+    "medications": "Ukumbusho wa Dawa",
+    "results": "Matokeo ya Uchunguzi"
+  },
+  "privacy": {
+    "title": "Faragha na Usalama",
+    "change_password": "Badilisha Nywila",
+    "biometric": "Kuingia kwa Kibiolojia",
+    "data_sharing": "Mapendekezo ya Kushiriki Data",
+    "delete_account": "Futa Akaunti"
+  },
+  "help": {
+    "title": "Msaada na Usaidizi",
+    "faq": "Maswali Yanayoulizwa Mara kwa Mara",
+    "contact": "Wasiliana na Msaada",
+    "feedback": "Tuma Maoni",
+    "about": "Kuhusu AfyaCare"
+  },
+  "logout": "Toka",
+  "version": "Toleo {{version}}"
+}

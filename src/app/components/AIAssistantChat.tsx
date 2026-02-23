@@ -16,7 +16,7 @@ import { Input } from '@/app/components/ui/input';
 
 const translations = {
   sw: {
-    title: 'Msaidizi wa AI',
+    title: 'Msaidizi wa Afya', // Changed from "AI Assistant"
     subtitle: 'Nina hapa kukusaidia!',
     placeholder: 'Andika swali lako hapa...',
     send: 'Tuma',

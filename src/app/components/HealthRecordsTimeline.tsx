@@ -1,8 +1,12 @@
 /**
  * HealthRecordsTimeline - Unified Health History
- * Timeline view of visits, tests, medications
- * Plain-language summaries, offline access
- * Download and share capabilities
+ * 
+ * REFACTORED: Now uses AfyaCare Design System components
+ * - PageHeader for consistent header
+ * - NativeDropdownFilter for record type filtering
+ * - StatusBadge for record status
+ * - UrgencyCard for follow-up needed items
+ * - Design system colors and spacing
  */
 
 import React, { useState } from 'react';
@@ -25,6 +29,13 @@ import {
   ChevronUp,
 } from 'lucide-react';
 import { Button } from './ui/button';
+import {
+  PageHeader,
+  NativeDropdownFilter,
+  StatusBadge,
+  UrgencyCard,
+  colors,
+} from '@/app/design-system';
 
 interface HealthRecordsTimelineProps {
   language: 'sw' | 'en';
@@ -55,6 +66,7 @@ export function HealthRecordsTimeline({
     sw: {
       title: 'Rekodi za Afya',
       subtitle: 'Historia yako ya kliniki na matokeo',
+      filter: 'Onyesha:',
       filters: {
         all: 'Zote',
         visit: 'Ziara',
@@ -80,6 +92,7 @@ export function HealthRecordsTimeline({
     en: {
       title: 'Health Records',
       subtitle: 'Your clinical history and results',
+      filter: 'Show:',
       filters: {
         all: 'All',
         visit: 'Visits',
@@ -255,45 +268,32 @@ export function HealthRecordsTimeline({
   return (
     <div className="min-h-screen bg-[#FAFBFC] pb-24">
       {/* Header */}
-      <div className="bg-white border-b border-[#E5E7EB]">
-        <div className="max-w-4xl mx-auto px-6 py-6">
-          <button
-            onClick={onBack}
-            className="flex items-center gap-2 mb-4 text-[#6B7280] hover:text-[#1A1D23] transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            <span className="text-sm font-medium">
-              {language === 'sw' ? 'Rudi' : 'Back'}
-            </span>
-          </button>
+      <PageHeader
+        onBack={onBack}
+        title={t.title}
+        subtitle={t.subtitle}
+        icon={FileText}
+        iconColor={colors.blue[500]}
+      />
 
-          <div className="flex items-center gap-3 mb-2">
-            <FileText className="w-8 h-8 text-[#1E88E5]" />
-            <h1 className="text-3xl font-bold text-[#1A1D23]">{t.title}</h1>
-          </div>
-          <p className="text-[#6B7280] text-base">{t.subtitle}</p>
-        </div>
-      </div>
-
-      {/* Filters */}
+      {/* Filters - Fixed: Dropdown instead of horizontal scroll */}
       <div className="bg-white border-b border-[#E5E7EB]">
         <div className="max-w-4xl mx-auto px-6 py-4">
-          <div className="flex gap-2 overflow-x-auto">
-            {(['all', 'visit', 'test', 'medication', 'procedure'] as const).map(
-              (filter) => (
-                <button
-                  key={filter}
-                  onClick={() => setSelectedFilter(filter)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
-                    selectedFilter === filter
-                      ? 'bg-[#1E88E5] text-white'
-                      : 'bg-[#F3F4F6] text-[#6B7280] hover:bg-[#E5E7EB]'
-                  }`}
-                >
-                  {t.filters[filter]}
-                </button>
-              )
-            )}
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-medium text-[#6B7280]">
+              {t.filter}
+            </span>
+            <NativeDropdownFilter
+              value={selectedFilter}
+              onChange={(e) => setSelectedFilter(e.target.value as any)}
+              options={[
+                { value: 'all', label: t.filters.all },
+                { value: 'visit', label: t.filters.visit },
+                { value: 'test', label: t.filters.test },
+                { value: 'medication', label: t.filters.medication },
+                { value: 'procedure', label: t.filters.procedure },
+              ]}
+            />
           </div>
         </div>
       </div>

@@ -1,11 +1,15 @@
 /**
- * ModernHome - The Heart of the App
- * Context-aware starting point with "What do you need right now?" prompt
- * Organized by human intent, not features
- * Inspired by: Apple Health, Notion clarity
+ * ModernHome - Redesigned for Clarity & Task Completion
+ * 
+ * REFACTORED: Now uses AfyaCare Design System components
+ * - SectionHeader for consistent labeling
+ * - QuickActionButton from design system
+ * - UrgencyCard for task urgency
+ * - StatusBadge for journey status
+ * - Design system colors and spacing
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'motion/react';
 import {
   Activity,
@@ -13,16 +17,20 @@ import {
   Calendar,
   MessageCircle,
   Baby,
-  TrendingUp,
-  Bell,
-  User,
-  ChevronRight,
+  Pill,
   Clock,
-  CheckCircle2,
   AlertCircle,
-  Sparkles,
+  ChevronRight,
+  FileText,
+  User,
 } from 'lucide-react';
-import { Button } from './ui/button';
+import {
+  SectionHeader,
+  QuickActionButton,
+  UrgencyCard,
+  StatusBadge,
+  colors,
+} from '@/app/design-system';
 
 interface ModernHomeProps {
   userName?: string;
@@ -31,225 +39,236 @@ interface ModernHomeProps {
 }
 
 export function ModernHome({ userName = 'User', language, onNavigate }: ModernHomeProps) {
-  const [todayTip, setTodayTip] = useState(0);
-
   const content = {
     sw: {
       greeting: 'Habari',
-      tagline: 'Unahitaji nini leo?',
-      primaryActions: {
-        symptoms: {
-          title: 'Nina Dalili',
-          description: 'Pata ushauri kuhusu jinsi unavyohisi',
-          color: '#1E88E5',
-          icon: Activity,
-          route: 'symptom-checker',
-        },
-        care: {
-          title: 'Huduma za Afya',
-          description: 'Angalia huduma zote za afya',
-          color: '#43A047',
-          icon: Heart,
-          route: 'care',
-        },
-        assistant: {
-          title: 'Msaidizi wa AI',
-          description: 'Uliza maswali kuhusu afya yako',
-          color: '#8B5CF6',
-          icon: Sparkles,
-          route: 'assistant',
-        },
-        messages: {
-          title: 'Ujumbe',
-          description: 'Wasiliana na timu yako ya afya',
-          color: '#F59E0B',
-          icon: MessageCircle,
-          route: 'messages',
-        },
+      tagline: 'Unahitaji msaada gani leo?',
+      inProgress: {
+        title: 'Zinaendelea',
+        empty: 'Hakuna huduma zinazoendeshwa',
       },
-      recentActivity: {
-        title: 'Shughuli za Karibuni',
-        empty: 'Hakuna shughuli bado',
+      primaryCTA: {
+        title: 'Nina Dalili',
+        subtitle: 'Pata ushauri wa haraka',
+        action: 'Anza Tathmini',
       },
-      healthTips: [
-        'Kunywa maji mengi kunasaidia mwili wako kufanya kazi vizuri',
-        'Mazoezi ya dakika 30 kila siku yanaboresha afya yako',
-        'Usingizi wa saa 7-9 ni muhimu kwa afya nzuri',
-      ],
-      continueCare: 'Endelea na Huduma',
+      quickActions: {
+        title: 'Vitendo vya Haraka',
+        appointments: 'Miadi',
+        records: 'Kumbukumbu',
+        medications: 'Dawa',
+        messages: 'Ujumbe',
+      },
+      upcomingTasks: {
+        title: 'Zijazo',
+        empty: 'Hakuna kazi zijazo',
+      },
     },
     en: {
       greeting: 'Hello',
-      tagline: 'What do you need right now?',
-      primaryActions: {
-        symptoms: {
-          title: 'I have symptoms',
-          description: 'Get guidance on how you feel',
-          color: '#1E88E5',
-          icon: Activity,
-          route: 'symptom-checker',
-        },
-        care: {
-          title: 'Care journeys',
-          description: 'View all care services',
-          color: '#43A047',
-          icon: Heart,
-          route: 'care',
-        },
-        assistant: {
-          title: 'AI Assistant',
-          description: 'Ask questions about your health',
-          color: '#8B5CF6',
-          icon: Sparkles,
-          route: 'assistant',
-        },
-        messages: {
-          title: 'Messages',
-          description: 'Connect with your care team',
-          color: '#F59E0B',
-          icon: MessageCircle,
-          route: 'messages',
-        },
+      tagline: 'What do you need help with today?',
+      inProgress: {
+        title: 'In Progress',
+        empty: 'No active care journeys',
       },
-      recentActivity: {
-        title: 'Recent Activity',
-        empty: 'No recent activity',
+      primaryCTA: {
+        title: 'I have symptoms',
+        subtitle: 'Get quick guidance',
+        action: 'Start Assessment',
       },
-      healthTips: [
-        'Drinking plenty of water helps your body function properly',
-        '30 minutes of exercise daily improves your health',
-        '7-9 hours of sleep is essential for good health',
-      ],
-      continueCare: 'Continue Care',
+      quickActions: {
+        title: 'Quick Actions',
+        appointments: 'Appointments',
+        records: 'Records',
+        medications: 'Medications',
+        messages: 'Messages',
+      },
+      upcomingTasks: {
+        title: 'Upcoming',
+        empty: 'No upcoming tasks',
+      },
     },
   };
 
   const t = content[language];
-  const timeOfDay = new Date().getHours();
-  const greeting = timeOfDay < 12 ? t.greeting : timeOfDay < 18 ? t.greeting : t.greeting;
+
+  // Mock data - In production, fetch from API/localStorage
+  const inProgressJourneys = [
+    {
+      id: 'maternal',
+      type: 'pregnancy',
+      title: language === 'sw' ? 'Huduma ya Ujauzito' : 'Pregnancy Care',
+      status: language === 'sw' ? 'Wiki 24' : 'Week 24',
+      nextTask: language === 'sw' ? 'Uchunguzi wa wiki 28' : 'Week 28 checkup',
+      dueDate: '2026-03-15',
+      urgent: false,
+      icon: Baby,
+      color: '#EC4899',
+    },
+  ];
+
+  const upcomingTasks = [
+    {
+      id: '1',
+      type: 'appointment',
+      title: language === 'sw' ? 'Miadi ya Kliniki' : 'Clinic Appointment',
+      subtitle: language === 'sw' ? 'Mwananyamala Hospital' : 'Mwananyamala Hospital',
+      date: '2026-02-25',
+      time: '10:00',
+      urgent: true,
+    },
+    {
+      id: '2',
+      type: 'medication',
+      title: language === 'sw' ? 'Kumbusho la Dawa' : 'Medication Reminder',
+      subtitle: language === 'sw' ? 'Lisinopril 10mg' : 'Lisinopril 10mg',
+      date: 'today',
+      time: '20:00',
+      urgent: false,
+    },
+  ];
 
   return (
-    <div className="min-h-screen bg-[#FAFBFC] pb-24">
-      {/* Header */}
-      <div className="bg-gradient-to-b from-white to-transparent pt-12 pb-6 px-6">
+    <div className="min-h-screen bg-[#F7F9FB] pb-24">
+      {/* Simplified Header - No gradient, institutional */}
+      <div className="bg-white border-b border-[#E5E7EB] pt-8 pb-6 px-6">
         <div className="max-w-4xl mx-auto">
-          {/* Greeting */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
           >
-            <h1 className="text-3xl font-bold text-[#1A1D23] mb-1">
-              {greeting}, {userName}
+            <h1 className="text-2xl font-semibold text-[#1A1D23] mb-1">
+              {t.greeting}, {userName}
             </h1>
-            <p className="text-lg text-[#6B7280]">{t.tagline}</p>
+            <p className="text-base text-[#6B7280]">{t.tagline}</p>
           </motion.div>
         </div>
       </div>
 
-      {/* Main content */}
-      <div className="px-6 space-y-8 max-w-4xl mx-auto">
-        {/* Primary care journeys */}
+      <div className="px-6 pt-6 space-y-6 max-w-4xl mx-auto">
+        {/* IN PROGRESS CARE JOURNEYS - Using Design System */}
+        {inProgressJourneys.length > 0 && (
+          <section>
+            <SectionHeader>{t.inProgress.title}</SectionHeader>
+            <div className="space-y-3">
+              {inProgressJourneys.map((journey) => (
+                <button
+                  key={journey.id}
+                  onClick={() => onNavigate(journey.id)}
+                  className="w-full p-4 bg-white border-2 border-[#E5E7EB] rounded-xl hover:border-[#1E88E5] transition-colors text-left group"
+                >
+                  <div className="flex items-center gap-4">
+                    <div
+                      className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                      style={{ backgroundColor: `${journey.color}15` }}
+                    >
+                      <journey.icon
+                        className="w-6 h-6"
+                        style={{ color: journey.color }}
+                        strokeWidth={2}
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <p className="font-semibold text-[#1A1D23]">{journey.title}</p>
+                        <StatusBadge
+                          type="in-progress"
+                          label={journey.status}
+                          size="sm"
+                        />
+                      </div>
+                      <p className="text-sm text-[#6B7280]">{journey.nextTask}</p>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-[#9CA3AF] group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* PRIMARY CTA - Most Common Action (Symptom Checker) */}
         <section>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {Object.entries(t.primaryActions).map(([key, action]: any, index) => (
-              <CareJourneyCard
-                key={key}
-                title={action.title}
-                description={action.description}
-                icon={action.icon}
-                color={action.color}
-                onClick={() => onNavigate(action.route)}
-                delay={index * 0.1}
-              />
-            ))}
-          </div>
+          <button
+            onClick={() => onNavigate('symptom-checker')}
+            className="w-full p-6 bg-[#1E88E5] hover:bg-[#1976D2] rounded-xl transition-colors text-left group shadow-sm"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                <Activity className="w-7 h-7 text-white" strokeWidth={2.5} />
+              </div>
+              <div className="flex-1">
+                <p className="text-xl font-semibold text-white mb-1">
+                  {t.primaryCTA.title}
+                </p>
+                <p className="text-sm text-white/90">{t.primaryCTA.subtitle}</p>
+              </div>
+              <div className="px-4 py-2 bg-white rounded-lg">
+                <span className="text-sm font-semibold text-[#1E88E5]">
+                  {t.primaryCTA.action}
+                </span>
+              </div>
+            </div>
+          </button>
         </section>
 
-        {/* Health tip of the day */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="p-6 bg-gradient-to-br from-[#43A047] to-[#2E7D32] rounded-2xl text-white"
-        >
-          <div className="flex items-start gap-4">
-            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
-              <Heart className="w-6 h-6" />
+        {/* UPCOMING TASKS - Using UrgencyCard from Design System */}
+        {upcomingTasks.length > 0 && (
+          <section>
+            <SectionHeader>{t.upcomingTasks.title}</SectionHeader>
+            <div className="space-y-3">
+              {upcomingTasks.map((task) => (
+                <UrgencyCard
+                  key={task.id}
+                  level={task.urgent ? 'urgent' : 'info'}
+                  title={task.title}
+                  description={`${task.subtitle} • ${
+                    task.date === 'today'
+                      ? language === 'sw'
+                        ? 'Leo'
+                        : 'Today'
+                      : task.date
+                  } ${task.time}`}
+                  icon={task.urgent ? AlertCircle : Clock}
+                />
+              ))}
             </div>
-            <div className="flex-1">
-              <p className="text-sm opacity-90 mb-2">
-                {language === 'sw' ? 'Kidokezo cha Leo' : 'Today\'s Health Tip'}
-              </p>
-              <p className="text-base font-medium leading-relaxed">
-                {t.healthTips[todayTip]}
-              </p>
-            </div>
-          </div>
-        </motion.section>
+          </section>
+        )}
 
-        {/* Recent activity placeholder */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-        >
-          <h2 className="text-xl font-semibold text-[#1A1D23] mb-4">
-            {t.recentActivity.title}
-          </h2>
-          <div className="p-8 bg-white rounded-2xl border border-[#E5E7EB] text-center">
-            <div className="w-16 h-16 bg-[#F3F4F6] rounded-full flex items-center justify-center mx-auto mb-4">
-              <Clock className="w-8 h-8 text-[#9CA3AF]" />
-            </div>
-            <p className="text-[#6B7280]">{t.recentActivity.empty}</p>
+        {/* QUICK ACTIONS - Using Design System Component */}
+        <section>
+          <SectionHeader>{t.quickActions.title}</SectionHeader>
+          <div className="grid grid-cols-2 gap-3">
+            <QuickActionButton
+              icon={Calendar}
+              label={t.quickActions.appointments}
+              onClick={() => onNavigate('appointments')}
+              color={colors.primary[500]}
+            />
+            <QuickActionButton
+              icon={FileText}
+              label={t.quickActions.records}
+              onClick={() => onNavigate('records')}
+              color={colors.success[500]}
+            />
+            <QuickActionButton
+              icon={Pill}
+              label={t.quickActions.medications}
+              onClick={() => onNavigate('medications')}
+              color="#8B5CF6"
+            />
+            <QuickActionButton
+              icon={MessageCircle}
+              label={t.quickActions.messages}
+              onClick={() => onNavigate('messages')}
+              color={colors.warning[500]}
+              badge={3}
+            />
           </div>
-        </motion.section>
+        </section>
       </div>
     </div>
-  );
-}
-
-function CareJourneyCard({
-  title,
-  description,
-  icon: Icon,
-  color,
-  onClick,
-  delay = 0,
-}: {
-  title: string;
-  description: string;
-  icon: any;
-  color: string;
-  onClick: () => void;
-  delay?: number;
-}) {
-  return (
-    <motion.button
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay }}
-      whileHover={{ scale: 1.02, y: -4 }}
-      whileTap={{ scale: 0.98 }}
-      onClick={onClick}
-      className="p-6 bg-white rounded-2xl border border-[#E5E7EB] hover:border-[#D1D5DB] shadow-sm hover:shadow-md transition-all text-left group"
-    >
-      <div className="flex items-start gap-4">
-        <div
-          className="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg shadow-sm ring-1 ring-black/5"
-          style={{ 
-            backgroundColor: `${color}08`,
-            boxShadow: `0 2px 8px ${color}15`
-          }}
-        >
-          <Icon className="w-7 h-7 transition-transform duration-300 group-hover:scale-110" style={{ color, strokeWidth: 2 }} />
-        </div>
-        <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-[#1A1D23] mb-1 text-lg">{title}</h3>
-          <p className="text-sm text-[#6B7280] leading-relaxed">{description}</p>
-        </div>
-        <ChevronRight className="w-5 h-5 text-[#9CA3AF] flex-shrink-0 transition-transform group-hover:translate-x-1" />
-      </div>
-    </motion.button>
   );
 }

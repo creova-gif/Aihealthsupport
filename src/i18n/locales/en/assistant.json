@@ -1,0 +1,56 @@
+{
+  "title": "Health Assistant",
+  "subtitle": "Your AI-powered health companion",
+  "greeting": "Hello! How can I help you today?",
+  "placeholder": "Type your question or describe your symptoms...",
+  "send": "Send",
+  "listening": "Listening...",
+  "thinking": "Analyzing...",
+  "voice_input": "Tap to speak",
+  "stop_voice": "Stop recording",
+  "examples": {
+    "title": "Try asking:",
+    "symptom_1": "I have a headache and fever",
+    "symptom_2": "What should I do for a cough?",
+    "appointment": "Should I see a doctor?",
+    "medication": "When should I take my medication?",
+    "general": "What are the symptoms of malaria?",
+    "emergency": "Is this an emergency?"
+  },
+  "disclaimer": {
+    "title": "Important Notice",
+    "message": "This assistant provides general health information and is not a replacement for professional medical advice, diagnosis, or treatment.",
+    "emergency": "If you have a medical emergency, call 114 immediately.",
+    "understand": "I Understand"
+  },
+  "responses": {
+    "emergency_detected": "Your symptoms may indicate an emergency condition.",
+    "see_doctor": "Based on your symptoms, we recommend consulting a healthcare provider.",
+    "self_care": "You can try these self-care measures:",
+    "monitor": "Monitor your symptoms. If they worsen, seek medical attention.",
+    "not_medical_advice": "This is not a medical diagnosis. Please consult a healthcare professional for proper evaluation."
+  },
+  "actions": {
+    "call_emergency": "Call Emergency (114)",
+    "book_appointment": "Book Appointment",
+    "find_facility": "Find Nearest Clinic",
+    "view_guide": "View Self-Care Guide",
+    "start_over": "Start New Conversation"
+  },
+  "limitations": {
+    "title": "What I Can't Do",
+    "no_diagnosis": "• I cannot provide medical diagnoses",
+    "no_prescriptions": "• I cannot prescribe medications",
+    "no_emergency": "• I cannot handle medical emergencies",
+    "no_replacement": "• I am not a replacement for a doctor"
+  },
+  "empty_state": {
+    "title": "Ask me anything about your health",
+    "suggestions": [
+      "Check symptoms",
+      "Medication guidance",
+      "Health tips",
+      "Find a doctor"
+    ]
+  }
+}

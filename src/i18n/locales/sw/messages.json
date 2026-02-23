@@ -1,0 +1,36 @@
+{
+  "title": "Ujumbe",
+  "subtitle": "Wasiliana na timu yako ya afya",
+  "empty_state": "Hakuna ujumbe bado",
+  "compose": "Ujumbe Mpya",
+  "inbox": "Sanduku la Ujumbe",
+  "sent": "Uliyotuma",
+  "archived": "Uliyohifadhiwa",
+  "search_placeholder": "Tafuta ujumbe...",
+  "unread": "{{count}} hazijasomaishwa",
+  "mark_read": "Weka Umesomwa",
+  "mark_unread": "Weka Haujasomwa",
+  "archive": "Hifadhi",
+  "delete": "Futa",
+  "reply": "Jibu",
+  "forward": "Peleka Mbele",
+  "new_message": {
+    "title": "Ujumbe Mpya",
+    "to": "Kwa",
+    "subject": "Mada",
+    "message": "Ujumbe",
+    "send": "Tuma",
+    "cancel": "Ghairi",
+    "select_recipient": "Chagua mpokeaji",
+    "placeholder": "Andika ujumbe wako..."
+  },
+  "recipients": {
+    "doctor": "Daktari Wangu",
+    "nurse": "Muuguzi",
+    "chw": "Mhudumu wa Afya ya Jamii",
+    "support": "Timu ya Msaada",
+    "custom": "Mwingine"
+  },
+  "sent_success": "Ujumbe umetumwa",
+  "send_failed": "Imeshindwa kutuma ujumbe"
+}

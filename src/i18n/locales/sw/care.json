@@ -1,0 +1,50 @@
+{
+  "title": "Huduma Zangu",
+  "subtitle": "Huduma zako zote za afya mahali pamoja",
+  "appointments": {
+    "title": "Miadi",
+    "upcoming": "Miadi Inayokuja",
+    "past": "Miadi Iliyopita",
+    "book_new": "Panga Miadi Mpya",
+    "no_upcoming": "Hakuna miadi inayokuja",
+    "cancel": "Ghairi Miadi",
+    "reschedule": "Panga Upya"
+  },
+  "medications": {
+    "title": "Dawa",
+    "active": "Dawa za Sasa",
+    "history": "Historia ya Dawa",
+    "refill": "Zinahitaji Kujazwa",
+    "add_medication": "Ongeza Dawa",
+    "no_medications": "Hakuna dawa za sasa"
+  },
+  "records": {
+    "title": "Rekodi za Afya",
+    "vitals": "Alama za Maisha",
+    "lab_results": "Matokeo ya Maabara",
+    "imaging": "Ripoti za Picha",
+    "documents": "Hati za Kitabibu",
+    "no_records": "Hakuna rekodi bado"
+  },
+  "care_team": {
+    "title": "Timu ya Huduma",
+    "primary_doctor": "Daktari Mkuu",
+    "specialists": "Wataalamu",
+    "nurses": "Wauguzi",
+    "chw": "Mhudumu wa Afya ya Jamii",
+    "contact": "Wasiliana"
+  },
+  "conditions": {
+    "title": "Hali za Afya",
+    "active": "Hali za Sasa",
+    "managed": "Zinazodhibitiwa Vizuri",
+    "needs_attention": "Zinahitaji Umakini"
+  },
+  "preventive_care": {
+    "title": "Huduma za Kuzuia",
+    "screenings": "Uchunguzi wa Afya",
+    "vaccinations": "Chanjo",
+    "checkups": "Uchunguzi wa Kila Mwaka",
+    "wellness": "Programu za Afya"
+  }
+}

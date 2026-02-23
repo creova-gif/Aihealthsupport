@@ -1,0 +1,36 @@
+{
+  "required_field": "Sehemu hii inahitajika",
+  "invalid_email": "Barua pepe si sahihi",
+  "invalid_phone": "Namba ya simu si sahihi",
+  "invalid_format": "Muundo si sahihi",
+  "min_length": "Herufi {{count}} au zaidi zinahitajika",
+  "max_length": "Herufi {{count}} au chini zinaruhusiwa",
+  "min_value": "Thamani lazima iwe angalau {{value}}",
+  "max_value": "Thamani isizidi {{value}}",
+  "phone": {
+    "invalid": "Tafadhali weka namba sahihi ya simu ya Tanzania",
+    "format": "+255 XXX XXX XXX",
+    "required": "Namba ya simu inahitajika"
+  },
+  "password": {
+    "too_short": "Nywila lazima iwe na herufi 8 au zaidi",
+    "too_weak": "Nywila ni dhaifu sana",
+    "no_match": "Nywila hazifanani",
+    "required": "Nywila inahitajika",
+    "requirements": "Nywila lazima iwe na herufi kubwa, ndogo, nambari, na alama maalum"
+  },
+  "date": {
+    "invalid": "Tarehe si sahihi",
+    "future_not_allowed": "Tarehe za baadaye haziruhusiwi",
+    "past_not_allowed": "Tarehe za zamani haziruhusiwi",
+    "required": "Tarehe inahitajika"
+  },
+  "file": {
+    "too_large": "Ukubwa wa faili usizidi {{size}}MB",
+    "invalid_type": "Aina ya faili si sahihi. Inaruhusiwa: {{types}}",
+    "required": "Faili inahitajika"
+  },
+  "consent": {
+    "required": "Lazima ukubali masharti ili kuendelea"
+  }
+}

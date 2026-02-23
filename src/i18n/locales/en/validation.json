@@ -1,0 +1,36 @@
+{
+  "required_field": "This field is required",
+  "invalid_email": "Invalid email address",
+  "invalid_phone": "Invalid phone number",
+  "invalid_format": "Invalid format",
+  "min_length": "Minimum {{count}} characters required",
+  "max_length": "Maximum {{count}} characters allowed",
+  "min_value": "Value must be at least {{value}}",
+  "max_value": "Value must not exceed {{value}}",
+  "phone": {
+    "invalid": "Please enter a valid Tanzanian phone number",
+    "format": "+255 XXX XXX XXX",
+    "required": "Phone number is required"
+  },
+  "password": {
+    "too_short": "Password must be at least 8 characters",
+    "too_weak": "Password is too weak",
+    "no_match": "Passwords do not match",
+    "required": "Password is required",
+    "requirements": "Password must contain uppercase, lowercase, number, and special character"
+  },
+  "date": {
+    "invalid": "Invalid date",
+    "future_not_allowed": "Future dates are not allowed",
+    "past_not_allowed": "Past dates are not allowed",
+    "required": "Date is required"
+  },
+  "file": {
+    "too_large": "File size must not exceed {{size}}MB",
+    "invalid_type": "Invalid file type. Allowed: {{types}}",
+    "required": "File is required"
+  },
+  "consent": {
+    "required": "You must accept the terms to continue"
+  }
+}

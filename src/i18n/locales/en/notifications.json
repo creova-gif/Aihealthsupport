@@ -1,0 +1,45 @@
+{
+  "appointment_reminder": {
+    "title": "Appointment Reminder",
+    "message": "You have an appointment tomorrow at {{time}}",
+    "action": "View Details"
+  },
+  "medication_reminder": {
+    "title": "Medication Reminder",
+    "message": "Time to take your {{medication}}",
+    "action": "Mark as Taken"
+  },
+  "test_results": {
+    "title": "Test Results Ready",
+    "message": "Your {{test}} results are now available",
+    "action": "View Results"
+  },
+  "message_received": {
+    "title": "New Message",
+    "message": "{{sender}} sent you a message",
+    "action": "Open Messages"
+  },
+  "emergency_alert": {
+    "title": "Emergency Alert",
+    "message": "Emergency services have been notified",
+    "action": "View Status"
+  },
+  "sync_complete": {
+    "title": "Sync Complete",
+    "message": "Your data has been synced successfully"
+  },
+  "refill_due": {
+    "title": "Medication Refill Due",
+    "message": "Refill needed for {{medication}}",
+    "action": "Order Refill"
+  },
+  "appointment_confirmed": {
+    "title": "Appointment Confirmed",
+    "message": "Your appointment on {{date}} is confirmed"
+  },
+  "vaccine_due": {
+    "title": "Vaccination Due",
+    "message": "{{vaccine}} vaccination is due",
+    "action": "Schedule"
+  }
+}

@@ -1,7 +1,7 @@
 
-  # AI Health Support
+  # AfyaCare
 
-  This is a code bundle for AI Health Support. The original project is available at https://www.figma.com/design/oqa2rPsNB4oSaivaXeS7bp/AI-Health-Support.
+  This is a code bundle for AfyaCare. The original project is available at https://www.figma.com/design/oqa2rPsNB4oSaivaXeS7bp/AfyaCare.
 
   ## Running the code
 

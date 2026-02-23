@@ -1,553 +1,396 @@
 /**
- * MedicationTracker - Medication & Treatment Adherence
- * Medication reminders (SMS + in-app), visual dose tracking
- * Refill requests, side-effect check-ins
- * Habit-forming, not nagging
+ * MedicationTracker - Complete medication management interface
+ * Track medications, doses, refills, and adherence
  */
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import {
-  ArrowLeft,
-  Pill,
-  Clock,
-  Check,
-  CheckCircle,
-  AlertCircle,
-  Plus,
-  Bell,
-  Calendar,
-  Info,
-  ChevronRight,
-  RefreshCw,
-} from 'lucide-react';
-import { Button } from './ui/button';
+import { Pill, Clock, Calendar, AlertTriangle, CheckCircle, Plus, ChevronRight, TrendingUp } from 'lucide-react';
+import { useApp } from '@/app/context/AppContext';
+import { MissedMedicationGuidance } from './MissedMedicationGuidance';
+import { motion } from 'motion/react';
 
-interface MedicationTrackerProps {
-  language: 'sw' | 'en';
-  onBack: () => void;
-}
+const translations = {
+  sw: {
+    title: 'Dawa Zangu',
+    subtitle: 'Fuatilia dawa zako na mipango',
+    today: 'Leo',
+    upcoming: 'Zijazo',
+    history: 'Historia',
+    addMedication: 'Ongeza Dawa',
+    takeMedication: 'Umya',
+    taken: 'Umemwa',
+    missed: 'Umekosa',
+    skipped: 'Umeruka',
+    adherence: 'Kufuata Mipango',
+    refillIn: 'Jaza tena baada ya siku',
+    dosesLeft: 'Kipimo zilizobaki',
+    dailySchedule: 'Ratiba ya Kila Siku',
+    morning: 'Asubuhi',
+    afternoon: 'Mchana',
+    evening: 'Jioni',
+    night: 'Usiku',
+    stats: 'Takwimu',
+    thisWeek: 'Wiki Hii',
+    thisMonth: 'Mwezi Huu',
+    onTime: 'Kwa Wakati',
+    late: 'Umechelewa',
+    noMedications: 'Hakuna Dawa Zilizowekwa',
+    tapToAdd: 'Gusa kuongeza dawa yako ya kwanza',
+  },
+  en: {
+    title: 'My Medications',
+    subtitle: 'Track your medications and schedules',
+    today: 'Today',
+    upcoming: 'Upcoming',
+    history: 'History',
+    addMedication: 'Add Medication',
+    takeMedication: 'Take',
+    taken: 'Taken',
+    missed: 'Missed',
+    skipped: 'Skipped',
+    adherence: 'Adherence',
+    refillIn: 'Refill in',
+    dosesLeft: 'doses left',
+    dailySchedule: 'Daily Schedule',
+    morning: 'Morning',
+    afternoon: 'Afternoon',
+    evening: 'Evening',
+    night: 'Night',
+    stats: 'Statistics',
+    thisWeek: 'This Week',
+    thisMonth: 'This Month',
+    onTime: 'On Time',
+    late: 'Late',
+    noMedications: 'No Medications Added',
+    tapToAdd: 'Tap to add your first medication',
+  },
+};
 
 interface Medication {
   id: string;
   name: string;
   dosage: string;
-  frequency: { sw: string; en: string };
+  frequency: string;
   times: string[];
-  startDate: Date;
-  endDate?: Date;
-  daysRemaining?: number;
-  takenToday: boolean[];
-  sideEffects?: string[];
-  instructions: { sw: string; en: string };
-  color: string;
+  refillDays: number;
+  dosesLeft: number;
+  totalDoses: number;
+  condition: string;
+  missedDoses: number;
 }
 
-interface DoseLog {
-  medicationId: string;
-  date: Date;
-  time: string;
-  taken: boolean;
-  skipped?: boolean;
-  notes?: string;
-}
+export function MedicationTracker({ onBack }: { onBack: () => void }) {
+  const { language } = useApp();
+  const t = translations[language];
+  const [view, setView] = useState<'today' | 'upcoming' | 'history'>('today');
+  const [showGuidance, setShowGuidance] = useState<Medication | null>(null);
 
-export function MedicationTracker({ language, onBack }: MedicationTrackerProps) {
-  const [view, setView] = useState<'list' | 'details' | 'add'>('list');
-  const [selectedMed, setSelectedMed] = useState<Medication | null>(null);
-  const [showSideEffectCheck, setShowSideEffectCheck] = useState(false);
-
-  const content = {
-    sw: {
-      title: 'Dawa Zangu',
-      subtitle: 'Fuatilia matibabu yako',
-      today: 'Leo',
-      upcoming: 'Zinazokuja',
-      completed: 'Zimekamilika',
-      addMedication: 'Ongeza Dawa',
-      takeDose: 'Meza Kipimo',
-      markTaken: 'Weka Alama Umemeza',
-      skip: 'Ruka',
-      refillNeeded: 'Inahitaji Kujaza Upya',
-      daysLeft: 'siku zimebaki',
-      timesToday: 'mara leo',
-      sideEffects: 'Athari Mbaya',
-      reportSideEffect: 'Ripoti Athari Mbaya',
-      instructions: 'Maelekezo',
-      schedule: 'Ratiba',
-      adherence: 'Ushikamano',
-      thisWeek: 'Wiki hii',
-      requestRefill: 'Omba Kujaza Upya',
-      viewHistory: 'Angalia Historia',
-      editMedication: 'Hariri Dawa',
-      deleteMedication: 'Futa Dawa',
-      noMedications: 'Hakuna dawa',
-      noMedicationsDescription: 'Dawa zako zitaonekana hapa',
-      reminderSet: 'Ukumbusho umewekwa',
-      goodJob: 'Kazi Nzuri!',
-      keepItUp: 'Endelea hivyo',
-    },
-    en: {
-      title: 'My Medications',
-      subtitle: 'Track your treatment',
-      today: 'Today',
-      upcoming: 'Upcoming',
-      completed: 'Completed',
-      addMedication: 'Add Medication',
-      takeDose: 'Take Dose',
-      markTaken: 'Mark as Taken',
-      skip: 'Skip',
-      refillNeeded: 'Refill Needed',
-      daysLeft: 'days left',
-      timesToday: 'times today',
-      sideEffects: 'Side Effects',
-      reportSideEffect: 'Report Side Effect',
-      instructions: 'Instructions',
-      schedule: 'Schedule',
-      adherence: 'Adherence',
-      thisWeek: 'This week',
-      requestRefill: 'Request Refill',
-      viewHistory: 'View History',
-      editMedication: 'Edit Medication',
-      deleteMedication: 'Delete Medication',
-      noMedications: 'No medications',
-      noMedicationsDescription: 'Your medications will appear here',
-      reminderSet: 'Reminder set',
-      goodJob: 'Good Job!',
-      keepItUp: 'Keep it up',
-    },
-  };
-
-  const t = content[language];
-
-  // Mock medications
-  const mockMedications: Medication[] = [
+  // Mock medication data
+  const medications: Medication[] = [
     {
       id: '1',
-      name: 'Paracetamol',
-      dosage: '500mg',
-      frequency: { sw: 'Mara 3 kwa siku', en: '3 times daily' },
-      times: ['08:00', '14:00', '20:00'],
-      startDate: new Date('2026-02-03'),
-      endDate: new Date('2026-02-08'),
-      daysRemaining: 3,
-      takenToday: [true, true, false],
-      instructions: {
-        sw: 'Meza vidonge 2 kila baada ya saa 8. Tumia na chakula.',
-        en: 'Take 2 tablets every 8 hours. Take with food.',
-      },
-      color: '#10B981',
+      name: 'Amlodipine',
+      dosage: '5mg',
+      frequency: language === 'sw' ? 'Mara 1 kwa siku' : 'Once daily',
+      times: ['08:00'],
+      refillDays: 7,
+      dosesLeft: 7,
+      totalDoses: 30,
+      condition: language === 'sw' ? 'Shinikizo la Damu' : 'Hypertension',
+      missedDoses: 2,
     },
     {
       id: '2',
-      name: 'Amoxicillin',
-      dosage: '250mg',
-      frequency: { sw: 'Mara 2 kwa siku', en: '2 times daily' },
-      times: ['09:00', '21:00'],
-      startDate: new Date('2026-02-01'),
-      endDate: new Date('2026-02-08'),
-      daysRemaining: 3,
-      takenToday: [true, false],
-      instructions: {
-        sw: 'Meza kapsuli 1 asubuhi na jioni. Maliza dawa zote.',
-        en: 'Take 1 capsule morning and evening. Complete the full course.',
-      },
-      color: '#1E88E5',
+      name: 'Metformin',
+      dosage: '500mg',
+      frequency: language === 'sw' ? 'Mara 2 kwa siku' : 'Twice daily',
+      times: ['08:00', '20:00'],
+      refillDays: 14,
+      dosesLeft: 28,
+      totalDoses: 60,
+      condition: language === 'sw' ? 'Kisukari' : 'Diabetes',
+      missedDoses: 0,
     },
     {
       id: '3',
-      name: 'Metformin',
-      dosage: '500mg',
-      frequency: { sw: 'Mara 2 kwa siku', en: '2 times daily' },
-      times: ['08:00', '20:00'],
-      startDate: new Date('2025-01-01'),
-      takenToday: [true, false],
-      instructions: {
-        sw: 'Dawa ya kudhibiti sukari. Meza na chakula.',
-        en: 'Diabetes medication. Take with meals.',
-      },
-      color: '#8B5CF6',
+      name: 'Aspirin',
+      dosage: '75mg',
+      frequency: language === 'sw' ? 'Mara 1 kwa siku' : 'Once daily',
+      times: ['08:00'],
+      refillDays: 2,
+      dosesLeft: 2,
+      totalDoses: 30,
+      condition: language === 'sw' ? 'Moyo' : 'Cardiovascular',
+      missedDoses: 0,
     },
   ];
 
-  const getCurrentTime = () => {
-    const now = new Date();
-    return now.toTimeString().slice(0, 5);
-  };
+  // Calculate adherence
+  const adherenceRate = 85; // Mock: would be calculated from history
 
-  const getNextDose = (med: Medication) => {
-    const currentTime = getCurrentTime();
-    const nextTime = med.times.find((t) => t > currentTime);
-    return nextTime || med.times[0];
-  };
+  // Get today's schedule
+  const todaySchedule = medications.flatMap((med) =>
+    med.times.map((time) => ({
+      ...med,
+      scheduledTime: time,
+      taken: Math.random() > 0.3, // Mock status
+    }))
+  );
 
-  const calculateAdherence = (med: Medication) => {
-    // Simple calculation: taken today / total times today
-    const taken = med.takenToday.filter((t) => t).length;
-    const total = med.takenToday.length;
-    return Math.round((taken / total) * 100);
-  };
+  return (
+    <div className="min-h-screen bg-[#F7F9FB] pb-24">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-4xl mx-auto px-6 py-6">
+          <button
+            onClick={onBack}
+            className="flex items-center gap-2 mb-4 text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            <ChevronRight className="w-5 h-5 rotate-180" />
+            <span className="text-sm font-medium">{language === 'sw' ? 'Rudi' : 'Back'}</span>
+          </button>
 
-  const handleMarkTaken = (medId: string, timeIndex: number) => {
-    // In production, this would update the backend
-    alert(
-      language === 'sw'
-        ? 'Umeweka alama umemeza dawa. Kazi nzuri!'
-        : 'Marked as taken. Good job!'
-    );
-  };
-
-  // List View
-  if (view === 'list') {
-    return (
-      <div className="min-h-screen bg-[#FAFBFC] pb-24">
-        {/* Header */}
-        <div className="bg-gradient-to-br from-[#10B981] to-[#059669] text-white">
-          <div className="max-w-4xl mx-auto px-6 py-6">
-            <button
-              onClick={onBack}
-              className="flex items-center gap-2 mb-4 text-white/90 hover:text-white transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              <span className="text-sm font-medium">
-                {language === 'sw' ? 'Rudi' : 'Back'}
-              </span>
-            </button>
-
-            <div className="flex items-center gap-3 mb-2">
-              <Pill className="w-8 h-8" />
-              <h1 className="text-3xl font-bold">{t.title}</h1>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">{t.title}</h1>
+              <p className="text-sm text-gray-600">{t.subtitle}</p>
             </div>
-            <p className="text-white/90 text-base">{t.subtitle}</p>
+            <Pill className="w-8 h-8 text-blue-600" />
+          </div>
+
+          {/* Adherence Card */}
+          <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-4 border-2 border-green-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">{t.adherence}</p>
+                <p className="text-3xl font-bold text-green-700">{adherenceRate}%</p>
+                <p className="text-xs text-gray-500 mt-1">{t.thisWeek}</p>
+              </div>
+              <TrendingUp className="w-12 h-12 text-green-600" />
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Quick Stats */}
-        <div className="max-w-4xl mx-auto px-6 py-6">
-          <div className="grid grid-cols-3 gap-4 mb-6">
-            <div className="bg-white rounded-xl border border-[#E5E7EB] p-4 text-center">
-              <p className="text-2xl font-bold text-[#1A1D23]">
-                {mockMedications.length}
-              </p>
-              <p className="text-sm text-[#6B7280] mt-1">
-                {language === 'sw' ? 'Dawa' : 'Medications'}
-              </p>
-            </div>
-            <div className="bg-white rounded-xl border border-[#E5E7EB] p-4 text-center">
-              <p className="text-2xl font-bold text-[#10B981]">85%</p>
-              <p className="text-sm text-[#6B7280] mt-1">{t.adherence}</p>
-            </div>
-            <div className="bg-white rounded-xl border border-[#E5E7EB] p-4 text-center">
-              <p className="text-2xl font-bold text-[#1A1D23]">
-                {mockMedications.filter((m) => m.takenToday.includes(false)).length}
-              </p>
-              <p className="text-sm text-[#6B7280] mt-1">{t.upcoming}</p>
-            </div>
-          </div>
+      {/* Tabs */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-4xl mx-auto px-6 flex gap-4">
+          {(['today', 'upcoming', 'history'] as const).map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setView(tab)}
+              className={`py-3 px-4 border-b-2 transition-all font-semibold text-sm ${
+                view === tab
+                  ? 'border-blue-600 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              {t[tab]}
+            </button>
+          ))}
+        </div>
+      </div>
 
-          {/* Add Medication Button */}
-          <Button
-            onClick={() => setView('add')}
-            variant="outline"
-            className="w-full mb-6 h-12 border-dashed"
-          >
-            <Plus className="w-5 h-5 mr-2" />
-            {t.addMedication}
-          </Button>
-
-          {/* Today's Schedule */}
-          <h2 className="text-xl font-semibold text-[#1A1D23] mb-4">{t.today}</h2>
-
-          {mockMedications.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-[#E5E7EB] p-12 text-center">
-              <Pill className="w-16 h-16 text-[#D1D5DB] mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-[#1A1D23] mb-2">
-                {t.noMedications}
-              </h3>
-              <p className="text-[#6B7280]">{t.noMedicationsDescription}</p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {mockMedications.map((med, index) => {
-                const adherence = calculateAdherence(med);
-                const nextDose = getNextDose(med);
-                const dosesLeft = med.takenToday.filter((t) => !t).length;
-
-                return (
-                  <motion.div
-                    key={med.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="bg-white rounded-xl border border-[#E5E7EB] p-6 hover:shadow-md transition-shadow"
-                  >
-                    <div className="flex items-start gap-4 mb-4">
-                      {/* Color Indicator */}
-                      <div
-                        className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center"
-                        style={{ backgroundColor: `${med.color}15` }}
+      <div className="max-w-4xl mx-auto px-6 py-6">
+        {/* TODAY VIEW */}
+        {view === 'today' && (
+          <div className="space-y-6">
+            {/* Alerts */}
+            {medications.some((med) => med.refillDays <= 3 || med.missedDoses > 0) && (
+              <div className="space-y-3">
+                <h2 className="text-lg font-bold text-gray-900">{language === 'sw' ? 'Tahadhari' : 'Alerts'}</h2>
+                {medications.map((med) => {
+                  if (med.missedDoses > 0 || med.refillDays <= 3) {
+                    return (
+                      <button
+                        key={med.id}
+                        onClick={() => setShowGuidance(med)}
+                        className="w-full text-left"
                       >
-                        <Pill className="w-6 h-6" style={{ color: med.color }} />
-                      </div>
-
-                      {/* Med Info */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-4 mb-1">
-                          <div>
-                            <h3 className="text-lg font-semibold text-[#1A1D23]">
-                              {med.name} {med.dosage}
-                            </h3>
-                            <p className="text-sm text-[#6B7280]">
-                              {med.frequency[language]}
-                            </p>
-                          </div>
-                          {med.daysRemaining && med.daysRemaining <= 3 && (
-                            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#FFFBEB] rounded-full">
-                              <AlertCircle className="w-4 h-4 text-[#F59E0B]" />
-                              <span className="text-xs font-medium text-[#F59E0B]">
-                                {med.daysRemaining} {t.daysLeft}
-                              </span>
+                        <div className={`p-4 rounded-xl border-2 ${
+                          med.dosesLeft === 0
+                            ? 'bg-red-50 border-red-500'
+                            : med.refillDays <= 3
+                            ? 'bg-orange-50 border-orange-500'
+                            : 'bg-amber-50 border-amber-500'
+                        }`}>
+                          <div className="flex items-center gap-3">
+                            <AlertTriangle className={`w-5 h-5 ${
+                              med.dosesLeft === 0 ? 'text-red-600' : 'text-orange-600'
+                            }`} />
+                            <div className="flex-1">
+                              <p className="font-semibold text-gray-900">{med.name}</p>
+                              <p className="text-sm text-gray-700">
+                                {med.missedDoses > 0 &&
+                                  (language === 'sw'
+                                    ? `${med.missedDoses} kipimo umekosa`
+                                    : `${med.missedDoses} doses missed`)}
+                                {med.refillDays <= 3 &&
+                                  (language === 'sw'
+                                    ? ` • Jaza tena ndani ya siku ${med.refillDays}`
+                                    : ` • Refill in ${med.refillDays} days`)}
+                              </p>
                             </div>
+                            <ChevronRight className="w-5 h-5 text-gray-400" />
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  }
+                  return null;
+                })}
+              </div>
+            )}
+
+            {/* Today's Schedule */}
+            <div>
+              <h2 className="text-lg font-bold text-gray-900 mb-4">{t.dailySchedule}</h2>
+              <div className="space-y-3">
+                {todaySchedule.map((item, idx) => (
+                  <motion.div
+                    key={`${item.id}-${item.scheduledTime}`}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                    className={`bg-white rounded-xl border-2 p-4 ${
+                      item.taken ? 'border-green-200' : 'border-gray-200'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                          item.taken ? 'bg-green-100' : 'bg-gray-100'
+                        }`}>
+                          {item.taken ? (
+                            <CheckCircle className="w-6 h-6 text-green-600" />
+                          ) : (
+                            <Pill className="w-6 h-6 text-gray-600" />
                           )}
                         </div>
+                        <div>
+                          <p className="font-semibold text-gray-900">
+                            {item.name} {item.dosage}
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            <Clock className="w-3.5 h-3.5 inline mr-1" />
+                            {item.scheduledTime} • {item.condition}
+                          </p>
+                        </div>
                       </div>
-                    </div>
 
-                    {/* Progress Bar */}
-                    <div className="mb-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm text-[#6B7280]">{t.today}</span>
-                        <span className="text-sm font-medium text-[#1A1D23]">
-                          {adherence}%
-                        </span>
-                      </div>
-                      <div className="h-2 bg-[#F3F4F6] rounded-full overflow-hidden">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{ width: `${adherence}%` }}
-                          transition={{ duration: 0.5, delay: index * 0.1 }}
-                          className="h-full rounded-full"
-                          style={{ backgroundColor: med.color }}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Dose Times */}
-                    <div className="flex gap-2 mb-4">
-                      {med.times.map((time, idx) => (
-                        <button
-                          key={idx}
-                          onClick={() => {
-                            if (!med.takenToday[idx]) {
-                              handleMarkTaken(med.id, idx);
-                            }
-                          }}
-                          className={`flex-1 p-3 rounded-lg border transition-all ${
-                            med.takenToday[idx]
-                              ? 'bg-[#ECFDF5] border-[#10B981]'
-                              : 'bg-[#FAFBFC] border-[#E5E7EB] hover:border-[#CBD5E1]'
-                          }`}
-                        >
-                          <div className="flex items-center justify-center gap-2 mb-1">
-                            <Clock className="w-4 h-4 text-[#6B7280]" />
-                            <span className="text-sm font-medium text-[#1A1D23]">
-                              {time}
-                            </span>
-                          </div>
-                          {med.takenToday[idx] && (
-                            <div className="flex items-center justify-center">
-                              <CheckCircle className="w-4 h-4 text-[#10B981]" />
-                            </div>
-                          )}
+                      {!item.taken && (
+                        <button className="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                          {t.takeMedication}
                         </button>
-                      ))}
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex gap-3">
-                      {dosesLeft > 0 && (
-                        <Button
-                          onClick={() => {
-                            setSelectedMed(med);
-                            setView('details');
-                          }}
-                          className="flex-1"
-                          style={{ backgroundColor: med.color }}
-                        >
-                          <Check className="w-4 h-4 mr-2" />
-                          {t.markTaken}
-                        </Button>
                       )}
-                      <Button
-                        onClick={() => {
-                          setSelectedMed(med);
-                          setView('details');
-                        }}
-                        variant="outline"
-                        className="flex-1"
-                      >
-                        {language === 'sw' ? 'Angalia' : 'View'}
-                        <ChevronRight className="w-4 h-4 ml-2" />
-                      </Button>
+                      {item.taken && (
+                        <span className="text-sm font-semibold text-green-600">{t.taken}</span>
+                      )}
                     </div>
                   </motion.div>
-                );
-              })}
-            </div>
-          )}
-
-          {/* Motivational Card */}
-          {mockMedications.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="mt-6 bg-gradient-to-br from-[#10B981] to-[#059669] rounded-2xl p-6 text-white"
-            >
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                  <CheckCircle className="w-6 h-6" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold mb-1">{t.goodJob}</h3>
-                  <p className="text-white/90 text-sm">{t.keepItUp}</p>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </div>
-      </div>
-    );
-  }
-
-  // Details View
-  if (view === 'details' && selectedMed) {
-    const adherence = calculateAdherence(selectedMed);
-
-    return (
-      <div className="min-h-screen bg-[#FAFBFC] pb-24">
-        {/* Header */}
-        <div className="bg-white border-b border-[#E5E7EB]">
-          <div className="max-w-4xl mx-auto px-6 py-6">
-            <button
-              onClick={() => setView('list')}
-              className="flex items-center gap-2 mb-4 text-[#6B7280] hover:text-[#1A1D23] transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              <span className="text-sm font-medium">
-                {language === 'sw' ? 'Rudi' : 'Back'}
-              </span>
-            </button>
-
-            <div className="flex items-center gap-4">
-              <div
-                className="w-16 h-16 rounded-2xl flex items-center justify-center"
-                style={{ backgroundColor: `${selectedMed.color}15` }}
-              >
-                <Pill className="w-8 h-8" style={{ color: selectedMed.color }} />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-[#1A1D23]">
-                  {selectedMed.name}
-                </h1>
-                <p className="text-[#6B7280]">{selectedMed.dosage}</p>
+                ))}
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Content */}
-        <div className="max-w-4xl mx-auto px-6 py-6 space-y-6">
-          {/* Adherence Card */}
-          <div className="bg-white rounded-xl border border-[#E5E7EB] p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-[#1A1D23]">
-                {t.adherence} {t.thisWeek}
+            {/* All Medications */}
+            <div>
+              <h2 className="text-lg font-bold text-gray-900 mb-4">
+                {language === 'sw' ? 'Dawa Zote' : 'All Medications'}
               </h2>
-              <span className="text-3xl font-bold" style={{ color: selectedMed.color }}>
-                {adherence}%
-              </span>
-            </div>
-            <div className="h-4 bg-[#F3F4F6] rounded-full overflow-hidden">
-              <div
-                className="h-full rounded-full transition-all"
-                style={{
-                  width: `${adherence}%`,
-                  backgroundColor: selectedMed.color,
-                }}
-              />
-            </div>
-          </div>
-
-          {/* Schedule */}
-          <div className="bg-white rounded-xl border border-[#E5E7EB] p-6">
-            <h2 className="text-lg font-semibold text-[#1A1D23] mb-4">{t.schedule}</h2>
-            <div className="space-y-3">
-              {selectedMed.times.map((time, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center justify-between p-4 bg-[#FAFBFC] rounded-lg"
-                >
-                  <div className="flex items-center gap-3">
-                    <Clock className="w-5 h-5 text-[#6B7280]" />
-                    <span className="text-base font-medium text-[#1A1D23]">
-                      {time}
-                    </span>
-                  </div>
-                  {selectedMed.takenToday[idx] ? (
-                    <div className="flex items-center gap-2 text-[#10B981]">
-                      <CheckCircle className="w-5 h-5" />
-                      <span className="text-sm font-medium">{t.completed}</span>
+              <div className="space-y-3">
+                {medications.map((med) => (
+                  <div key={med.id} className="bg-white rounded-xl border border-gray-200 p-4">
+                    <div className="flex items-start justify-between mb-3">
+                      <div>
+                        <h3 className="font-bold text-gray-900">
+                          {med.name} <span className="text-gray-600">{med.dosage}</span>
+                        </h3>
+                        <p className="text-sm text-gray-600">{med.frequency}</p>
+                        <p className="text-xs text-gray-500 mt-1">{med.condition}</p>
+                      </div>
                     </div>
-                  ) : (
-                    <Button size="sm" style={{ backgroundColor: selectedMed.color }}>
-                      {t.markTaken}
-                    </Button>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
 
-          {/* Instructions */}
-          <div className="bg-[#EFF6FF] rounded-xl border border-[#DBEAFE] p-6">
-            <div className="flex items-start gap-3">
-              <Info className="w-5 h-5 text-[#1E88E5] flex-shrink-0 mt-0.5" />
-              <div>
-                <h3 className="text-base font-semibold text-[#1A1D23] mb-2">
-                  {t.instructions}
-                </h3>
-                <p className="text-[#1A1D23] leading-relaxed">
-                  {selectedMed.instructions[language]}
-                </p>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="bg-gray-50 rounded-lg p-3">
+                        <p className="text-xs text-gray-600 mb-1">{t.dosesLeft}</p>
+                        <p className="text-lg font-bold text-gray-900">
+                          {med.dosesLeft}/{med.totalDoses}
+                        </p>
+                        <div className="w-full bg-gray-200 h-1.5 rounded-full mt-2">
+                          <div
+                            className={`h-full rounded-full ${
+                              med.dosesLeft <= 3 ? 'bg-red-500' : 'bg-green-500'
+                            }`}
+                            style={{ width: `${(med.dosesLeft / med.totalDoses) * 100}%` }}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="bg-gray-50 rounded-lg p-3">
+                        <p className="text-xs text-gray-600 mb-1">{t.refillIn}</p>
+                        <p className={`text-lg font-bold ${
+                          med.refillDays <= 3 ? 'text-red-600' : 'text-gray-900'
+                        }`}>
+                          {med.refillDays} {language === 'sw' ? 'siku' : 'days'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
+        )}
 
-          {/* Actions */}
-          <div className="space-y-3">
-            {selectedMed.daysRemaining && selectedMed.daysRemaining <= 3 && (
-              <Button
-                variant="outline"
-                className="w-full h-12 border-[#F59E0B] text-[#F59E0B] hover:bg-[#FFFBEB]"
-              >
-                <RefreshCw className="w-5 h-5 mr-2" />
-                {t.requestRefill}
-              </Button>
-            )}
-            <Button variant="outline" className="w-full h-12">
-              <AlertCircle className="w-5 h-5 mr-2" />
-              {t.reportSideEffect}
-            </Button>
-            <Button variant="outline" className="w-full h-12">
-              <Calendar className="w-5 h-5 mr-2" />
-              {t.viewHistory}
-            </Button>
+        {/* UPCOMING VIEW */}
+        {view === 'upcoming' && (
+          <div className="text-center py-12 text-gray-500">
+            <Calendar className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+            <p>{language === 'sw' ? 'Ratiba za baadaye' : 'Upcoming schedules'}</p>
+          </div>
+        )}
+
+        {/* HISTORY VIEW */}
+        {view === 'history' && (
+          <div className="text-center py-12 text-gray-500">
+            <Clock className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+            <p>{language === 'sw' ? 'Historia ya dawa' : 'Medication history'}</p>
+          </div>
+        )}
+      </div>
+
+      {/* Missed Medication Guidance Modal */}
+      {showGuidance && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="max-w-lg w-full">
+            <MissedMedicationGuidance
+              medicationName={`${showGuidance.name} ${showGuidance.dosage}`}
+              missedDoses={showGuidance.missedDoses}
+              daysUntilRefill={showGuidance.refillDays}
+              isOutOfStock={showGuidance.dosesLeft === 0}
+              language={language}
+              onContactCHW={() => {
+                setShowGuidance(null);
+                // Handle CHW contact
+              }}
+              onMarkTaken={() => {
+                setShowGuidance(null);
+                // Handle mark as taken
+              }}
+              onRequestRefill={() => {
+                setShowGuidance(null);
+                // Handle refill request
+              }}
+            />
+            <button
+              onClick={() => setShowGuidance(null)}
+              className="mt-4 w-full bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl"
+            >
+              {language === 'sw' ? 'Funga' : 'Close'}
+            </button>
           </div>
         </div>
-      </div>
-    );
-  }
-
-  return null;
+      )}
+    </div>
+  );
 }

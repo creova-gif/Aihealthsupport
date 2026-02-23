@@ -104,9 +104,10 @@ const diseaseDistribution = [
 interface MoHDashboardProps {
   onBack: () => void;
   onViewArchitecture?: () => void;
+  onViewMonitoring?: () => void;
 }
 
-export function MoHDashboard({ onBack, onViewArchitecture }: MoHDashboardProps) {
+export function MoHDashboard({ onBack, onViewArchitecture, onViewMonitoring }: MoHDashboardProps) {
   const { language } = useApp();
   const t = translations[language];
 
@@ -127,6 +128,17 @@ export function MoHDashboard({ onBack, onViewArchitecture }: MoHDashboardProps) 
             >
               <Brain className="h-4 w-4" />
               {language === 'sw' ? 'Muundo wa AI' : 'AI Architecture'}
+            </Button>
+          )}
+          
+          {onViewMonitoring && (
+            <Button
+              onClick={onViewMonitoring}
+              className="gap-2"
+              style={{ backgroundColor: '#8B5CF6' }}
+            >
+              <Brain className="h-4 w-4" />
+              {language === 'sw' ? 'Mfumo wa AI' : 'AI Monitoring'}
             </Button>
           )}
         </div>

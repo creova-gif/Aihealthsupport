@@ -1,0 +1,36 @@
+{
+  "title": "Messages",
+  "subtitle": "Communicate with your care team",
+  "empty_state": "No messages yet",
+  "compose": "New Message",
+  "inbox": "Inbox",
+  "sent": "Sent",
+  "archived": "Archived",
+  "search_placeholder": "Search messages...",
+  "unread": "{{count}} unread",
+  "mark_read": "Mark as read",
+  "mark_unread": "Mark as unread",
+  "archive": "Archive",
+  "delete": "Delete",
+  "reply": "Reply",
+  "forward": "Forward",
+  "new_message": {
+    "title": "New Message",
+    "to": "To",
+    "subject": "Subject",
+    "message": "Message",
+    "send": "Send",
+    "cancel": "Cancel",
+    "select_recipient": "Select recipient",
+    "placeholder": "Type your message..."
+  },
+  "recipients": {
+    "doctor": "My Doctor",
+    "nurse": "Nurse",
+    "chw": "Community Health Worker",
+    "support": "Support Team",
+    "custom": "Other"
+  },
+  "sent_success": "Message sent successfully",
+  "send_failed": "Failed to send message"
+}

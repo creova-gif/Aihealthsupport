@@ -1,0 +1,50 @@
+{
+  "title": "My Care",
+  "subtitle": "All your healthcare services in one place",
+  "appointments": {
+    "title": "Appointments",
+    "upcoming": "Upcoming Appointments",
+    "past": "Past Appointments",
+    "book_new": "Book New Appointment",
+    "no_upcoming": "No upcoming appointments",
+    "cancel": "Cancel Appointment",
+    "reschedule": "Reschedule"
+  },
+  "medications": {
+    "title": "Medications",
+    "active": "Active Medications",
+    "history": "Medication History",
+    "refill": "Refill Needed",
+    "add_medication": "Add Medication",
+    "no_medications": "No active medications"
+  },
+  "records": {
+    "title": "Health Records",
+    "vitals": "Vital Signs",
+    "lab_results": "Lab Results",
+    "imaging": "Imaging Reports",
+    "documents": "Medical Documents",
+    "no_records": "No records yet"
+  },
+  "care_team": {
+    "title": "Care Team",
+    "primary_doctor": "Primary Doctor",
+    "specialists": "Specialists",
+    "nurses": "Nurses",
+    "chw": "Community Health Worker",
+    "contact": "Contact"
+  },
+  "conditions": {
+    "title": "Health Conditions",
+    "active": "Active Conditions",
+    "managed": "Well-Managed",
+    "needs_attention": "Needs Attention"
+  },
+  "preventive_care": {
+    "title": "Preventive Care",
+    "screenings": "Health Screenings",
+    "vaccinations": "Vaccinations",
+    "checkups": "Annual Checkups",
+    "wellness": "Wellness Programs"
+  }
+}

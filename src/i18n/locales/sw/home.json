@@ -1,0 +1,79 @@
+{
+  "greeting": "Habari {{name}}",
+  "greeting_default": "Habari",
+  "welcome": "Karibu AfyaCare",
+  "tagline": "Afya yako, rahisi",
+  "how_can_help": "Tunaweza kukusaidia vipi leo?",
+  "afya_id": "Namba ya AfyaID",
+  "afya_id_info": "Nambari yako ya kitaifa ya utambulisho wa afya. Inatumika katika vituo vyote vya afya nchini Tanzania.",
+  "quick_actions": {
+    "title": "Vitendo vya Haraka",
+    "check_symptoms": "Angalia Dalili",
+    "book_appointment": "Panga Miadi",
+    "refill_medication": "Jaza Dawa",
+    "view_results": "Angalia Matokeo",
+    "find_facility": "Tafuta Kituo",
+    "emergency": "Dharura"
+  },
+  "primary_cards": {
+    "symptoms": {
+      "title": "Mtaalam wa Dalili",
+      "description": "Pata ushauri kuhusu jinsi unavyojisikia",
+      "available_offline": "Inapatikana nje ya mtandao"
+    },
+    "appointments": {
+      "title": "Miadi",
+      "description": "Panga na usimamie miadi",
+      "next": "Miadi inayofuata"
+    },
+    "medications": {
+      "title": "Dawa",
+      "description": "Fuatilia dawa zako",
+      "refill_due": "Jaza dawa hivi karibuni"
+    },
+    "records": {
+      "title": "Rekodi za Afya",
+      "description": "Angalia historia yako ya matibabu",
+      "recent_visit": "Ziara ya hivi karibuni"
+    },
+    "care": {
+      "title": "Huduma Zangu",
+      "description": "Huduma zako zote za afya"
+    },
+    "messages": {
+      "title": "Ujumbe",
+      "description": "Ongea na timu yako ya afya",
+      "unread": "{{count}} hazijasomaishwa"
+    }
+  },
+  "upcoming": {
+    "title": "Inayokuja",
+    "next_appointment": "Miadi Inayofuata",
+    "medication_reminder": "Ukumbusho wa Dawa",
+    "test_results": "Matokeo ya Uchunguzi Yameandaliwa",
+    "no_upcoming": "Hakuna miadi inayokuja",
+    "schedule_now": "Panga Sasa",
+    "view_all": "Angalia Zote"
+  },
+  "health_summary": {
+    "title": "Muhtasari wa Afya",
+    "vitals": "Alama za Maisha za Hivi Karibuni",
+    "conditions": "Hali",
+    "allergies": "Mzio",
+    "no_data": "Hakuna data ya afya iliyorekodiwa bado"
+  },
+  "emergency": {
+    "title": "Dharura",
+    "subtitle": "Pata msaada wa haraka",
+    "call_now": "Piga Simu 114 Sasa",
+    "find_hospital": "Tafuta Hospitali Iliyo Karibu",
+    "first_aid": "Mwongozo wa Huduma za Kwanza"
+  },
+  "connectivity": {
+    "online": "Umeunganishwa na AfyaCare",
+    "offline": "Hali ya Nje ya Mtandao",
+    "offline_message": "Huna mtandao. Mabadiliko yatasawazishwa unapounganishwa.",
+    "syncing": "Inasawazisha...",
+    "sync_complete": "Usawazishaji umekamilika"
+  }
+}

@@ -1,13 +1,13 @@
 /**
- * ModernLogOff - Reassuring Session End
- * "Your information is saved securely"
- * Reminder of next step, emergency contact visible, warm tone
+ * ModernLogOff - Secure Session End with Shared Device Protection
+ * PDPA Compliant: Forces data clear on shared devices
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { Shield, CheckCircle2, Calendar, Phone, Heart, ChevronRight } from 'lucide-react';
+import { Shield, CheckCircle2, Calendar, Phone, Heart, ChevronRight, AlertTriangle, Trash2 } from 'lucide-react';
 import { Button } from './ui/button';
+import { useSharedDevice } from '../context/SharedDeviceContext';
 
 interface ModernLogOffProps {
   language: 'sw' | 'en';
@@ -28,6 +28,9 @@ export function ModernLogOff({
   onConfirmLogout,
   onCancel,
 }: ModernLogOffProps) {
+  const { isSharedDevice, logActivity } = useSharedDevice();
+  const [clearData, setClearData] = useState(isSharedDevice); // Force true on shared devices
+
   const content = {
     sw: {
       title: 'Kwaheri, ' + userName,
@@ -38,6 +41,28 @@ export function ModernLogOff({
         'Haujasahau chochote',
         'Unaweza kurudi wakati wowote',
       ],
+      sharedDeviceWarning: {
+        title: 'Kifaa Kinachoshirikiwa',
+        message: 'Data yako itafutwa kiotomatiki kwa usalama',
+        points: [
+          'Historia ya afya itafutwa',
+          'Ujumbe utafutwa',
+          'Picha na hati zitafutwa',
+        ],
+      },
+      dataOptions: {
+        title: 'Ni aina gani ya kifaa hiki?',
+        personal: {
+          title: 'Kifaa Binafsi',
+          description: 'Weka data ya nje ya mtandao',
+          note: 'Kwa ajili ya simu yangu binafsi',
+        },
+        shared: {
+          title: 'Kifaa Kinachoshirikiwa',
+          description: 'Futa data yote kwa usalama',
+          note: 'Kwa ajili ya simu inayoshirikiwa',
+        },
+      },
       nextSteps: 'Hatua Zinazofuata',
       noAppointment: 'Hakuna miadi ya baadaye iliyopangwa',
       emergency: 'Kwa Dharura',
@@ -56,6 +81,28 @@ export function ModernLogOff({
         'You haven\'t forgotten anything',
         'You can return anytime',
       ],
+      sharedDeviceWarning: {
+        title: 'Shared Device Detected',
+        message: 'Your data will be automatically cleared for security',
+        points: [
+          'Health history will be cleared',
+          'Messages will be cleared',
+          'Photos and documents will be cleared',
+        ],
+      },
+      dataOptions: {
+        title: 'What type of device is this?',
+        personal: {
+          title: 'Personal Device',
+          description: 'Keep offline data',
+          note: 'For my personal phone',
+        },
+        shared: {
+          title: 'Shared Device',
+          description: 'Clear all data securely',
+          note: 'For family/clinic/public device',
+        },
+      },
       nextSteps: 'Next Steps',
       noAppointment: 'No upcoming appointments scheduled',
       emergency: 'For Emergencies',
@@ -68,6 +115,26 @@ export function ModernLogOff({
   };
 
   const t = content[language];
+
+  const handleLogout = () => {
+    if (clearData) {
+      // Clear all sensitive data
+      const keysToKeep = ['device_mode', 'device_fingerprint', 'world_class_mode'];
+      const allKeys = Object.keys(localStorage);
+      
+      allKeys.forEach((key) => {
+        if (!keysToKeep.includes(key)) {
+          localStorage.removeItem(key);
+        }
+      });
+      
+      logActivity('LOGOUT_WITH_DATA_CLEAR', 'All user data cleared');
+    } else {
+      logActivity('LOGOUT_WITHOUT_DATA_CLEAR', 'Offline data retained');
+    }
+    
+    onConfirmLogout();
+  };
 
   return (
     <div className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm flex items-center justify-center p-6">
@@ -92,6 +159,74 @@ export function ModernLogOff({
         </div>
 
         <div className="p-6 space-y-6">
+          {/* Shared Device Warning (if applicable) */}
+          {isSharedDevice && (
+            <div className="p-4 bg-[#FEF2F2] border-2 border-[#FCA5A5] rounded-xl">
+              <div className="flex items-start gap-3 mb-3">
+                <AlertTriangle className="w-5 h-5 text-[#DC2626] flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-semibold text-[#991B1B] mb-1">
+                    {t.sharedDeviceWarning.title}
+                  </p>
+                  <p className="text-xs text-[#991B1B]">
+                    {t.sharedDeviceWarning.message}
+                  </p>
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                {t.sharedDeviceWarning.points.map((point, index) => (
+                  <div key={index} className="flex items-center gap-2 text-xs text-[#991B1B]">
+                    <Trash2 className="w-3 h-3 flex-shrink-0" />
+                    <span>{point}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Data Options (only on personal devices) */}
+          {!isSharedDevice && (
+            <div className="space-y-3">
+              <p className="text-sm font-medium text-[#1A1D23]">
+                {t.dataOptions.title}
+              </p>
+              
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={() => setClearData(false)}
+                  className={`p-3 border-2 rounded-xl text-left transition-colors ${
+                    !clearData
+                      ? 'border-[#1E88E5] bg-[#EFF6FF]'
+                      : 'border-[#E5E7EB] bg-white'
+                  }`}
+                >
+                  <p className="text-xs font-semibold text-[#1A1D23] mb-1">
+                    {t.dataOptions.personal.title}
+                  </p>
+                  <p className="text-[10px] text-[#6B7280]">
+                    {t.dataOptions.personal.description}
+                  </p>
+                </button>
+
+                <button
+                  onClick={() => setClearData(true)}
+                  className={`p-3 border-2 rounded-xl text-left transition-colors ${
+                    clearData
+                      ? 'border-[#DC2626] bg-[#FEF2F2]'
+                      : 'border-[#E5E7EB] bg-white'
+                  }`}
+                >
+                  <p className="text-xs font-semibold text-[#1A1D23] mb-1">
+                    {t.dataOptions.shared.title}
+                  </p>
+                  <p className="text-[10px] text-[#6B7280]">
+                    {t.dataOptions.shared.description}
+                  </p>
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Security assurance */}
           <div className="space-y-3">
             <div className="flex items-center gap-3 p-4 bg-[#ECFDF5] rounded-xl">
@@ -163,11 +298,12 @@ export function ModernLogOff({
           {/* Actions */}
           <div className="space-y-3 pt-2">
             <Button
-              onClick={onConfirmLogout}
+              onClick={handleLogout}
               className="w-full h-12 bg-[#1E88E5] hover:bg-[#1976D2] text-white rounded-xl"
             >
               {t.logout}
-              <ChevronRight className="w-4 h-4 ml-2" />
+              {clearData && <Trash2 className="w-4 h-4 ml-2" />}
+              {!clearData && <ChevronRight className="w-4 h-4 ml-2" />}
             </Button>
             <Button
               onClick={onCancel}

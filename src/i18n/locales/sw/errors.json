@@ -1,0 +1,41 @@
+{
+  "general": {
+    "title": "Kuna tatizo",
+    "message": "Hitilafu isiyotarajiwa imetokea. Tafadhali jaribu tena.",
+    "retry": "Jaribu Tena",
+    "contact_support": "Wasiliana na Msaada"
+  },
+  "network": {
+    "offline": "Hakuna muunganisho wa intaneti",
+    "timeout": "Ombi limechelewa",
+    "server_error": "Hitilafu ya seva. Jaribu tena baadaye",
+    "connection_failed": "Muunganisho umeshindwa"
+  },
+  "auth": {
+    "unauthorized": "Kipindi kimekwisha. Tafadhali ingia tena",
+    "forbidden": "Huna ruhusa ya kufikia hii",
+    "invalid_token": "Tokeni ya uthibitishaji si sahihi"
+  },
+  "validation": {
+    "form_errors": "Tafadhali rekebisha makosa kwenye fomu",
+    "invalid_input": "Kiingizo si sahihi"
+  },
+  "data": {
+    "not_found": "Data haijapatikana",
+    "load_failed": "Imeshindwa kupakia data",
+    "save_failed": "Imeshindwa kuhifadhi mabadiliko",
+    "sync_failed": "Usawazishaji umeshindwa"
+  },
+  "appointments": {
+    "booking_failed": "Imeshindwa kupanga miadi",
+    "cancellation_failed": "Imeshindwa kufuta miadi",
+    "no_slots": "Hakuna nafasi zinazopatikana"
+  },
+  "messages": {
+    "send_failed": "Imeshindwa kutuma ujumbe",
+    "load_failed": "Imeshindwa kupakia ujumbe"
+  },
+  "emergency": {
+    "call_failed": "Simu ya dharura imeshindwa. Piga 114 mwenyewe"
+  }
+}
