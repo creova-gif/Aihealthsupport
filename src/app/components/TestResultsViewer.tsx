@@ -5,7 +5,7 @@
  * HIPAA-style privacy with patient consent
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ChevronLeft,
   FileText,
@@ -17,6 +17,9 @@ import {
   Calendar,
 } from 'lucide-react';
 import { MedicalButton, MedicalCard, colors, StatusBadge } from '@/app/design-system';
+import { api } from '@/app/services/api';
+import type { TestResult as ApiTestResult } from '@/app/services/supabase';
+import { toast } from 'sonner';
 
 interface TestResultsViewerProps {
   language: 'sw' | 'en';
@@ -34,87 +37,53 @@ interface TestResult {
 
 export function TestResultsViewer({ language, onBack }: TestResultsViewerProps) {
   const [selectedResult, setSelectedResult] = useState<TestResult | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [testResults, setTestResults] = useState<ApiTestResult[]>([]);
 
-  const t = {
-    sw: {
-      title: 'Matokeo ya Maabara',
-      recent: 'Matokeo ya Hivi Karibuni',
-      viewDetails: 'Angalia Maelezo',
-      download: 'Pakua',
-      share: 'Shiriki',
-      normal: 'Kawaida',
-      abnormal: 'Si Kawaida',
-      pending: 'Inasubiri',
-      testName: 'Jina la Mtihani',
-      result: 'Matokeo',
-      normalRange: 'Kiwango cha Kawaida',
-      status: 'Hali',
-      testedAt: 'Imefanywa',
-      contactDoctor: 'Wasiliana na Daktari',
-      noResults: 'Hakuna Matokeo',
-      noResultsMessage: 'Matokeo yako ya maabara yataonekana hapa.',
-      back: 'Rudi',
-      high: 'Juu',
-      low: 'Chini',
-    },
-    en: {
-      title: 'Test Results',
-      recent: 'Recent Results',
-      viewDetails: 'View Details',
-      download: 'Download',
-      share: 'Share',
-      normal: 'Normal',
-      abnormal: 'Abnormal',
-      pending: 'Pending',
-      testName: 'Test Name',
-      result: 'Result',
-      normalRange: 'Normal Range',
-      status: 'Status',
-      testedAt: 'Tested at',
-      contactDoctor: 'Contact Doctor',
-      noResults: 'No Results',
-      noResultsMessage: 'Your lab results will appear here.',
-      back: 'Back',
-      high: 'High',
-      low: 'Low',
-    },
-  }[language];
+  // Load test results on mount
+  useEffect(() => {
+    loadTestResults();
+  }, []);
 
-  // Mock test results (would come from secure API in production)
-  const testResults: TestResult[] = [
-    {
-      id: '1',
-      type: language === 'sw' ? 'Kipimo cha Damu Kamili' : 'Complete Blood Count (CBC)',
-      date: '2026-02-20',
-      status: 'normal',
-      facility: language === 'sw' ? 'Hospitali ya Mwananyamala' : 'Mwananyamala Hospital',
-      results: [
-        { name: 'Hemoglobin', value: '14.2', range: '12-16 g/dL', status: 'normal' },
-        { name: 'WBC', value: '7.5', range: '4-11 K/uL', status: 'normal' },
-        { name: 'Platelets', value: '250', range: '150-400 K/uL', status: 'normal' },
-      ],
-    },
-    {
-      id: '2',
-      type: language === 'sw' ? 'Mtihani wa Sukari ya Damu' : 'Blood Sugar Test',
-      date: '2026-02-18',
-      status: 'abnormal',
-      facility: language === 'sw' ? 'Kituo cha Afya Kigogo' : 'Kigogo Health Center',
-      results: [
-        { name: 'Fasting Glucose', value: '126', range: '70-100 mg/dL', status: 'high' },
-      ],
-    },
-    {
-      id: '3',
-      type: language === 'sw' ? 'Mtihani wa Malaria' : 'Malaria Test',
-      date: '2026-02-15',
-      status: 'normal',
-      facility: language === 'sw' ? 'Zahanati ya Tandale' : 'Tandale Dispensary',
-      results: [
-        { name: 'Malaria Parasites', value: 'Negative', range: 'Negative', status: 'normal' },
-      ],
-    },
-  ];
+  const loadTestResults = async () => {
+    setIsLoading(true);
+    const userId = 'user_001'; // TODO: Get from auth context
+    const response = await api.testResults.list(userId);
+    if (response.success && response.data) {
+      setTestResults(response.data);
+    } else {
+      console.error('Failed to load test results:', response.error);
+      toast.error(language === 'sw' ? 'Imeshindwa kupakia matokeo' : 'Failed to load test results');
+    }
+    setIsLoading(false);
+  };
+
+  // Convert API test results to UI format
+  const convertToUIFormat = (apiResult: ApiTestResult): TestResult => {
+    const results = Object.entries(apiResult.results || {}).map(([key, data]: [string, any]) => ({
+      name: key,
+      value: data.value?.toString() || '',
+      range: data.range || '',
+      status: data.status || 'normal',
+    }));
+
+    const overallStatus = results.some((r) => r.status === 'high' || r.status === 'low')
+      ? 'abnormal'
+      : apiResult.status === 'pending'
+      ? 'pending'
+      : 'normal';
+
+    return {
+      id: apiResult.id,
+      type: apiResult.test_type,
+      date: apiResult.test_date,
+      status: overallStatus,
+      facility: apiResult.facility_id, // TODO: Join with facilities table for name
+      results,
+    };
+  };
+
+  const testResultsUI = testResults.map(convertToUIFormat);
 
   const getStatusColor = (status: TestResult['status']) => {
     return status === 'normal'
@@ -157,108 +126,374 @@ export function TestResultsViewer({ language, onBack }: TestResultsViewerProps) 
           </div>
         </header>
 
-        <div className="max-w-4xl mx-auto px-6 pt-6 space-y-6">
-          {/* Overall Status */}
-          <MedicalCard>
-            <div className="flex items-center gap-4">
-              <div
-                className="w-12 h-12 rounded-full flex items-center justify-center"
-                style={{ backgroundColor: `${getStatusColor(selectedResult.status)}10` }}
-              >
-                <StatusIcon className="w-6 h-6" style={{ color: getStatusColor(selectedResult.status) }} />
-              </div>
-              <div className="flex-1">
-                <p className="text-sm text-[#6B7280] mb-1">{t.status}</p>
-                <p className="text-xl font-semibold" style={{ color: getStatusColor(selectedResult.status) }}>
-                  {selectedResult.status === 'normal' ? t.normal : selectedResult.status === 'abnormal' ? t.abnormal : t.pending}
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-4 pt-4 border-t border-[#E5E7EB]">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-[#6B7280] mb-1">
-                    <Calendar className="w-4 h-4 inline mr-1" />
-                    {language === 'sw' ? 'Tarehe' : 'Date'}
-                  </p>
-                  <p className="font-medium text-[#1A1D23]">{selectedResult.date}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-[#6B7280] mb-1">{t.testedAt}</p>
-                  <p className="font-medium text-[#1A1D23]">{selectedResult.facility}</p>
-                </div>
-              </div>
-            </div>
-          </MedicalCard>
-
-          {/* Individual Results */}
-          <div>
-            <h2 className="text-sm font-semibold text-[#6B7280] uppercase tracking-wide mb-4">
-              {t.result}
-            </h2>
-            <div className="space-y-3">
-              {selectedResult.results.map((result, idx) => (
-                <MedicalCard key={idx}>
-                  <div className="flex items-center justify-between mb-2">
-                    <p className="font-semibold text-[#1A1D23]">{result.name}</p>
-                    <span
-                      className="text-sm font-medium px-2 py-1 rounded"
-                      style={{
-                        color: getResultStatusColor(result.status),
-                        backgroundColor: `${getResultStatusColor(result.status)}10`,
+        <div className="max-w-4xl mx-auto px-6 pt-6 space-y-6 pb-8">
+          {/* Overall Status - Redesigned */}
+          <div className="relative overflow-hidden">
+            {/* Animated Background Gradient */}
+            <div 
+              className="absolute inset-0 opacity-10"
+              style={{
+                background: `radial-gradient(circle at top right, ${getStatusColor(selectedResult.status)} 0%, transparent 70%)`
+              }}
+            />
+            
+            <MedicalCard className="relative">
+              <div className="flex items-start gap-5">
+                {/* Animated Status Icon */}
+                <div className="relative">
+                  <div
+                    className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg transition-transform hover:scale-105"
+                    style={{ 
+                      background: `linear-gradient(135deg, ${getStatusColor(selectedResult.status)}15 0%, ${getStatusColor(selectedResult.status)}25 100%)`,
+                      border: `2px solid ${getStatusColor(selectedResult.status)}40`
+                    }}
+                  >
+                    <StatusIcon className="w-8 h-8" style={{ color: getStatusColor(selectedResult.status) }} />
+                  </div>
+                  
+                  {/* Pulse Ring for Abnormal */}
+                  {selectedResult.status === 'abnormal' && (
+                    <span 
+                      className="absolute inset-0 rounded-2xl animate-ping"
+                      style={{ 
+                        backgroundColor: getStatusColor(selectedResult.status),
+                        opacity: 0.2,
+                        animationDuration: '2s'
                       }}
-                    >
-                      {result.status === 'normal' ? t.normal : result.status === 'high' ? t.high : t.low}
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <p className="text-[#6B7280]">{t.result}</p>
-                      <p className="font-semibold text-[#1A1D23]">{result.value}</p>
-                    </div>
-                    <div>
-                      <p className="text-[#6B7280]">{t.normalRange}</p>
-                      <p className="font-semibold text-[#1A1D23]">{result.range}</p>
-                    </div>
-                  </div>
-                </MedicalCard>
-              ))}
-            </div>
-          </div>
-
-          {/* Actions */}
-          {selectedResult.status === 'abnormal' && (
-            <MedicalCard style={{ backgroundColor: colors.danger[50], borderColor: colors.danger[200] }}>
-              <div className="flex items-start gap-3">
-                <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: colors.danger[500] }} />
+                    />
+                  )}
+                </div>
+                
                 <div className="flex-1">
-                  <p className="font-semibold text-[#1A1D23] mb-2">
-                    {language === 'sw' ? 'Matokeo Yanahitaji Ufuatiliaji' : 'Results Need Follow-Up'}
+                  <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-2">
+                    {t.status}
                   </p>
-                  <p className="text-sm text-[#6B7280] mb-4">
-                    {language === 'sw'
-                      ? 'Wasiliana na daktari wako kujadili matokeo haya.'
-                      : 'Contact your doctor to discuss these results.'}
+                  <p 
+                    className="text-2xl font-black mb-1"
+                    style={{ color: getStatusColor(selectedResult.status) }}
+                  >
+                    {selectedResult.status === 'normal' ? t.normal : selectedResult.status === 'abnormal' ? t.abnormal : t.pending}
                   </p>
-                  <MedicalButton variant="danger" size="sm">
-                    {t.contactDoctor}
-                  </MedicalButton>
+                  <p className="text-sm text-[#6B7280]">
+                    {selectedResult.type}
+                  </p>
+                </div>
+
+                {/* Status Badge */}
+                <div
+                  className="px-4 py-2 rounded-full font-bold text-sm shadow-sm"
+                  style={{
+                    backgroundColor: `${getStatusColor(selectedResult.status)}15`,
+                    color: getStatusColor(selectedResult.status),
+                    border: `2px solid ${getStatusColor(selectedResult.status)}30`
+                  }}
+                >
+                  {selectedResult.results.length} {language === 'sw' ? 'vipimo' : 'tests'}
+                </div>
+              </div>
+
+              {/* Info Grid - Enhanced */}
+              <div className="mt-6 pt-6 border-t-2 border-[#E5E7EB]">
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="relative pl-12">
+                    <div 
+                      className="absolute left-0 top-0 w-9 h-9 rounded-lg flex items-center justify-center"
+                      style={{ backgroundColor: `${colors.primary[500]}10` }}
+                    >
+                      <Calendar className="w-5 h-5" style={{ color: colors.primary[500] }} />
+                    </div>
+                    <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wide mb-1">
+                      {language === 'sw' ? 'Tarehe' : 'Date'}
+                    </p>
+                    <p className="font-bold text-[#1A1D23] text-[15px]">{selectedResult.date}</p>
+                  </div>
+                  <div className="relative pl-12">
+                    <div 
+                      className="absolute left-0 top-0 w-9 h-9 rounded-lg flex items-center justify-center"
+                      style={{ backgroundColor: `${colors.primary[500]}10` }}
+                    >
+                      <FileText className="w-5 h-5" style={{ color: colors.primary[500] }} />
+                    </div>
+                    <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wide mb-1">
+                      {t.testedAt}
+                    </p>
+                    <p className="font-bold text-[#1A1D23] text-[15px]">{selectedResult.facility}</p>
+                  </div>
                 </div>
               </div>
             </MedicalCard>
+          </div>
+
+          {/* Individual Results - Premium Redesign */}
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-sm font-bold text-[#6B7280] uppercase tracking-wider">
+                {t.result}
+              </h2>
+              <span className="text-xs text-[#6B7280]">
+                {selectedResult.results.length} {language === 'sw' ? 'vipimo' : 'items'}
+              </span>
+            </div>
+            
+            <div className="space-y-4">
+              {selectedResult.results.map((result, idx) => {
+                // Parse numeric values for visualization
+                const parseValue = (val: string) => parseFloat(val.replace(/[^0-9.]/g, ''));
+                const parseRange = (range: string) => {
+                  const match = range.match(/(\d+\.?\d*)\s*-\s*(\d+\.?\d*)/);
+                  return match ? { min: parseFloat(match[1]), max: parseFloat(match[2]) } : null;
+                };
+                
+                const numericValue = parseValue(result.value);
+                const rangeValues = parseRange(result.range);
+                let percentage = 50; // default middle
+                
+                if (rangeValues && !isNaN(numericValue)) {
+                  const { min, max } = rangeValues;
+                  percentage = ((numericValue - min) / (max - min)) * 100;
+                  percentage = Math.max(0, Math.min(100, percentage)); // clamp 0-100
+                }
+
+                return (
+                  <div
+                    key={idx}
+                    className="group relative overflow-hidden"
+                  >
+                    {/* Status Border */}
+                    <div 
+                      className="absolute left-0 top-0 bottom-0 w-1.5 rounded-l-xl transition-all"
+                      style={{ backgroundColor: getResultStatusColor(result.status) }}
+                    />
+                    
+                    <MedicalCard className="pl-5 hover:shadow-xl transition-all duration-300">
+                      {/* Header */}
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex-1">
+                          <h3 className="font-bold text-[#1A1D23] text-[16px] mb-1">
+                            {result.name}
+                          </h3>
+                        </div>
+                        
+                        <span
+                          className="text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wide flex-shrink-0"
+                          style={{
+                            color: getResultStatusColor(result.status),
+                            backgroundColor: `${getResultStatusColor(result.status)}15`,
+                            border: `2px solid ${getResultStatusColor(result.status)}30`
+                          }}
+                        >
+                          {result.status === 'normal' ? t.normal : result.status === 'high' ? t.high : t.low}
+                        </span>
+                      </div>
+
+                      {/* Value Display - Large and Prominent */}
+                      <div className="mb-4">
+                        <div 
+                          className="inline-flex items-baseline gap-2 px-4 py-3 rounded-xl"
+                          style={{ 
+                            backgroundColor: `${getResultStatusColor(result.status)}08`
+                          }}
+                        >
+                          <span 
+                            className="text-3xl font-black"
+                            style={{ color: getResultStatusColor(result.status) }}
+                          >
+                            {result.value}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Visual Range Indicator */}
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between text-xs font-semibold text-[#6B7280] mb-2">
+                          <span>{t.normalRange}</span>
+                          <span className="text-[#1A1D23]">{result.range}</span>
+                        </div>
+                        
+                        {/* Range Bar with Indicator */}
+                        <div className="relative h-3 bg-gradient-to-r from-blue-100 via-green-100 to-blue-100 rounded-full overflow-hidden">
+                          {/* Safe Zone (middle 70%) */}
+                          <div 
+                            className="absolute top-0 h-full bg-green-200/50"
+                            style={{ left: '15%', width: '70%' }}
+                          />
+                          
+                          {/* Value Indicator */}
+                          <div
+                            className="absolute top-1/2 -translate-y-1/2 transition-all duration-500"
+                            style={{ 
+                              left: `${percentage}%`,
+                              transform: 'translate(-50%, -50%)'
+                            }}
+                          >
+                            <div 
+                              className="w-5 h-5 rounded-full border-3 shadow-lg relative z-10"
+                              style={{ 
+                                backgroundColor: 'white',
+                                borderColor: getResultStatusColor(result.status),
+                                borderWidth: '3px'
+                              }}
+                            >
+                              {/* Pulse effect for abnormal */}
+                              {result.status !== 'normal' && (
+                                <span 
+                                  className="absolute inset-0 rounded-full animate-ping"
+                                  style={{ 
+                                    backgroundColor: getResultStatusColor(result.status),
+                                    opacity: 0.4
+                                  }}
+                                />
+                              )}
+                            </div>
+                            
+                            {/* Pointer line */}
+                            <div 
+                              className="absolute top-0 left-1/2 -translate-x-1/2 w-0.5 h-1.5 -mt-1.5"
+                              style={{ backgroundColor: getResultStatusColor(result.status) }}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Range Labels */}
+                        <div className="flex justify-between text-[10px] font-semibold text-[#9CA3AF]">
+                          <span>{language === 'sw' ? 'Chini' : 'Low'}</span>
+                          <span>{language === 'sw' ? 'Kawaida' : 'Normal'}</span>
+                          <span>{language === 'sw' ? 'Juu' : 'High'}</span>
+                        </div>
+                      </div>
+                    </MedicalCard>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Actions - Abnormal Alert */}
+          {selectedResult.status === 'abnormal' && (
+            <div className="relative overflow-hidden rounded-2xl">
+              {/* Animated Warning Pattern Background */}
+              <div 
+                className="absolute inset-0 opacity-5"
+                style={{
+                  backgroundImage: `repeating-linear-gradient(45deg, ${colors.danger[500]} 0, ${colors.danger[500]} 10px, transparent 10px, transparent 20px)`
+                }}
+              />
+              
+              <MedicalCard 
+                style={{ 
+                  background: `linear-gradient(135deg, ${colors.danger[50]} 0%, ${colors.danger[100]} 100%)`,
+                  borderColor: colors.danger[300],
+                  borderWidth: '2px'
+                }}
+                className="relative"
+              >
+                <div className="flex items-start gap-4">
+                  {/* Pulsing Alert Icon */}
+                  <div className="relative flex-shrink-0">
+                    <div
+                      className="w-12 h-12 rounded-xl flex items-center justify-center"
+                      style={{ 
+                        backgroundColor: colors.danger[200],
+                        boxShadow: `0 0 20px ${colors.danger[300]}`
+                      }}
+                    >
+                      <AlertCircle className="w-6 h-6" style={{ color: colors.danger[600] }} />
+                    </div>
+                    <span 
+                      className="absolute inset-0 rounded-xl animate-ping"
+                      style={{ 
+                        backgroundColor: colors.danger[400],
+                        opacity: 0.3,
+                        animationDuration: '1.5s'
+                      }}
+                    />
+                  </div>
+                  
+                  <div className="flex-1">
+                    <p className="font-bold text-[#1A1D23] mb-2 text-[17px]">
+                      {language === 'sw' ? 'Matokeo Yanahitaji Ufuatiliaji' : 'Results Need Follow-Up'}
+                    </p>
+                    <p className="text-sm text-[#6B7280] mb-4 leading-relaxed">
+                      {language === 'sw'
+                        ? 'Wasiliana na daktari wako kujadili matokeo haya.'
+                        : 'Contact your doctor to discuss these results.'}
+                    </p>
+                    <MedicalButton variant="danger" size="md" className="shadow-lg">
+                      <AlertCircle className="w-4 h-4" />
+                      {t.contactDoctor}
+                    </MedicalButton>
+                  </div>
+                </div>
+              </MedicalCard>
+            </div>
           )}
 
-          <div className="flex gap-3">
-            <MedicalButton variant="secondary" size="md" fullWidth>
-              <Download className="w-5 h-5" />
-              {t.download}
-            </MedicalButton>
-            <MedicalButton variant="secondary" size="md" fullWidth>
-              <Share2 className="w-5 h-5" />
-              {t.share}
-            </MedicalButton>
+          {/* Action Buttons - Enhanced */}
+          <div className="grid grid-cols-2 gap-4">
+            <button
+              className="group relative overflow-hidden rounded-xl p-4 transition-all duration-300 hover:shadow-lg"
+              style={{
+                background: 'linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%)',
+                border: '2px solid #D1D5DB'
+              }}
+            >
+              <div className="relative z-10 flex items-center justify-center gap-3">
+                <div 
+                  className="w-10 h-10 rounded-lg flex items-center justify-center transition-transform group-hover:scale-110"
+                  style={{ backgroundColor: `${colors.primary[500]}15` }}
+                >
+                  <Download className="w-5 h-5" style={{ color: colors.primary[500] }} />
+                </div>
+                <span className="font-bold text-[#1A1D23]">{t.download}</span>
+              </div>
+              
+              {/* Hover shine effect */}
+              <div 
+                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                style={{
+                  background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%)',
+                  transform: 'translateX(-100%)',
+                  animation: 'shine 2s infinite'
+                }}
+              />
+            </button>
+
+            <button
+              className="group relative overflow-hidden rounded-xl p-4 transition-all duration-300 hover:shadow-lg"
+              style={{
+                background: 'linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%)',
+                border: '2px solid #D1D5DB'
+              }}
+            >
+              <div className="relative z-10 flex items-center justify-center gap-3">
+                <div 
+                  className="w-10 h-10 rounded-lg flex items-center justify-center transition-transform group-hover:scale-110"
+                  style={{ backgroundColor: `${colors.primary[500]}15` }}
+                >
+                  <Share2 className="w-5 h-5" style={{ color: colors.primary[500] }} />
+                </div>
+                <span className="font-bold text-[#1A1D23]">{t.share}</span>
+              </div>
+              
+              {/* Hover shine effect */}
+              <div 
+                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                style={{
+                  background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%)',
+                  transform: 'translateX(-100%)',
+                  animation: 'shine 2s infinite'
+                }}
+              />
+            </button>
           </div>
+
+          {/* CSS Animation */}
+          <style jsx>{`
+            @keyframes shine {
+              0% { transform: translateX(-100%); }
+              100% { transform: translateX(100%); }
+            }
+          `}</style>
         </div>
       </div>
     );
@@ -284,7 +519,19 @@ export function TestResultsViewer({ language, onBack }: TestResultsViewerProps) 
       </header>
 
       <div className="max-w-4xl mx-auto px-6 pt-6 space-y-6">
-        {testResults.length === 0 ? (
+        {isLoading ? (
+          // Loading State
+          <div className="text-center py-12">
+            <div
+              className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center"
+              style={{ backgroundColor: colors.neutral[100] }}
+            >
+              <FileText className="w-8 h-8" style={{ color: colors.neutral[500] }} />
+            </div>
+            <h2 className="text-lg font-semibold text-[#1A1D23] mb-2">{t.noResults}</h2>
+            <p className="text-[#6B7280]">{t.noResultsMessage}</p>
+          </div>
+        ) : testResultsUI.length === 0 ? (
           // Empty State
           <div className="text-center py-12">
             <div
@@ -303,7 +550,7 @@ export function TestResultsViewer({ language, onBack }: TestResultsViewerProps) 
             </h2>
 
             <div className="space-y-4">
-              {testResults.map((result) => {
+              {testResultsUI.map((result) => {
                 const StatusIcon = getStatusIcon(result.status);
                 return (
                   <MedicalCard key={result.id}>

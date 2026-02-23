@@ -6,6 +6,9 @@ import i18n from './utils/i18n';
 import '../styles/fonts.css';
 import '../styles/theme.css';
 
+// Error Boundary
+import { ErrorBoundary } from './components/ErrorBoundary';
+
 // Monitoring & Analytics
 import {
   initializeMonitoring,
@@ -468,9 +471,11 @@ export default function App() {
     <I18nextProvider i18n={i18n}>
       <AppProvider>
         <SharedDeviceProvider>
-          <Suspense fallback={<LoadingSpinner />}>
-            {useNationalInfrastructure ? <NationalInfrastructureApp /> : <WorldClassApp />}
-          </Suspense>
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingSpinner />}>
+              {useNationalInfrastructure ? <NationalInfrastructureApp /> : <WorldClassApp />}
+            </Suspense>
+          </ErrorBoundary>
         </SharedDeviceProvider>
       </AppProvider>
     </I18nextProvider>

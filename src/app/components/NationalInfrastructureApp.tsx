@@ -73,13 +73,22 @@ export function NationalInfrastructureApp() {
 
   // Check saved user data
   useEffect(() => {
-    const saved = SecureStorage.getItem('afyacare_national_user');
-    if (saved) {
-      try {
-        setUserData(JSON.parse(saved));
-      } catch (e) {
-        console.error('Failed to parse user data');
+    try {
+      const saved = SecureStorage.getItem('afyacare_national_user');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          setUserData(parsed);
+          console.log('✅ User data loaded:', parsed);
+        } catch (e) {
+          console.error('Failed to parse user data:', e);
+          SecureStorage.removeItem('afyacare_national_user');
+        }
+      } else {
+        console.log('ℹ️ No saved user data found');
       }
+    } catch (error) {
+      console.error('Storage access error:', error);
     }
   }, []);
 
@@ -99,19 +108,25 @@ export function NationalInfrastructureApp() {
 
   // Handlers
   const handleSplashComplete = () => {
+    console.log('🎬 Splash complete');
     setShowSplash(false);
     if (!userData) {
+      console.log('📝 No user data, showing onboarding');
       setShowOnboarding(true);
+    } else {
+      console.log('👤 User data exists, going to home');
     }
   };
 
   const handleOnboardingComplete = (data: UserData) => {
+    console.log('✅ Onboarding complete:', data);
     setUserData(data);
     SecureStorage.setItem('afyacare_national_user', JSON.stringify(data));
     setShowOnboarding(false);
   };
 
   const handleLogout = () => {
+    console.log('👋 Logging out');
     SecureStorage.removeItem('afyacare_national_user');
     setUserData(null);
     setCurrentRoute('home');
@@ -119,20 +134,35 @@ export function NationalInfrastructureApp() {
   };
 
   const handleNavigate = (route: string) => {
+    console.log('🧭 Navigating to:', route);
     setCurrentRoute(route as Route);
   };
 
+  // Debug info
+  useEffect(() => {
+    console.log('📊 App State:', {
+      showSplash,
+      showOnboarding,
+      hasUserData: !!userData,
+      currentRoute,
+      isOnline
+    });
+  }, [showSplash, showOnboarding, userData, currentRoute, isOnline]);
+
   // Show splash
   if (showSplash) {
+    console.log('🎬 Rendering splash screen');
     return <NationalSplash onComplete={handleSplashComplete} />;
   }
 
   // Show onboarding
   if (showOnboarding || !userData) {
+    console.log('📝 Rendering onboarding');
     return <NationalOnboarding onComplete={handleOnboardingComplete} />;
   }
 
   const language = userData.language;
+  console.log('🏠 Rendering main app, route:', currentRoute);
 
   // Main App
   return (

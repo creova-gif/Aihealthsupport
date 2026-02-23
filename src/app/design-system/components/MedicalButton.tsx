@@ -17,7 +17,7 @@ import { Loader2 } from 'lucide-react';
 import { colors, transitions } from '../tokens';
 
 interface MedicalButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'ghost' | 'destructive';
+  variant?: 'primary' | 'secondary' | 'ghost' | 'destructive' | 'danger';
   size?: 'sm' | 'md' | 'lg';
   loading?: boolean;
   icon?: React.ReactNode;
@@ -131,6 +131,25 @@ export function MedicalButton({
       },
     },
     destructive: {
+      default: {
+        backgroundColor: colors.danger[500],
+        color: '#FFFFFF',
+        border: 'none',
+      },
+      hover: {
+        backgroundColor: colors.danger[600],
+      },
+      active: {
+        backgroundColor: colors.danger[700],
+        transform: 'scale(0.98)',
+      },
+      disabled: {
+        backgroundColor: colors.neutral[200],
+        color: colors.neutral[500],
+        cursor: 'not-allowed',
+      },
+    },
+    danger: {
       default: {
         backgroundColor: colors.danger[500],
         color: '#FFFFFF',

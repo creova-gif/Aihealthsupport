@@ -1,26 +1,25 @@
 /**
- * ErrorBoundary - React Error Boundary for Graceful Failure
+ * ErrorBoundary - React Error Boundary Component
  * 
- * FEATURES:
- * - Catches JavaScript errors in component tree
- * - Displays fallback UI instead of crash
+ * SAFETY NET:
+ * - Catches JavaScript errors in child components
+ * - Prevents white screen of death
  * - Logs errors for debugging
- * - Allows recovery without page reload
+ * - Shows user-friendly fallback UI
  * 
  * USAGE:
- * ```tsx
  * <ErrorBoundary>
  *   <YourComponent />
  * </ErrorBoundary>
- * ```
  */
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { AlertTriangle, RefreshCw } from 'lucide-react';
+import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
 
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;
+  onError?: (error: Error, errorInfo: ErrorInfo) => void;
 }
 
 interface State {
@@ -39,46 +38,34 @@ export class ErrorBoundary extends Component<Props, State> {
     };
   }
 
-  static getDerivedStateFromError(error: Error): Partial<State> {
-    return { hasError: true, error };
+  static getDerivedStateFromError(error: Error): State {
+    return {
+      hasError: true,
+      error,
+      errorInfo: null,
+    };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-    // Log error for debugging
-    console.error('ErrorBoundary caught error:', error, errorInfo);
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    // Log error to console
+    console.error('🚨 ErrorBoundary caught an error:', error, errorInfo);
 
-    // Log to error tracking service (in production)
-    this.logErrorToService(error, errorInfo);
-
+    // Update state with error details
     this.setState({
       error,
       errorInfo,
     });
-  }
 
-  private logErrorToService(error: Error, errorInfo: ErrorInfo): void {
-    // In production: Send to Sentry, LogRocket, etc.
-    const errorLog = {
-      message: error.message,
-      stack: error.stack,
-      componentStack: errorInfo.componentStack,
-      timestamp: new Date().toISOString(),
-      userAgent: navigator.userAgent,
-    };
-
-    try {
-      // Store locally for now
-      const errors = JSON.parse(localStorage.getItem('error_log') || '[]');
-      errors.push(errorLog);
-      // Keep last 50 errors
-      const recentErrors = errors.slice(-50);
-      localStorage.setItem('error_log', JSON.stringify(recentErrors));
-    } catch (e) {
-      console.error('Failed to log error:', e);
+    // Call custom error handler if provided
+    if (this.props.onError) {
+      this.props.onError(error, errorInfo);
     }
+
+    // TODO: Send to error tracking service (Sentry, etc.)
+    // logErrorToService(error, errorInfo);
   }
 
-  private handleReset = (): void => {
+  handleReset = () => {
     this.setState({
       hasError: false,
       error: null,
@@ -86,13 +73,13 @@ export class ErrorBoundary extends Component<Props, State> {
     });
   };
 
-  private handleReload = (): void => {
-    window.location.reload();
+  handleGoHome = () => {
+    window.location.href = '/';
   };
 
-  render(): ReactNode {
+  render() {
     if (this.state.hasError) {
-      // Custom fallback if provided
+      // Use custom fallback if provided
       if (this.props.fallback) {
         return this.props.fallback;
       }
@@ -101,54 +88,63 @@ export class ErrorBoundary extends Component<Props, State> {
       return (
         <div className="min-h-screen bg-[#F7F9FB] flex items-center justify-center p-6">
           <div className="max-w-md w-full bg-white rounded-2xl border-2 border-[#FEE2E2] p-8 text-center">
+            {/* Error Icon */}
             <div
               className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center"
               style={{ backgroundColor: '#FEE2E2' }}
             >
-              <AlertTriangle className="w-8 h-8" style={{ color: '#DC2626' }} />
+              <AlertTriangle className="w-8 h-8" style={{ color: '#EF4444' }} />
             </div>
 
-            <h2 className="text-xl font-bold text-[#1A1D23] mb-2">
-              Oops! Something went wrong
-            </h2>
+            {/* Error Message */}
+            <h1 className="text-2xl font-bold text-[#1A1D23] mb-2">
+              Samahani, kuna tatizo
+            </h1>
+            <p className="text-[#6B7280] mb-1">Sorry, something went wrong</p>
 
             <p className="text-sm text-[#6B7280] mb-6">
-              We encountered an unexpected error. Your data is safe, and we've recorded the issue.
+              Tumepata hitilafu isiyo ya kawaida. Tafadhali jaribu tena.
             </p>
 
-            {/* Show error message in development */}
+            {/* Error Details (Development Only) */}
             {process.env.NODE_ENV === 'development' && this.state.error && (
-              <div className="mb-6 p-4 bg-[#FEF2F2] rounded-lg text-left">
-                <p className="text-xs font-mono text-[#DC2626] break-all">
-                  {this.state.error.message}
-                </p>
-              </div>
+              <details className="mb-6 text-left">
+                <summary className="text-sm font-medium text-[#EF4444] cursor-pointer mb-2">
+                  🔍 Technical Details (Dev Only)
+                </summary>
+                <div className="bg-[#FEF2F2] rounded-lg p-4 text-xs text-[#1A1D23] overflow-auto max-h-40">
+                  <p className="font-bold mb-2">{this.state.error.toString()}</p>
+                  <pre className="whitespace-pre-wrap">
+                    {this.state.errorInfo?.componentStack}
+                  </pre>
+                </div>
+              </details>
             )}
 
+            {/* Actions */}
             <div className="space-y-3">
               <button
                 onClick={this.handleReset}
-                className="w-full py-3 px-4 rounded-xl font-semibold text-white transition-all active:scale-95"
-                style={{ backgroundColor: '#0066CC' }}
+                className="w-full h-12 bg-[#1E88E5] hover:bg-[#1976D2] text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
               >
-                <RefreshCw className="w-5 h-5 inline mr-2" />
-                Try Again
+                <RefreshCw className="w-5 h-5" />
+                <span>Jaribu Tena / Try Again</span>
               </button>
 
               <button
-                onClick={this.handleReload}
-                className="w-full py-3 px-4 rounded-xl font-semibold transition-all active:scale-95"
-                style={{
-                  backgroundColor: '#F3F4F6',
-                  color: '#374151',
-                }}
+                onClick={this.handleGoHome}
+                className="w-full h-12 bg-white border-2 border-[#E5E7EB] hover:border-[#D1D5DB] text-[#1A1D23] font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
               >
-                Reload App
+                <Home className="w-5 h-5" />
+                <span>Rudi Nyumbani / Go Home</span>
               </button>
             </div>
 
-            <p className="text-xs text-[#9CA3AF] mt-6">
-              If this problem persists, please contact support.
+            {/* Support Message */}
+            <p className="text-xs text-[#6B7280] mt-6">
+              Kama tatizo linaendelea, wasiliana na msaada wetu.
+              <br />
+              If the problem persists, contact support.
             </p>
           </div>
         </div>
@@ -160,17 +156,18 @@ export class ErrorBoundary extends Component<Props, State> {
 }
 
 /**
- * AsyncErrorBoundary - For async operations
+ * Hook-based error boundary (for functional components)
+ * Note: This is a wrapper around the class-based ErrorBoundary
  */
-export function useAsyncError() {
-  const [, setError] = React.useState();
-  
-  return React.useCallback(
-    (error: Error) => {
-      setError(() => {
-        throw error;
-      });
-    },
-    [setError]
-  );
+export function withErrorBoundary<P extends object>(
+  Component: React.ComponentType<P>,
+  fallback?: ReactNode
+) {
+  return function WithErrorBoundaryWrapper(props: P) {
+    return (
+      <ErrorBoundary fallback={fallback}>
+        <Component {...props} />
+      </ErrorBoundary>
+    );
+  };
 }

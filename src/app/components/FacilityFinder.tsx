@@ -3,21 +3,24 @@
  * Shows facilities, distances, services, and current load
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useApp } from '../context/AppContext';
 import {
   MapPin,
-  Navigation,
   Phone,
   Clock,
-  Activity,
-  ChevronRight,
-  Filter,
+  ChevronLeft,
+  Navigation,
   Search,
+  Filter,
   Star,
   Users,
+  AlertCircle,
 } from 'lucide-react';
-import { useApp } from '@/app/context/AppContext';
-import { motion } from 'motion/react';
+import { Button } from './ui/button';
+import { api } from '@/app/services/api';
+import type { Facility as ApiFacility } from '@/app/services/supabase';
+import { toast } from 'sonner';
 
 const translations = {
   sw: {
@@ -95,82 +98,102 @@ export function FacilityFinder({ onBack }: { onBack: () => void }) {
   const t = translations[language];
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedService, setSelectedService] = useState<string>('all');
+  const [isLoading, setIsLoading] = useState(false);
+  const [facilities, setFacilities] = useState<ApiFacility[]>([]);
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
 
-  // Mock facilities data
-  const facilities: Facility[] = [
-    {
-      id: '1',
-      name: {
-        sw: 'Zahanati ya Tandale',
-        en: 'Tandale Dispensary',
-      },
-      address: {
-        sw: 'Barabara ya Morogoro, Tandale',
-        en: 'Morogoro Road, Tandale',
-      },
-      distance: '0.8 km',
-      phone: '+255 22 277 3000',
-      isOpen: true,
-      openHours: '07:00 - 19:00',
-      waitTime: 15,
-      currentLoad: 'low',
-      services: ['emergency', 'maternal', 'pharmacy', 'lab'],
-      rating: 4.5,
-      latitude: -6.7924,
-      longitude: 39.2083,
-    },
-    {
-      id: '2',
-      name: {
-        sw: 'Hospitali ya Mwananyamala',
-        en: 'Mwananyamala Hospital',
-      },
-      address: {
-        sw: 'Mwananyamala, Dar es Salaam',
-        en: 'Mwananyamala, Dar es Salaam',
-      },
-      distance: '2.3 km',
-      phone: '+255 22 270 0987',
-      isOpen: true,
-      openHours: '24/7',
-      waitTime: 45,
-      currentLoad: 'high',
-      services: ['emergency', 'maternal', 'ncd', 'pharmacy', 'lab'],
-      rating: 4.2,
-      latitude: -6.7833,
-      longitude: 39.2167,
-    },
-    {
-      id: '3',
-      name: {
-        sw: 'Kituo cha Afya Magomeni',
-        en: 'Magomeni Health Center',
-      },
-      address: {
-        sw: 'Magomeni Mapipa',
-        en: 'Magomeni Mapipa',
-      },
-      distance: '3.5 km',
-      phone: '+255 22 215 0456',
-      isOpen: true,
-      openHours: '08:00 - 17:00',
-      waitTime: 30,
-      currentLoad: 'medium',
-      services: ['maternal', 'ncd', 'pharmacy'],
-      rating: 4.0,
-      latitude: -6.8000,
-      longitude: 39.2000,
-    },
-  ];
+  // Load facilities on mount
+  useEffect(() => {
+    loadFacilities();
+    getUserLocation();
+  }, []);
 
-  const services = [
-    { id: 'all', label: t.all },
-    { id: 'emergency', label: t.emergency },
-    { id: 'maternal', label: t.maternal },
-    { id: 'ncd', label: t.ncd },
-    { id: 'pharmacy', label: t.pharmacy },
-    { id: 'lab', label: t.lab },
-  ];
+  const loadFacilities = async () => {
+    setIsLoading(true);
+    const response = await api.facilities.list();
+    if (response.success && response.data) {
+      setFacilities(response.data);
+    } else {
+      console.error('Failed to load facilities:', response.error);
+      toast.error(language === 'sw' ? 'Imeshindwa kupakia vituo' : 'Failed to load facilities');
+    }
+    setIsLoading(false);
+  };
+
+  const getUserLocation = () => {
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+          // Load nearby facilities
+          loadNearbyFacilities(position.coords.latitude, position.coords.longitude);
+        },
+        (error) => {
+          console.warn('Geolocation error:', error);
+          // Fallback to Dar es Salaam center
+          setUserLocation({ lat: -6.7924, lng: 39.2083 });
+        }
+      );
+    }
+  };
+
+  const loadNearbyFacilities = async (lat: number, lng: number) => {
+    const response = await api.facilities.searchNearby(lat, lng, 50); // 50km radius
+    if (response.success && response.data) {
+      setFacilities(response.data as any);
+    }
+  };
+
+  // Convert API facilities to UI format
+  const convertToUIFormat = (apiFacility: ApiFacility): Facility => {
+    // Calculate distance if user location available
+    let distance = '—';
+    if (userLocation && apiFacility.latitude && apiFacility.longitude) {
+      const dist = calculateDistance(
+        userLocation.lat,
+        userLocation.lng,
+        apiFacility.latitude,
+        apiFacility.longitude
+      );
+      distance = `${dist.toFixed(1)} km`;
+    }
+
+    return {
+      id: apiFacility.id,
+      name: { sw: apiFacility.name_sw, en: apiFacility.name },
+      address: { sw: apiFacility.address_sw, en: apiFacility.address },
+      distance,
+      phone: apiFacility.phone || '',
+      isOpen: true, // TODO: Calculate from operating_hours
+      openHours: '08:00 - 16:00', // TODO: Parse from operating_hours JSON
+      waitTime: apiFacility.wait_time_minutes || 30,
+      currentLoad: apiFacility.current_load || 'medium',
+      services: apiFacility.services || [],
+      rating: 4.2, // TODO: Add ratings table
+      latitude: apiFacility.latitude || 0,
+      longitude: apiFacility.longitude || 0,
+    };
+  };
+
+  const facilitiesUI = facilities.map(convertToUIFormat);
+
+  // Calculate distance (Haversine formula)
+  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+    const R = 6371; // Earth's radius in km
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  };
 
   const getLoadColor = (load: string) => {
     switch (load) {
@@ -186,7 +209,7 @@ export function FacilityFinder({ onBack }: { onBack: () => void }) {
   };
 
   // Filter facilities
-  const filteredFacilities = facilities.filter((facility) => {
+  const filteredFacilities = facilitiesUI.filter((facility) => {
     const matchesSearch =
       searchQuery === '' ||
       facility.name[language].toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -207,7 +230,7 @@ export function FacilityFinder({ onBack }: { onBack: () => void }) {
             onClick={onBack}
             className="flex items-center gap-2 mb-4 text-gray-600 hover:text-gray-900 transition-colors"
           >
-            <ChevronRight className="w-5 h-5 rotate-180" />
+            <ChevronLeft className="w-5 h-5" />
             <span className="text-sm font-medium">{language === 'sw' ? 'Rudi' : 'Back'}</span>
           </button>
 

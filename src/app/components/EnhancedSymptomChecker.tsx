@@ -17,23 +17,26 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { useApp } from '../context/AppContext';
 import {
   ChevronLeft,
   AlertTriangle,
-  MapPin,
-  Phone,
-  Info,
-  Shield,
+  CheckCircle,
   Clock,
+  Phone,
+  ArrowRight,
+  RefreshCw,
+  Shield,
+  MapPin,
+  Info,
+  ChevronDown,
 } from 'lucide-react';
-import { useApp } from '@/app/context/AppContext';
+import { Button } from './ui/button';
+import { ClinicalTriageEngine } from './ClinicalTriageEngine';
+import type { TriageResult, SymptomAnswer } from './ClinicalTriageEngine';
+import { api } from '@/app/services/api';
+import { toast } from 'sonner';
 import { MedicalButton, MedicalCard, colors } from '@/app/design-system';
-import {
-  ClinicalTriageEngine,
-  SymptomAnswer,
-  TriageResult,
-} from './ClinicalTriageEngine';
-import { Collapsible } from './ui/collapsible';
 
 const translations = {
   sw: {
@@ -156,6 +159,7 @@ export function EnhancedSymptomChecker({ onBack }: EnhancedSymptomCheckerProps) 
   const [answers, setAnswers] = useState<SymptomAnswer[]>([]);
   const [showResults, setShowResults] = useState(false);
   const [triageResult, setTriageResult] = useState<TriageResult | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Autosave answers (Phase 1 requirement - crash recovery)
   useEffect(() => {
@@ -182,6 +186,31 @@ export function EnhancedSymptomChecker({ onBack }: EnhancedSymptomCheckerProps) 
     }
   }, []);
 
+  // NEW: Save assessment to database
+  const saveAssessment = async (assessment: TriageResult, answers: SymptomAnswer[]) => {
+    setIsSaving(true);
+    try {
+      const response = await api.symptomAssessments.create({
+        user_id: undefined, // Anonymous users can use symptom checker
+        session_id: assessment.auditId,
+        symptoms: answers,
+        triage_result: assessment,
+        language: language,
+      });
+
+      if (response.success) {
+        console.log('✅ Assessment saved:', assessment.auditId);
+      } else {
+        console.error('Failed to save assessment:', response.error);
+        // Don't show error to user - this is background logging
+      }
+    } catch (error) {
+      console.error('Assessment save error:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const handleAnswer = (answer: boolean | string) => {
     const newAnswer: SymptomAnswer = {
       questionId: questions[currentQuestion].id,
@@ -206,6 +235,9 @@ export function EnhancedSymptomChecker({ onBack }: EnhancedSymptomCheckerProps) 
         result
       );
 
+      // NEW: Save to database
+      saveAssessment(result, updatedAnswers);
+
       setTriageResult(result);
       setShowResults(true);
 
@@ -221,6 +253,10 @@ export function EnhancedSymptomChecker({ onBack }: EnhancedSymptomCheckerProps) 
       // Perform triage with partial data
       const result = ClinicalTriageEngine.assessSymptoms(answers, language);
       ClinicalTriageEngine.logAssessment(result.auditId, answers, result);
+      
+      // NEW: Save to database
+      saveAssessment(result, answers);
+      
       setTriageResult(result);
       setShowResults(true);
       sessionStorage.removeItem('symptom_checker_autosave');
@@ -594,26 +630,22 @@ export function EnhancedSymptomChecker({ onBack }: EnhancedSymptomCheckerProps) 
 
           {triageResult.reasoning.length > 0 && (
             <MedicalCard className="border-2 border-[#E5E7EB]">
-              <Collapsible
-                trigger={
-                  <div className="flex items-center gap-3 cursor-pointer group">
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center group-hover:bg-[#EFF6FF] transition-colors"
-                         style={{ backgroundColor: colors.primary[50] }}>
-                      <Info className="w-5 h-5" style={{ color: colors.primary[500] }} />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-bold text-[#1A1D23] mb-0.5">
-                        {language === 'sw' ? 'Jinsi Tathmini Ilivyofanywa' : 'How This Assessment Was Made'}
-                      </p>
-                      <p className="text-sm text-[#6B7280]">
-                        {language === 'sw' ? 'Bonyeza kuona maelezo zaidi' : 'Tap to see detailed reasoning'}
-                      </p>
-                    </div>
-                    <ChevronLeft className="w-5 h-5 text-[#6B7280] transition-transform group-hover:translate-x-1" />
+              <details className="group">
+                <summary className="flex items-center gap-3 cursor-pointer list-none hover:opacity-75 transition-opacity">
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center group-hover:bg-[#EFF6FF] transition-colors"
+                       style={{ backgroundColor: colors.primary[50] }}>
+                    <Info className="w-5 h-5" style={{ color: colors.primary[500] }} />
                   </div>
-                }
-                defaultOpen={false}
-              >
+                  <div className="flex-1">
+                    <p className="font-bold text-[#1A1D23] mb-0.5">
+                      {language === 'sw' ? 'Jinsi Tathmini Ilivyofanywa' : 'How This Assessment Was Made'}
+                    </p>
+                    <p className="text-sm text-[#6B7280]">
+                      {language === 'sw' ? 'Bonyeza kuona maelezo zaidi' : 'Tap to see detailed reasoning'}
+                    </p>
+                  </div>
+                  <ChevronDown className="w-5 h-5 text-[#6B7280] transition-transform group-open:rotate-180" />
+                </summary>
                 <div className="mt-5 pt-5 border-t border-[#E5E7EB] space-y-5">
                   {/* Reasoning Points */}
                   <div>
@@ -651,7 +683,7 @@ export function EnhancedSymptomChecker({ onBack }: EnhancedSymptomCheckerProps) 
                     </div>
                   </div>
                 </div>
-              </Collapsible>
+              </details>
             </MedicalCard>
           )}
 

@@ -195,16 +195,115 @@ export function ClinicFinder({ language, onBack }: ClinicFinderProps) {
 
         {/* Use My Location Button */}
         {!userLocation && (
-          <MedicalButton
-            variant="secondary"
-            size="md"
+          <button
             onClick={requestLocation}
-            fullWidth
             disabled={loading}
+            className="w-full group relative overflow-hidden"
           >
-            <Navigation className="w-5 h-5" />
-            {t.useMyLocation}
-          </MedicalButton>
+            {/* Animated Background Gradient */}
+            <div 
+              className="absolute inset-0 transition-all duration-300"
+              style={{
+                background: loading 
+                  ? `linear-gradient(90deg, ${colors.primary[100]} 0%, ${colors.primary[200]} 50%, ${colors.primary[100]} 100%)`
+                  : `linear-gradient(135deg, ${colors.primary[500]} 0%, ${colors.primary[600]} 100%)`,
+                backgroundSize: loading ? '200% 100%' : '100% 100%',
+                animation: loading ? 'shimmer 1.5s infinite' : 'none'
+              }}
+            />
+            
+            {/* Button Content */}
+            <div className="relative flex items-center justify-center gap-3 px-6 py-4 rounded-2xl">
+              {/* Icon Container with Pulse Animation */}
+              <div 
+                className="relative w-10 h-10 rounded-full flex items-center justify-center"
+                style={{ 
+                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                  boxShadow: loading ? 'none' : '0 0 0 0 rgba(255, 255, 255, 0.4)'
+                }}
+              >
+                <Navigation 
+                  className={`w-5 h-5 text-white transition-transform duration-300 ${
+                    loading ? 'animate-spin' : 'group-hover:scale-110'
+                  }`}
+                />
+                
+                {/* Pulse Ring Effect */}
+                {!loading && (
+                  <span 
+                    className="absolute inset-0 rounded-full animate-ping"
+                    style={{ 
+                      backgroundColor: 'rgba(255, 255, 255, 0.4)',
+                      animationDuration: '2s'
+                    }}
+                  />
+                )}
+              </div>
+              
+              {/* Text */}
+              <span className="text-white font-semibold text-[15px]">
+                {loading ? (language === 'sw' ? 'Inapata Mahali...' : 'Getting Location...') : t.useMyLocation}
+              </span>
+              
+              {/* Chevron Indicator */}
+              {!loading && (
+                <div 
+                  className="w-6 h-6 rounded-full flex items-center justify-center transition-transform group-hover:translate-x-1"
+                  style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
+                >
+                  <svg 
+                    className="w-3 h-3 text-white" 
+                    fill="none" 
+                    viewBox="0 0 24 24" 
+                    stroke="currentColor"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+              )}
+              
+              {/* Loading Dots */}
+              {loading && (
+                <div className="flex gap-1">
+                  {[0, 1, 2].map((i) => (
+                    <span
+                      key={i}
+                      className="w-1.5 h-1.5 bg-white rounded-full animate-bounce"
+                      style={{
+                        animationDelay: `${i * 0.15}s`,
+                        animationDuration: '0.6s'
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+            
+            {/* Shine Effect on Hover */}
+            {!loading && (
+              <div 
+                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                style={{
+                  background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.2) 50%, transparent 100%)',
+                  transform: 'translateX(-100%)',
+                  animation: 'shine 2s infinite'
+                }}
+              />
+            )}
+            
+            {/* CSS Animations */}
+            <style jsx>{`
+              @keyframes shimmer {
+                0% { background-position: 200% 0; }
+                100% { background-position: -200% 0; }
+              }
+              
+              @keyframes shine {
+                0% { transform: translateX(-100%); }
+                100% { transform: translateX(100%); }
+              }
+            `}</style>
+          </button>
         )}
 
         {/* Facilities List */}
@@ -217,91 +316,145 @@ export function ClinicFinder({ language, onBack }: ClinicFinderProps) {
             const FacilityIcon = getFacilityIcon(facility.type);
             return (
               <MedicalCard key={facility.id}>
-                <div className="flex gap-4">
-                  {/* Icon */}
-                  <div
-                    className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0"
-                    style={{ backgroundColor: colors.primary[50] }}
-                  >
-                    <FacilityIcon className="w-6 h-6" style={{ color: colors.primary[500] }} />
-                  </div>
+                {/* Modern Card Layout with Visual Hierarchy */}
+                <div className="relative overflow-hidden">
+                  {/* Top Section: Header with Distance Badge */}
+                  <div className="flex items-start justify-between gap-4 mb-4">
+                    {/* Left: Icon & Info */}
+                    <div className="flex gap-3 flex-1 min-w-0">
+                      {/* Gradient Icon Container */}
+                      <div
+                        className="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 relative"
+                        style={{
+                          background: `linear-gradient(135deg, ${colors.primary[500]} 0%, ${colors.primary[600]} 100%)`,
+                          boxShadow: `0 4px 12px ${colors.primary[500]}20`
+                        }}
+                      >
+                        <FacilityIcon className="w-7 h-7 text-white" />
+                        {/* 24/7 Badge Overlay */}
+                        {facility.hours === '24/7' && (
+                          <div 
+                            className="absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
+                            style={{ backgroundColor: colors.success[500] }}
+                          >
+                            ✓
+                          </div>
+                        )}
+                      </div>
 
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <div>
-                        <h3 className="font-semibold text-[#1A1D23] mb-1">
+                      {/* Facility Info */}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-[17px] text-[#1A1D23] mb-1 leading-tight">
                           {facility.name}
                         </h3>
-                        <p className="text-sm text-[#6B7280]">
+                        <p 
+                          className="text-[13px] font-medium mb-2"
+                          style={{ color: colors.primary[600] }}
+                        >
                           {getFacilityTypeLabel(facility.type)}
                         </p>
                       </div>
-                      <div className="text-right flex-shrink-0">
-                        <p className="text-sm font-semibold" style={{ color: colors.primary[500] }}>
-                          {facility.distance} {t.km}
-                        </p>
+                    </div>
+
+                    {/* Right: Distance Badge */}
+                    <div 
+                      className="px-3 py-2 rounded-xl flex flex-col items-center justify-center min-w-[60px]"
+                      style={{ backgroundColor: colors.primary[50] }}
+                    >
+                      <span 
+                        className="text-[18px] font-bold leading-none"
+                        style={{ color: colors.primary[600] }}
+                      >
+                        {facility.distance}
+                      </span>
+                      <span 
+                        className="text-[11px] font-semibold mt-0.5"
+                        style={{ color: colors.primary[500] }}
+                      >
+                        {t.km}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Location & Hours Section */}
+                  <div className="space-y-2 mb-4">
+                    {/* Address with Icon */}
+                    <div className="flex items-start gap-2.5">
+                      <div 
+                        className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
+                        style={{ backgroundColor: colors.neutral[100] }}
+                      >
+                        <MapPin className="w-4 h-4" style={{ color: colors.neutral[600] }} />
                       </div>
+                      <span className="text-[14px] text-[#4B5563] leading-relaxed">
+                        {facility.address}
+                      </span>
                     </div>
 
-                    {/* Address */}
-                    <div className="flex items-center gap-2 text-sm text-[#6B7280] mb-2">
-                      <MapPin className="w-4 h-4 flex-shrink-0" />
-                      <span className="truncate">{facility.address}</span>
-                    </div>
-
-                    {/* Hours */}
-                    <div className="flex items-center gap-2 text-sm text-[#6B7280] mb-3">
-                      <Clock className="w-4 h-4 flex-shrink-0" />
-                      <span>{facility.hours}</span>
+                    {/* Hours with Status */}
+                    <div className="flex items-center gap-2.5">
+                      <div 
+                        className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
+                        style={{ backgroundColor: colors.neutral[100] }}
+                      >
+                        <Clock className="w-4 h-4" style={{ color: colors.neutral[600] }} />
+                      </div>
+                      <span className="text-[14px] text-[#4B5563]">
+                        {facility.hours}
+                      </span>
                       {facility.hours === '24/7' && (
                         <span
-                          className="px-2 py-0.5 rounded text-xs font-medium"
+                          className="px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wide"
                           style={{
-                            backgroundColor: colors.success[50],
-                            color: colors.success[700],
+                            backgroundColor: colors.success[500],
+                            color: 'white',
                           }}
                         >
                           {t.openNow}
                         </span>
                       )}
                     </div>
+                  </div>
 
-                    {/* Services */}
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {facility.services.slice(0, 3).map((service, idx) => (
-                        <span
-                          key={idx}
-                          className="px-2 py-1 text-xs rounded"
-                          style={{
-                            backgroundColor: colors.neutral[100],
-                            color: colors.neutral[700],
-                          }}
-                        >
-                          {service}
-                        </span>
-                      ))}
-                    </div>
+                  {/* Services Pills - Modern Design */}
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {facility.services.slice(0, 4).map((service, idx) => (
+                      <span
+                        key={idx}
+                        className="px-3 py-1.5 text-[12px] font-semibold rounded-full"
+                        style={{
+                          backgroundColor: idx === 0 ? colors.primary[100] : colors.neutral[100],
+                          color: idx === 0 ? colors.primary[700] : colors.neutral[700],
+                        }}
+                      >
+                        {service}
+                      </span>
+                    ))}
+                  </div>
 
-                    {/* Actions */}
-                    <div className="flex gap-2">
-                      <MedicalButton
-                        variant="primary"
-                        size="sm"
-                        onClick={() => openDirections(facility)}
-                      >
-                        <Navigation className="w-4 h-4" />
-                        {t.getDirections}
-                      </MedicalButton>
-                      <MedicalButton
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => window.location.href = `tel:${facility.phone}`}
-                      >
-                        <Phone className="w-4 h-4" />
-                        {t.call}
-                      </MedicalButton>
-                    </div>
+                  {/* Action Buttons - Enhanced Design */}
+                  <div className="flex gap-3 pt-3 border-t" style={{ borderColor: colors.neutral[200] }}>
+                    <MedicalButton
+                      variant="primary"
+                      size="sm"
+                      onClick={() => openDirections(facility)}
+                      className="flex-1"
+                      style={{
+                        boxShadow: `0 2px 8px ${colors.primary[500]}25`
+                      }}
+                    >
+                      <Navigation className="w-4 h-4" />
+                      {t.getDirections}
+                    </MedicalButton>
+                    <MedicalButton
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => window.location.href = `tel:${facility.phone}`}
+                      className="flex-1"
+                    >
+                      <Phone className="w-4 h-4" />
+                      {t.call}
+                    </MedicalButton>
                   </div>
                 </div>
               </MedicalCard>

@@ -4,32 +4,21 @@
  * Reduces frustration and no-shows
  */
 
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import {
-  ArrowLeft,
-  Calendar,
-  Clock,
-  MapPin,
-  User,
-  CheckCircle,
-  AlertCircle,
-  Plus,
-  Edit,
-  X,
-  ChevronRight,
-  Users,
-  Activity,
-  Phone,
-} from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ArrowLeft, Calendar, Clock, MapPin, CheckCircle, AlertCircle, Phone, Plus, Edit, X, User, Users, Activity } from 'lucide-react';
 import { Button } from './ui/button';
+import { motion } from 'motion/react';
+import { api } from '@/app/services/api';
+import type { Appointment as ApiAppointment, Facility as ApiFacility } from '@/app/services/supabase';
+import { toast } from 'sonner';
 
 interface AppointmentSystemProps {
   language: 'sw' | 'en';
   onBack: () => void;
 }
 
-interface Appointment {
+// Local UI types
+interface AppointmentUI {
   id: string;
   date: Date;
   time: string;
@@ -42,7 +31,7 @@ interface Appointment {
   facilityLoad?: 'low' | 'medium' | 'high';
 }
 
-interface Facility {
+interface FacilityUI {
   id: string;
   name: { sw: string; en: string };
   address: { sw: string; en: string };
@@ -54,18 +43,60 @@ interface Facility {
 
 export function AppointmentSystem({ language, onBack }: AppointmentSystemProps) {
   const [view, setView] = useState<'list' | 'book' | 'details'>('list');
-  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
-  const [selectedFacility, setSelectedFacility] = useState<Facility | null>(null);
+  const [selectedAppointment, setSelectedAppointment] = useState<AppointmentUI | null>(null);
+  const [selectedFacility, setSelectedFacility] = useState<FacilityUI | null>(null);
   
   // NEW: Multi-step booking wizard state
   const [bookingStep, setBookingStep] = useState<1 | 2 | 3>(1);
   const [bookingData, setBookingData] = useState({
-    facility: null as Facility | null,
+    facility: null as FacilityUI | null,
     date: '',
     time: '',
     reason: '',
     hasInsurance: false,
   });
+
+  // NEW: Loading states
+  const [isLoading, setIsLoading] = useState(false);
+  const [appointments, setAppointments] = useState<ApiAppointment[]>([]);
+  const [facilities, setFacilities] = useState<ApiFacility[]>([]);
+
+  // Load appointments on mount
+  useEffect(() => {
+    loadAppointments();
+    loadFacilities();
+  }, []);
+
+  const loadAppointments = async () => {
+    setIsLoading(true);
+    const userId = 'user_001'; // TODO: Get from auth context
+    const response = await api.appointments.list(userId);
+    if (response.success && response.data) {
+      setAppointments(response.data);
+    } else {
+      console.error('Failed to load appointments:', response.error);
+      toast.error(language === 'sw' ? 'Imeshindwa kupakia miadi' : 'Failed to load appointments');
+    }
+    setIsLoading(false);
+  };
+
+  const loadFacilities = async () => {
+    const response = await api.facilities.list();
+    if (response.success && response.data) {
+      setFacilities(response.data);
+    }
+  };
+
+  // Convert API facilities to UI format
+  const facilitiesUI: FacilityUI[] = facilities.map((f) => ({
+    id: f.id,
+    name: { sw: f.name_sw, en: f.name },
+    address: { sw: f.address_sw, en: f.address },
+    currentLoad: f.current_load || 'medium',
+    waitTime: f.wait_time_minutes || 30,
+    availableSlots: 15, // TODO: Calculate from API
+    distance: undefined, // TODO: Calculate from user location
+  }));
 
   const content = {
     sw: {
@@ -171,7 +202,7 @@ export function AppointmentSystem({ language, onBack }: AppointmentSystemProps) 
   const t = content[language];
 
   // Mock appointments
-  const mockAppointments: Appointment[] = [
+  const mockAppointments: AppointmentUI[] = [
     {
       id: '1',
       date: new Date('2026-02-10'),
@@ -196,7 +227,7 @@ export function AppointmentSystem({ language, onBack }: AppointmentSystemProps) 
   ];
 
   // Mock facilities
-  const mockFacilities: Facility[] = [
+  const mockFacilities: FacilityUI[] = [
     {
       id: '1',
       name: { sw: 'Kituo cha Afya Kariakoo', en: 'Kariakoo Health Centre' },
@@ -256,23 +287,61 @@ export function AppointmentSystem({ language, onBack }: AppointmentSystemProps) 
   };
 
   // Helper: Handle booking confirmation
-  const handleConfirmBooking = () => {
-    // In production: Send to backend
-    alert(
-      language === 'sw'
-        ? `Miadi imepangwa! ${bookingData.facility?.name.sw} - ${bookingData.date} ${bookingData.time}`
-        : `Appointment booked! ${bookingData.facility?.name.en} - ${bookingData.date} ${bookingData.time}`
-    );
-    // Reset and return to list
-    setBookingData({
-      facility: null,
-      date: '',
-      time: '',
-      reason: '',
-      hasInsurance: false,
-    });
-    setBookingStep(1);
-    setView('list');
+  const handleConfirmBooking = async () => {
+    if (!bookingData.facility || !bookingData.date || !bookingData.time) {
+      toast.error(language === 'sw' ? 'Tafadhali jaza sehemu zote' : 'Please fill all fields');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const userId = 'user_001'; // TODO: Get from auth context
+      const response = await api.appointments.create({
+        user_id: userId,
+        facility_id: bookingData.facility.id,
+        date: bookingData.date,
+        time: bookingData.time,
+        type: 'General Checkup', // TODO: Make configurable
+        status: 'scheduled',
+        reason: bookingData.reason,
+        notes: '',
+        has_insurance: bookingData.hasInsurance,
+      });
+
+      if (response.success && response.data) {
+        toast.success(
+          language === 'sw'
+            ? `Miadi imepangwa! ${bookingData.facility.name_sw} - ${bookingData.date} ${bookingData.time}`
+            : `Appointment booked! ${bookingData.facility.name} - ${bookingData.date} ${bookingData.time}`
+        );
+
+        // Reset and return to list
+        setBookingData({
+          facility: null,
+          date: '',
+          time: '',
+          reason: '',
+          hasInsurance: false,
+        });
+        setBookingStep(1);
+        setView('list');
+        
+        // Reload appointments
+        await loadAppointments();
+      } else {
+        throw response.error || new Error('Failed to book appointment');
+      }
+    } catch (error) {
+      console.error('Booking error:', error);
+      toast.error(
+        language === 'sw'
+          ? 'Imeshindwa kupanga miadi. Tafadhali jaribu tena.'
+          : 'Failed to book appointment. Please try again.'
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const getLoadColor = (load: string) => {

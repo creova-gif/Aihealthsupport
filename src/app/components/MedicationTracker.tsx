@@ -3,62 +3,67 @@
  * Track medications, doses, refills, and adherence
  */
 
-import React, { useState } from 'react';
-import { Pill, Clock, Calendar, AlertTriangle, CheckCircle, Plus, ChevronRight, TrendingUp } from 'lucide-react';
-import { useApp } from '@/app/context/AppContext';
-import { MissedMedicationGuidance } from './MissedMedicationGuidance';
-import { motion } from 'motion/react';
+import React, { useState, useEffect } from 'react';
+import {
+  Pill,
+  Clock,
+  Calendar,
+  AlertCircle,
+  CheckCircle,
+  Plus,
+  ChevronLeft,
+  TrendingUp,
+  AlertTriangle,
+  Info,
+} from 'lucide-react';
+import { useApp } from '../context/AppContext';
+import { Button } from './ui/button';
+import { api } from '@/app/services/api';
+import type { Medication as ApiMedication } from '@/app/services/supabase';
+import { toast } from 'sonner';
 
 const translations = {
   sw: {
     title: 'Dawa Zangu',
-    subtitle: 'Fuatilia dawa zako na mipango',
-    today: 'Leo',
-    upcoming: 'Zijazo',
-    history: 'Historia',
+    subtitle: 'Fuatilia dawa na kumbusho',
+    tabs: {
+      today: 'Leo',
+      upcoming: 'Zijazo',
+      history: 'Historia',
+    },
     addMedication: 'Ongeza Dawa',
-    takeMedication: 'Umya',
-    taken: 'Umemwa',
-    missed: 'Umekosa',
-    skipped: 'Umeruka',
-    adherence: 'Kufuata Mipango',
-    refillIn: 'Jaza tena baada ya siku',
-    dosesLeft: 'Kipimo zilizobaki',
-    dailySchedule: 'Ratiba ya Kila Siku',
-    morning: 'Asubuhi',
-    afternoon: 'Mchana',
-    evening: 'Jioni',
-    night: 'Usiku',
-    stats: 'Takwimu',
-    thisWeek: 'Wiki Hii',
-    thisMonth: 'Mwezi Huu',
+    takeNow: 'Tumia Sasa',
+    taken: 'Imetumika',
+    skip: 'Ruka',
+    timeLeft: 'Muda Uliobaki',
+    refillIn: 'Jaza Upya Baada ya',
+    days: 'siku',
+    adherenceRate: 'Kiwango cha Kufuata',
+    guidance: 'Mwongozo',
+    missedDoses: 'Kipimo Kilichokosekana',
     onTime: 'Kwa Wakati',
-    late: 'Umechelewa',
-    noMedications: 'Hakuna Dawa Zilizowekwa',
-    tapToAdd: 'Gusa kuongeza dawa yako ya kwanza',
+    late: 'Chelewa',
+    noMedications: 'Hakuna Dawa Zilizoongezwa',
+    tapToAdd: 'Gusa ili kuongeza dawa yako ya kwanza',
   },
   en: {
     title: 'My Medications',
-    subtitle: 'Track your medications and schedules',
-    today: 'Today',
-    upcoming: 'Upcoming',
-    history: 'History',
+    subtitle: 'Track medications and reminders',
+    tabs: {
+      today: 'Today',
+      upcoming: 'Upcoming',
+      history: 'History',
+    },
     addMedication: 'Add Medication',
-    takeMedication: 'Take',
+    takeNow: 'Take Now',
     taken: 'Taken',
-    missed: 'Missed',
-    skipped: 'Skipped',
-    adherence: 'Adherence',
+    skip: 'Skip',
+    timeLeft: 'Time Left',
     refillIn: 'Refill in',
-    dosesLeft: 'doses left',
-    dailySchedule: 'Daily Schedule',
-    morning: 'Morning',
-    afternoon: 'Afternoon',
-    evening: 'Evening',
-    night: 'Night',
-    stats: 'Statistics',
-    thisWeek: 'This Week',
-    thisMonth: 'This Month',
+    days: 'days',
+    adherenceRate: 'Adherence Rate',
+    guidance: 'Guidance',
+    missedDoses: 'Missed Doses',
     onTime: 'On Time',
     late: 'Late',
     noMedications: 'No Medications Added',
@@ -66,7 +71,7 @@ const translations = {
   },
 };
 
-interface Medication {
+interface MedicationUI {
   id: string;
   name: string;
   dosage: string;
@@ -83,53 +88,49 @@ export function MedicationTracker({ onBack }: { onBack: () => void }) {
   const { language } = useApp();
   const t = translations[language];
   const [view, setView] = useState<'today' | 'upcoming' | 'history'>('today');
-  const [showGuidance, setShowGuidance] = useState<Medication | null>(null);
+  const [showGuidance, setShowGuidance] = useState<MedicationUI | null>(null);
+  
+  // NEW: State management
+  const [isLoading, setIsLoading] = useState(false);
+  const [medications, setMedications] = useState<ApiMedication[]>([]);
 
-  // Mock medication data
-  const medications: Medication[] = [
-    {
-      id: '1',
-      name: 'Amlodipine',
-      dosage: '5mg',
-      frequency: language === 'sw' ? 'Mara 1 kwa siku' : 'Once daily',
-      times: ['08:00'],
-      refillDays: 7,
-      dosesLeft: 7,
-      totalDoses: 30,
-      condition: language === 'sw' ? 'Shinikizo la Damu' : 'Hypertension',
-      missedDoses: 2,
-    },
-    {
-      id: '2',
-      name: 'Metformin',
-      dosage: '500mg',
-      frequency: language === 'sw' ? 'Mara 2 kwa siku' : 'Twice daily',
-      times: ['08:00', '20:00'],
-      refillDays: 14,
-      dosesLeft: 28,
-      totalDoses: 60,
-      condition: language === 'sw' ? 'Kisukari' : 'Diabetes',
-      missedDoses: 0,
-    },
-    {
-      id: '3',
-      name: 'Aspirin',
-      dosage: '75mg',
-      frequency: language === 'sw' ? 'Mara 1 kwa siku' : 'Once daily',
-      times: ['08:00'],
-      refillDays: 2,
-      dosesLeft: 2,
-      totalDoses: 30,
-      condition: language === 'sw' ? 'Moyo' : 'Cardiovascular',
-      missedDoses: 0,
-    },
-  ];
+  // Load medications on mount
+  useEffect(() => {
+    loadMedications();
+  }, []);
+
+  const loadMedications = async () => {
+    setIsLoading(true);
+    const userId = 'user_001'; // TODO: Get from auth context
+    const response = await api.medications.list(userId);
+    if (response.success && response.data) {
+      setMedications(response.data);
+    } else {
+      console.error('Failed to load medications:', response.error);
+      toast.error(language === 'sw' ? 'Imeshindwa kupakia dawa' : 'Failed to load medications');
+    }
+    setIsLoading(false);
+  };
+
+  // Convert API medications to UI format
+  const medicationsUI: MedicationUI[] = medications.map((med) => ({
+    id: med.id,
+    name: med.name,
+    dosage: med.dosage,
+    frequency: med.frequency,
+    times: med.reminder_times,
+    refillDays: 7, // TODO: Calculate from end_date
+    dosesLeft: 15, // TODO: Calculate from usage tracking
+    totalDoses: 30, // TODO: Calculate from prescription
+    condition: '', // TODO: Add to schema
+    missedDoses: 0, // TODO: Track in separate table
+  }));
 
   // Calculate adherence
   const adherenceRate = 85; // Mock: would be calculated from history
 
   // Get today's schedule
-  const todaySchedule = medications.flatMap((med) =>
+  const todaySchedule = medicationsUI.flatMap((med) =>
     med.times.map((time) => ({
       ...med,
       scheduledTime: time,
@@ -146,7 +147,7 @@ export function MedicationTracker({ onBack }: { onBack: () => void }) {
             onClick={onBack}
             className="flex items-center gap-2 mb-4 text-gray-600 hover:text-gray-900 transition-colors"
           >
-            <ChevronRight className="w-5 h-5 rotate-180" />
+            <ChevronLeft className="w-5 h-5" />
             <span className="text-sm font-medium">{language === 'sw' ? 'Rudi' : 'Back'}</span>
           </button>
 
@@ -162,7 +163,7 @@ export function MedicationTracker({ onBack }: { onBack: () => void }) {
           <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-4 border-2 border-green-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 mb-1">{t.adherence}</p>
+                <p className="text-sm text-gray-600 mb-1">{t.adherenceRate}</p>
                 <p className="text-3xl font-bold text-green-700">{adherenceRate}%</p>
                 <p className="text-xs text-gray-500 mt-1">{t.thisWeek}</p>
               </div>
@@ -185,7 +186,7 @@ export function MedicationTracker({ onBack }: { onBack: () => void }) {
                   : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
             >
-              {t[tab]}
+              {t.tabs[tab]}
             </button>
           ))}
         </div>
@@ -196,10 +197,10 @@ export function MedicationTracker({ onBack }: { onBack: () => void }) {
         {view === 'today' && (
           <div className="space-y-6">
             {/* Alerts */}
-            {medications.some((med) => med.refillDays <= 3 || med.missedDoses > 0) && (
+            {medicationsUI.some((med) => med.refillDays <= 3 || med.missedDoses > 0) && (
               <div className="space-y-3">
                 <h2 className="text-lg font-bold text-gray-900">{language === 'sw' ? 'Tahadhari' : 'Alerts'}</h2>
-                {medications.map((med) => {
+                {medicationsUI.map((med) => {
                   if (med.missedDoses > 0 || med.refillDays <= 3) {
                     return (
                       <button
@@ -297,46 +298,197 @@ export function MedicationTracker({ onBack }: { onBack: () => void }) {
               <h2 className="text-lg font-bold text-gray-900 mb-4">
                 {language === 'sw' ? 'Dawa Zote' : 'All Medications'}
               </h2>
-              <div className="space-y-3">
-                {medications.map((med) => (
-                  <div key={med.id} className="bg-white rounded-xl border border-gray-200 p-4">
-                    <div className="flex items-start justify-between mb-3">
-                      <div>
-                        <h3 className="font-bold text-gray-900">
-                          {med.name} <span className="text-gray-600">{med.dosage}</span>
-                        </h3>
-                        <p className="text-sm text-gray-600">{med.frequency}</p>
-                        <p className="text-xs text-gray-500 mt-1">{med.condition}</p>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="bg-gray-50 rounded-lg p-3">
-                        <p className="text-xs text-gray-600 mb-1">{t.dosesLeft}</p>
-                        <p className="text-lg font-bold text-gray-900">
-                          {med.dosesLeft}/{med.totalDoses}
-                        </p>
-                        <div className="w-full bg-gray-200 h-1.5 rounded-full mt-2">
-                          <div
-                            className={`h-full rounded-full ${
-                              med.dosesLeft <= 3 ? 'bg-red-500' : 'bg-green-500'
-                            }`}
-                            style={{ width: `${(med.dosesLeft / med.totalDoses) * 100}%` }}
-                          />
+              <div className="space-y-4">
+                {medicationsUI.map((med, index) => {
+                  const isLowStock = med.dosesLeft <= 3;
+                  const isRefillUrgent = med.refillDays <= 3;
+                  const stockPercentage = (med.dosesLeft / med.totalDoses) * 100;
+                  
+                  return (
+                    <motion.div
+                      key={med.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      className="group relative"
+                    >
+                      {/* Status Indicator Bar */}
+                      <div 
+                        className="absolute left-0 top-0 bottom-0 w-1 rounded-l-2xl"
+                        style={{
+                          backgroundColor: isLowStock ? '#EF4444' : isRefillUrgent ? '#F59E0B' : '#10B981'
+                        }}
+                      />
+                      
+                      <div className="bg-white rounded-2xl border-2 border-gray-100 p-5 pl-6 hover:shadow-xl transition-all duration-300 hover:border-blue-200">
+                        {/* Header Section */}
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex gap-3 flex-1">
+                            {/* Pill Icon */}
+                            <div 
+                              className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform"
+                              style={{
+                                background: isLowStock 
+                                  ? 'linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%)'
+                                  : 'linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%)'
+                              }}
+                            >
+                              <Pill 
+                                className="w-6 h-6" 
+                                style={{ color: isLowStock ? '#DC2626' : '#2563EB' }}
+                              />
+                            </div>
+                            
+                            {/* Medication Info */}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-start gap-2 mb-1">
+                                <h3 className="font-bold text-[17px] text-gray-900 leading-tight">
+                                  {med.name}
+                                </h3>
+                                {(isLowStock || isRefillUrgent) && (
+                                  <span 
+                                    className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide flex-shrink-0"
+                                    style={{
+                                      backgroundColor: isLowStock ? '#FEE2E2' : '#FEF3C7',
+                                      color: isLowStock ? '#DC2626' : '#D97706'
+                                    }}
+                                  >
+                                    {isLowStock ? (language === 'sw' ? 'CHINI' : 'LOW') : (language === 'sw' ? 'JAZA' : 'REFILL')}
+                                  </span>
+                                )}
+                              </div>
+                              
+                              <p className="text-[15px] font-semibold text-blue-600 mb-1">
+                                {med.dosage}
+                              </p>
+                              
+                              <div className="flex flex-wrap items-center gap-2 text-sm">
+                                <span className="flex items-center gap-1 text-gray-600">
+                                  <Clock className="w-3.5 h-3.5" />
+                                  {med.frequency}
+                                </span>
+                                <span className="text-gray-300">•</span>
+                                <span className="text-gray-500">{med.condition}</span>
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                      </div>
 
-                      <div className="bg-gray-50 rounded-lg p-3">
-                        <p className="text-xs text-gray-600 mb-1">{t.refillIn}</p>
-                        <p className={`text-lg font-bold ${
-                          med.refillDays <= 3 ? 'text-red-600' : 'text-gray-900'
-                        }`}>
-                          {med.refillDays} {language === 'sw' ? 'siku' : 'days'}
-                        </p>
+                        {/* Stats Grid - Redesigned */}
+                        <div className="grid grid-cols-2 gap-3 mb-4">
+                          {/* Doses Left Card */}
+                          <div 
+                            className="relative overflow-hidden rounded-xl p-4"
+                            style={{
+                              background: isLowStock
+                                ? 'linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%)'
+                                : 'linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%)'
+                            }}
+                          >
+                            <div className="relative z-10">
+                              <p className="text-[11px] font-semibold uppercase tracking-wide mb-1" 
+                                style={{ color: isLowStock ? '#991B1B' : '#166534' }}
+                              >
+                                {t.dosesLeft}
+                              </p>
+                              <div className="flex items-baseline gap-1 mb-2">
+                                <span 
+                                  className="text-[28px] font-black leading-none"
+                                  style={{ color: isLowStock ? '#DC2626' : '#16A34A' }}
+                                >
+                                  {med.dosesLeft}
+                                </span>
+                                <span className="text-[14px] font-bold text-gray-500">
+                                  /{med.totalDoses}
+                                </span>
+                              </div>
+                              
+                              {/* Animated Progress Bar */}
+                              <div className="relative h-2 bg-white/50 rounded-full overflow-hidden">
+                                <motion.div
+                                  className="h-full rounded-full"
+                                  initial={{ width: 0 }}
+                                  animate={{ width: `${stockPercentage}%` }}
+                                  transition={{ duration: 1, delay: index * 0.1 + 0.3 }}
+                                  style={{
+                                    background: isLowStock
+                                      ? 'linear-gradient(90deg, #DC2626 0%, #EF4444 100%)'
+                                      : 'linear-gradient(90deg, #16A34A 0%, #22C55E 100%)'
+                                  }}
+                                />
+                              </div>
+                            </div>
+                            
+                            {/* Background Icon */}
+                            <Pill 
+                              className="absolute -right-2 -bottom-2 w-16 h-16 opacity-10"
+                              style={{ color: isLowStock ? '#DC2626' : '#16A34A' }}
+                            />
+                          </div>
+
+                          {/* Refill Days Card */}
+                          <div 
+                            className="relative overflow-hidden rounded-xl p-4"
+                            style={{
+                              background: isRefillUrgent
+                                ? 'linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)'
+                                : 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)'
+                            }}
+                          >
+                            <div className="relative z-10">
+                              <p className="text-[11px] font-semibold uppercase tracking-wide mb-1"
+                                style={{ color: isRefillUrgent ? '#92400E' : '#1E40AF' }}
+                              >
+                                {t.refillIn}
+                              </p>
+                              <div className="flex items-baseline gap-1.5 mb-1">
+                                <span 
+                                  className="text-[28px] font-black leading-none"
+                                  style={{ color: isRefillUrgent ? '#D97706' : '#2563EB' }}
+                                >
+                                  {med.refillDays}
+                                </span>
+                                <span className="text-[14px] font-bold text-gray-500">
+                                  {language === 'sw' ? 'siku' : 'days'}
+                                </span>
+                              </div>
+                              
+                              {/* Urgency Indicator */}
+                              {isRefillUrgent && (
+                                <div className="flex items-center gap-1 mt-1">
+                                  <AlertTriangle className="w-3 h-3 text-amber-600" />
+                                  <span className="text-[10px] font-bold text-amber-600 uppercase">
+                                    {language === 'sw' ? 'Haraka' : 'Urgent'}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                            
+                            {/* Background Icon */}
+                            <Calendar 
+                              className="absolute -right-2 -bottom-2 w-16 h-16 opacity-10"
+                              style={{ color: isRefillUrgent ? '#D97706' : '#2563EB' }}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Action Button */}
+                        <button
+                          className="w-full flex items-center justify-between px-4 py-3 rounded-xl group/btn transition-all duration-200"
+                          style={{
+                            background: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
+                            boxShadow: '0 2px 8px rgba(59, 130, 246, 0.25)'
+                          }}
+                        >
+                          <span className="text-white font-semibold text-[14px]">
+                            {language === 'sw' ? 'Angalia Maelezo' : 'View Details'}
+                          </span>
+                          <ChevronRight className="w-5 h-5 text-white group-hover/btn:translate-x-1 transition-transform" />
+                        </button>
                       </div>
-                    </div>
-                  </div>
-                ))}
+                    </motion.div>
+                  );
+                })}
               </div>
             </div>
           </div>
