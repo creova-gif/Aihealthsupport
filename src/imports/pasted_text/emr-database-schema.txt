@@ -1,0 +1,208 @@
+CREATE CORE AUTH + USER STRUCTURE
+
+Supabase already provides authentication, so we extend it with profiles.
+
+Table: staff_profiles
+create table staff_profiles (
+  id uuid primary key references auth.users(id),
+  full_name text,
+  role text,
+  clinic_id uuid,
+  phone text,
+  created_at timestamp default now()
+);
+
+Roles supported:
+
+doctor
+nurse
+pharmacist
+lab_tech
+admin
+2️⃣ CLINICS SYSTEM
+
+A single platform can support multiple clinics.
+
+Table: clinics
+create table clinics (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  country text,
+  city text,
+  address text,
+  phone text,
+  created_at timestamp default now()
+);
+Table: clinic_locations
+create table clinic_locations (
+  id uuid primary key default gen_random_uuid(),
+  clinic_id uuid references clinics(id),
+  location_name text,
+  created_at timestamp default now()
+);
+3️⃣ PATIENT REGISTRY
+
+This is the heart of the EMR.
+
+Table: patients
+create table patients (
+  id uuid primary key default gen_random_uuid(),
+  clinic_id uuid references clinics(id),
+  first_name text,
+  last_name text,
+  date_of_birth date,
+  gender text,
+  phone text,
+  address text,
+  blood_type text,
+  created_at timestamp default now()
+);
+Table: patient_allergies
+create table patient_allergies (
+  id uuid primary key default gen_random_uuid(),
+  patient_id uuid references patients(id),
+  allergy text,
+  severity text,
+  created_at timestamp default now()
+);
+Table: patient_conditions
+create table patient_conditions (
+  id uuid primary key default gen_random_uuid(),
+  patient_id uuid references patients(id),
+  condition_name text,
+  diagnosed_date date
+);
+4️⃣ TRIAGE SYSTEM
+
+Nurses record symptoms and assign priority.
+
+Table: triage_records
+create table triage_records (
+  id uuid primary key default gen_random_uuid(),
+  patient_id uuid references patients(id),
+  nurse_id uuid references staff_profiles(id),
+  symptoms text,
+  priority text,
+  notes text,
+  created_at timestamp default now()
+);
+
+Priority levels:
+
+emergency
+urgent
+moderate
+routine
+5️⃣ VITALS SYSTEM
+
+Vitals are stored separately for medical history.
+
+Table: vitals
+create table vitals (
+  id uuid primary key default gen_random_uuid(),
+  patient_id uuid references patients(id),
+  temperature numeric,
+  blood_pressure text,
+  pulse integer,
+  respiration integer,
+  weight numeric,
+  height numeric,
+  recorded_by uuid references staff_profiles(id),
+  recorded_at timestamp default now()
+);
+6️⃣ CONSULTATIONS
+
+Doctors document visits here.
+
+Table: consultations
+create table consultations (
+  id uuid primary key default gen_random_uuid(),
+  patient_id uuid references patients(id),
+  doctor_id uuid references staff_profiles(id),
+  diagnosis text,
+  notes text,
+  follow_up_date date,
+  created_at timestamp default now()
+);
+7️⃣ CLINICAL NOTES (SOAP)
+Table: clinical_notes
+create table clinical_notes (
+  id uuid primary key default gen_random_uuid(),
+  consultation_id uuid references consultations(id),
+  subjective text,
+  objective text,
+  assessment text,
+  plan text,
+  created_at timestamp default now()
+);
+8️⃣ PATIENT TIMELINE EVENTS
+
+This powers the patient history feed.
+
+Table: patient_events
+create table patient_events (
+  id uuid primary key default gen_random_uuid(),
+  patient_id uuid references patients(id),
+  event_type text,
+  event_title text,
+  event_data jsonb,
+  created_at timestamp default now()
+);
+
+Event types:
+
+triage
+vitals
+consultation
+prescription
+lab
+pharmacy
+9️⃣ PRESCRIPTIONS SYSTEM
+Table: prescriptions
+create table prescriptions (
+  id uuid primary key default gen_random_uuid(),
+  consultation_id uuid references consultations(id),
+  doctor_id uuid references staff_profiles(id),
+  created_at timestamp default now()
+);
+Table: prescription_items
+create table prescription_items (
+  id uuid primary key default gen_random_uuid(),
+  prescription_id uuid references prescriptions(id),
+  drug_name text,
+  dosage text,
+  frequency text,
+  duration text,
+  notes text
+);
+🔐 SECURITY (ROW LEVEL SECURITY)
+
+Enable data protection.
+
+alter table patients enable row level security;
+alter table consultations enable row level security;
+alter table prescriptions enable row level security;
+
+Example policy:
+
+create policy "clinic staff can view patients"
+on patients
+for select
+using (true);
+
+Later we restrict by clinic_id.
+
+📱 FIRST WORKING APP FEATURES
+
+Once these tables are deployed, your app can already support:
+
+Login
+Create clinic
+Create patient
+Record vitals
+Perform triage
+Doctor consultation
+Write prescription
+View patient timeline
+
+That is a fully functional basic EMR.
