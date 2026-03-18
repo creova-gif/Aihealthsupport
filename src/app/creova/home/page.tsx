@@ -1,5 +1,5 @@
-import HomeDashboard from '../../components/creova/HomeDashboard';
+import HomeDashboardModern from '../../components/creova/HomeDashboardModern';
 
 export default function HomePage() {
-  return <HomeDashboard />;
+  return <HomeDashboardModern />;
 }
